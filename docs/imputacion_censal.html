@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 13 12_Imputacion_censal | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024</title>
+  <meta name="description" content="Manual de procesamiento." />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 13 12_Imputacion_censal | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Manual de procesamiento." />
+  <meta name="github-repo" content="psirusteam/coneval" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 13 12_Imputacion_censal | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
+  
+  <meta name="twitter:description" content="Manual de procesamiento." />
+  
+
+<meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
+
+
+<meta name="date" content="2024-07-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="postbenchmarking_ic_segsoc.html"/>
+<link rel="next" href="estimacion_ent_02.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Taller de instalación de capacidades en SAE</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introducción</a>
+<ul>
+<li class="chapter" data-level="" data-path="respositodio-de-códigos.html"><a href="respositodio-de-códigos.html"><i class="fa fa-check"></i>Respositodio de códigos</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="librerias-de-r-y-otros-insumos.html"><a href="librerias-de-r-y-otros-insumos.html"><i class="fa fa-check"></i>Librerias de <em>R</em> y otros insumos</a>
+<ul>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html"><i class="fa fa-check"></i>Librerías Utilizadas</a>
+<ul>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#manipulación-y-transformación-de-datos"><i class="fa fa-check"></i>Manipulación y Transformación de Datos</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#lectura-y-escritura-de-datos"><i class="fa fa-check"></i>Lectura y Escritura de Datos</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#análisis-de-datos-de-encuestas"><i class="fa fa-check"></i>Análisis de Datos de Encuestas</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#modelado-y-análisis-estadístico"><i class="fa fa-check"></i>Modelado y Análisis Estadístico</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#visualización-de-datos"><i class="fa fa-check"></i>Visualización de Datos</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#informes-y-reproducibilidad"><i class="fa fa-check"></i>Informes y Reproducibilidad</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#integración-con-otros-lenguajes"><i class="fa fa-check"></i>Integración con Otros Lenguajes</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="bases-de-datos-utilizadas.html"><a href="bases-de-datos-utilizadas.html"><i class="fa fa-check"></i>Bases de Datos Utilizadas</a></li>
+<li class="chapter" data-level="" data-path="estructura-del-proyecto.html"><a href="estructura-del-proyecto.html"><i class="fa fa-check"></i>Estructura del Proyecto</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i><b>1</b> 00_union_bases.R</a></li>
+<li class="chapter" data-level="2" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i><b>2</b> 01_Descarga_satelitales.R</a></li>
+<li class="chapter" data-level="3" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i><b>3</b> 02_Union_predictores.R</a></li>
+<li class="chapter" data-level="4" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i><b>4</b> 03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
+<li class="chapter" data-level="5" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i><b>5</b> 04_Armonizar_encuesta.R</a></li>
+<li class="chapter" data-level="6" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i><b>6</b> 05_Validacion_encuestas.R</a></li>
+<li class="chapter" data-level="7" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i><b>7</b> 06_Modelo_unidad_ictpc.R</a></li>
+<li class="chapter" data-level="8" data-path="modelo_unidad_py_ic_ali_nc.html"><a href="modelo_unidad_py_ic_ali_nc.html"><i class="fa fa-check"></i><b>8</b> 07_Modelo_unidad_py_ic_ali_nc.R</a></li>
+<li class="chapter" data-level="9" data-path="modelo_unidad_py_ic_segsoc.html"><a href="modelo_unidad_py_ic_segsoc.html"><i class="fa fa-check"></i><b>9</b> 08_Modelo_unidad_py_ic_segsoc</a></li>
+<li class="chapter" data-level="10" data-path="postbenchmarking_ictpc.html"><a href="postbenchmarking_ictpc.html"><i class="fa fa-check"></i><b>10</b> 09_PostBenchmarking_ictpc.R</a></li>
+<li class="chapter" data-level="11" data-path="postbenchmarking_ic_ali_nc.html"><a href="postbenchmarking_ic_ali_nc.html"><i class="fa fa-check"></i><b>11</b> 10_PostBenchmarking_ic_ali_nc.R</a></li>
+<li class="chapter" data-level="12" data-path="postbenchmarking_ic_segsoc.html"><a href="postbenchmarking_ic_segsoc.html"><i class="fa fa-check"></i><b>12</b> 11_PostBenchmarking_ic_segsoc</a></li>
+<li class="chapter" data-level="13" data-path="imputacion_censal.html"><a href="imputacion_censal.html"><i class="fa fa-check"></i><b>13</b> 12_Imputacion_censal</a></li>
+<li class="chapter" data-level="14" data-path="estimacion_ent_02.html"><a href="estimacion_ent_02.html"><i class="fa fa-check"></i><b>14</b> 13_Estimacion_ent_02.R</a></li>
+<li class="chapter" data-level="15" data-path="estimacion_municipios_ipm_pobreza.html"><a href="estimacion_municipios_ipm_pobreza.html"><i class="fa fa-check"></i><b>15</b> 14_estimacion_municipios_ipm_pobreza.R</a></li>
+<li class="chapter" data-level="16" data-path="estimacion_municipios_ipm_pobreza_error.html"><a href="estimacion_municipios_ipm_pobreza_error.html"><i class="fa fa-check"></i><b>16</b> 15_estimacion_municipios_ipm_pobreza_error.R</a></li>
+<li class="chapter" data-level="17" data-path="mapas.html"><a href="mapas.html"><i class="fa fa-check"></i><b>17</b> 16_Mapas.R</a></li>
+<li class="chapter" data-level="18" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i><b>18</b> 17_estimacion_municipios_carencias.R</a></li>
+<li class="divider"></li>
+<li><a Taller de instalación de capacidades en SAE </a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="imputacion_censal" class="section level1 hasAnchor" number="13">
+<h1><span class="header-section-number">Capítulo 13</span> 12_Imputacion_censal<a href="imputacion_censal.html#imputacion_censal" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Para la ejecución del presente análisis, se debe abrir el archivo <strong>12_Imputacion_censal.R</strong> disponible en la ruta <strong>Rcodes/2020/12_Imputacion_censal.R</strong>.</p>
+<p>Este script en R se centra en el análisis y la predicción de datos utilizando modelos estadísticos ajustados a encuestas y censos. Primero, se limpia el entorno de trabajo y se cargan diversas librerías necesarias para el análisis. Luego, se leen modelos previamente ajustados (<code>fit_ingreso</code>, <code>fit_alimento</code>, <code>fit_salud</code>) y datos de encuestas y líneas de bienestar. Se realiza una combinación de datos entre las encuestas y predictores de nivel estatal, y se calculan predicciones basadas en estos modelos. Los resultados de estas predicciones se almacenan en un archivo RDS para su posterior análisis.</p>
+<p>El script también incluye un paso para ajustar y validar los datos de la encuesta ampliada mediante simulaciones de variables predictoras y el cálculo de medidas de desviación estándar residual. Posteriormente, se lleva a cabo un proceso iterativo para generar nuevas predicciones y comparar estas predicciones con las originales. Finalmente, el script prepara los datos para un análisis posterior al actualizar las variables con valores simulados basados en las predicciones y desviaciones calculadas. Este proceso permite validar y ajustar los modelos utilizados, asegurando la precisión de las predicciones en la encuesta ampliada.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="imputacion_censal.html#cb13-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
+<span id="cb13-2"><a href="imputacion_censal.html#cb13-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb13-3"><a href="imputacion_censal.html#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="imputacion_censal.html#cb13-4" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb13-5"><a href="imputacion_censal.html#cb13-5" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
+<span id="cb13-6"><a href="imputacion_censal.html#cb13-6" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb13-7"><a href="imputacion_censal.html#cb13-7" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb13-8"><a href="imputacion_censal.html#cb13-8" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb13-9"><a href="imputacion_censal.html#cb13-9" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb13-10"><a href="imputacion_censal.html#cb13-10" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb13-11"><a href="imputacion_censal.html#cb13-11" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb13-12"><a href="imputacion_censal.html#cb13-12" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
+<span id="cb13-13"><a href="imputacion_censal.html#cb13-13" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb13-14"><a href="imputacion_censal.html#cb13-14" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb13-15"><a href="imputacion_censal.html#cb13-15" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb13-16"><a href="imputacion_censal.html#cb13-16" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
+<span id="cb13-17"><a href="imputacion_censal.html#cb13-17" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
+<span id="cb13-18"><a href="imputacion_censal.html#cb13-18" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/benchmarking_indicador.R&quot;</span>)</span>
+<span id="cb13-19"><a href="imputacion_censal.html#cb13-19" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb13-20"><a href="imputacion_censal.html#cb13-20" tabindex="-1"></a><span class="co"># Lectura del modelo </span></span>
+<span id="cb13-21"><a href="imputacion_censal.html#cb13-21" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb13-22"><a href="imputacion_censal.html#cb13-22" tabindex="-1"></a></span>
+<span id="cb13-23"><a href="imputacion_censal.html#cb13-23" tabindex="-1"></a>fit_ingreso <span class="ot">&lt;-</span></span>
+<span id="cb13-24"><a href="imputacion_censal.html#cb13-24" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span>
+<span id="cb13-25"><a href="imputacion_censal.html#cb13-25" tabindex="-1"></a></span>
+<span id="cb13-26"><a href="imputacion_censal.html#cb13-26" tabindex="-1"></a>fit_alimento <span class="ot">&lt;-</span></span>
+<span id="cb13-27"><a href="imputacion_censal.html#cb13-27" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ic_ali_nc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span>
+<span id="cb13-28"><a href="imputacion_censal.html#cb13-28" tabindex="-1"></a>fit_salud <span class="ot">&lt;-</span></span>
+<span id="cb13-29"><a href="imputacion_censal.html#cb13-29" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ic_segsoc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span>
+<span id="cb13-30"><a href="imputacion_censal.html#cb13-30" tabindex="-1"></a></span>
+<span id="cb13-31"><a href="imputacion_censal.html#cb13-31" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span><span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-32"><a href="imputacion_censal.html#cb13-32" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ingreso =</span> ictpc)</span>
+<span id="cb13-33"><a href="imputacion_censal.html#cb13-33" tabindex="-1"></a></span>
+<span id="cb13-34"><a href="imputacion_censal.html#cb13-34" tabindex="-1"></a></span>
+<span id="cb13-35"><a href="imputacion_censal.html#cb13-35" tabindex="-1"></a><span class="co"># lineas de bienestar </span></span>
+<span id="cb13-36"><a href="imputacion_censal.html#cb13-36" tabindex="-1"></a></span>
+<span id="cb13-37"><a href="imputacion_censal.html#cb13-37" tabindex="-1"></a>LB <span class="ot">&lt;-</span></span>
+<span id="cb13-38"><a href="imputacion_censal.html#cb13-38" tabindex="-1"></a>  <span class="fu">read.delim</span>(</span>
+<span id="cb13-39"><a href="imputacion_censal.html#cb13-39" tabindex="-1"></a>    <span class="st">&quot;input/2020/Lineas_Bienestar.csv&quot;</span>,</span>
+<span id="cb13-40"><a href="imputacion_censal.html#cb13-40" tabindex="-1"></a>    <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb13-41"><a href="imputacion_censal.html#cb13-41" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
+<span id="cb13-42"><a href="imputacion_censal.html#cb13-42" tabindex="-1"></a>    <span class="at">dec =</span> <span class="st">&quot;,&quot;</span></span>
+<span id="cb13-43"><a href="imputacion_censal.html#cb13-43" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">as.character</span>(area))</span>
+<span id="cb13-44"><a href="imputacion_censal.html#cb13-44" tabindex="-1"></a></span>
+<span id="cb13-45"><a href="imputacion_censal.html#cb13-45" tabindex="-1"></a>statelevel_predictors <span class="ot">&lt;-</span> </span>
+<span id="cb13-46"><a href="imputacion_censal.html#cb13-46" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
+<span id="cb13-47"><a href="imputacion_censal.html#cb13-47" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb13-48"><a href="imputacion_censal.html#cb13-48" tabindex="-1"></a><span class="co"># Lectura del muestras intercensal o  muestra_ampliada del censo</span></span>
+<span id="cb13-49"><a href="imputacion_censal.html#cb13-49" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb13-50"><a href="imputacion_censal.html#cb13-50" tabindex="-1"></a></span>
+<span id="cb13-51"><a href="imputacion_censal.html#cb13-51" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
+<span id="cb13-52"><a href="imputacion_censal.html#cb13-52" tabindex="-1"></a>col_names_muestra <span class="ot">&lt;-</span> <span class="fu">names</span>(muestra_ampliada)</span>
+<span id="cb13-53"><a href="imputacion_censal.html#cb13-53" tabindex="-1"></a></span>
+<span id="cb13-54"><a href="imputacion_censal.html#cb13-54" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span>  <span class="fu">inner_join</span>(muestra_ampliada, statelevel_predictors)</span>
+<span id="cb13-55"><a href="imputacion_censal.html#cb13-55" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> muestra_ampliada <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB) </span>
+<span id="cb13-56"><a href="imputacion_censal.html#cb13-56" tabindex="-1"></a></span>
+<span id="cb13-57"><a href="imputacion_censal.html#cb13-57" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb13-58"><a href="imputacion_censal.html#cb13-58" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(encuesta_enigh, </span>
+<span id="cb13-59"><a href="imputacion_censal.html#cb13-59" tabindex="-1"></a>                           statelevel_predictors )</span>
+<span id="cb13-60"><a href="imputacion_censal.html#cb13-60" tabindex="-1"></a>pred_ingreso <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_ingreso, </span>
+<span id="cb13-61"><a href="imputacion_censal.html#cb13-61" tabindex="-1"></a>                        <span class="at">newdata =</span> encuesta_sta)</span>
+<span id="cb13-62"><a href="imputacion_censal.html#cb13-62" tabindex="-1"></a><span class="fu">rm</span>(encuesta_sta)</span>
+<span id="cb13-63"><a href="imputacion_censal.html#cb13-63" tabindex="-1"></a></span>
+<span id="cb13-64"><a href="imputacion_censal.html#cb13-64" tabindex="-1"></a>paso <span class="ot">&lt;-</span>encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_ingreso =</span> pred_ingreso) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-65"><a href="imputacion_censal.html#cb13-65" tabindex="-1"></a>  survey<span class="sc">::</span><span class="fu">svydesign</span>(<span class="at">id =</span><span class="sc">~</span>upm , <span class="at">strata =</span> <span class="sc">~</span>estrato , <span class="at">data =</span> .,<span class="at">weights =</span> <span class="sc">~</span>fep) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-66"><a href="imputacion_censal.html#cb13-66" tabindex="-1"></a>  <span class="fu">as_survey_design</span>()</span>
+<span id="cb13-67"><a href="imputacion_censal.html#cb13-67" tabindex="-1"></a></span>
+<span id="cb13-68"><a href="imputacion_censal.html#cb13-68" tabindex="-1"></a>sd_1 <span class="ot">&lt;-</span> paso <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-69"><a href="imputacion_censal.html#cb13-69" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">media_obs =</span> <span class="fu">survey_mean</span>(ingreso), </span>
+<span id="cb13-70"><a href="imputacion_censal.html#cb13-70" tabindex="-1"></a>            <span class="at">media_pred =</span> <span class="fu">survey_mean</span>(pred_ingreso)) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-71"><a href="imputacion_censal.html#cb13-71" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">media_sd =</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(<span class="fu">c</span>(media_obs <span class="sc">-</span> media_pred)<span class="sc">^</span><span class="dv">2</span>)))</span>
+<span id="cb13-72"><a href="imputacion_censal.html#cb13-72" tabindex="-1"></a></span>
+<span id="cb13-73"><a href="imputacion_censal.html#cb13-73" tabindex="-1"></a>desv_estandar_residual <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">c</span>(<span class="fu">as.numeric</span>(sd_1), <span class="fu">sigma</span>(fit_ingreso)))</span>
+<span id="cb13-74"><a href="imputacion_censal.html#cb13-74" tabindex="-1"></a></span>
+<span id="cb13-75"><a href="imputacion_censal.html#cb13-75" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">c</span>(<span class="st">&quot;pred_ingreso&quot;</span>,<span class="st">&quot;sd_1&quot;</span>, <span class="st">&quot;paso&quot;</span>, <span class="st">&quot;statelevel_predictors&quot;</span>))</span>
+<span id="cb13-76"><a href="imputacion_censal.html#cb13-76" tabindex="-1"></a></span>
+<span id="cb13-77"><a href="imputacion_censal.html#cb13-77" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb13-78"><a href="imputacion_censal.html#cb13-78" tabindex="-1"></a><span class="co"># IPM en la enigh</span></span>
+<span id="cb13-79"><a href="imputacion_censal.html#cb13-79" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb13-80"><a href="imputacion_censal.html#cb13-80" tabindex="-1"></a></span>
+<span id="cb13-81"><a href="imputacion_censal.html#cb13-81" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span></span>
+<span id="cb13-82"><a href="imputacion_censal.html#cb13-82" tabindex="-1"></a>  encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB)  <span class="sc">%&gt;%</span> </span>
+<span id="cb13-83"><a href="imputacion_censal.html#cb13-83" tabindex="-1"></a>   <span class="fu">mutate</span>(</span>
+<span id="cb13-84"><a href="imputacion_censal.html#cb13-84" tabindex="-1"></a>   <span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span>  ic_sbv <span class="sc">+</span> ic_rezedu,</span>
+<span id="cb13-85"><a href="imputacion_censal.html#cb13-85" tabindex="-1"></a>   <span class="at">ipm   =</span> <span class="fu">case_when</span>(</span>
+<span id="cb13-86"><a href="imputacion_censal.html#cb13-86" tabindex="-1"></a>     <span class="co"># Población en situación de pobreza.</span></span>
+<span id="cb13-87"><a href="imputacion_censal.html#cb13-87" tabindex="-1"></a>     ingreso <span class="sc">&lt;</span> lp  <span class="sc">&amp;</span>  tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;I&quot;</span>,</span>
+<span id="cb13-88"><a href="imputacion_censal.html#cb13-88" tabindex="-1"></a>     <span class="co"># Población vulnerable por carencias sociales.</span></span>
+<span id="cb13-89"><a href="imputacion_censal.html#cb13-89" tabindex="-1"></a>     ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;II&quot;</span>,</span>
+<span id="cb13-90"><a href="imputacion_censal.html#cb13-90" tabindex="-1"></a>     <span class="co"># Poblacion vulnerable por ingresos.</span></span>
+<span id="cb13-91"><a href="imputacion_censal.html#cb13-91" tabindex="-1"></a>     ingreso <span class="sc">&lt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;III&quot;</span>,</span>
+<span id="cb13-92"><a href="imputacion_censal.html#cb13-92" tabindex="-1"></a>     <span class="co"># Población no pobre multidimensional y no vulnerable.</span></span>
+<span id="cb13-93"><a href="imputacion_censal.html#cb13-93" tabindex="-1"></a>     ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;IV&quot;</span></span>
+<span id="cb13-94"><a href="imputacion_censal.html#cb13-94" tabindex="-1"></a>     )</span>
+<span id="cb13-95"><a href="imputacion_censal.html#cb13-95" tabindex="-1"></a>   )</span>
+<span id="cb13-96"><a href="imputacion_censal.html#cb13-96" tabindex="-1"></a></span>
+<span id="cb13-97"><a href="imputacion_censal.html#cb13-97" tabindex="-1"></a></span>
+<span id="cb13-98"><a href="imputacion_censal.html#cb13-98" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb13-99"><a href="imputacion_censal.html#cb13-99" tabindex="-1"></a><span class="co"># predict de los modelos en la encuesta </span></span>
+<span id="cb13-100"><a href="imputacion_censal.html#cb13-100" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb13-101"><a href="imputacion_censal.html#cb13-101" tabindex="-1"></a></span>
+<span id="cb13-102"><a href="imputacion_censal.html#cb13-102" tabindex="-1"></a>pred_ingreso <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_ingreso, </span>
+<span id="cb13-103"><a href="imputacion_censal.html#cb13-103" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
+<span id="cb13-104"><a href="imputacion_censal.html#cb13-104" tabindex="-1"></a>                        <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb13-105"><a href="imputacion_censal.html#cb13-105" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb13-106"><a href="imputacion_censal.html#cb13-106" tabindex="-1"></a></span>
+<span id="cb13-107"><a href="imputacion_censal.html#cb13-107" tabindex="-1"></a>pred_ic_ali_nc <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_alimento, </span>
+<span id="cb13-108"><a href="imputacion_censal.html#cb13-108" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
+<span id="cb13-109"><a href="imputacion_censal.html#cb13-109" tabindex="-1"></a>                        <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb13-110"><a href="imputacion_censal.html#cb13-110" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb13-111"><a href="imputacion_censal.html#cb13-111" tabindex="-1"></a></span>
+<span id="cb13-112"><a href="imputacion_censal.html#cb13-112" tabindex="-1"></a>pred_segsoc <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_salud, </span>
+<span id="cb13-113"><a href="imputacion_censal.html#cb13-113" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
+<span id="cb13-114"><a href="imputacion_censal.html#cb13-114" tabindex="-1"></a>                       <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb13-115"><a href="imputacion_censal.html#cb13-115" tabindex="-1"></a>                       <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb13-116"><a href="imputacion_censal.html#cb13-116" tabindex="-1"></a></span>
+<span id="cb13-117"><a href="imputacion_censal.html#cb13-117" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="fu">list</span>(<span class="at">pred_ingreso =</span> pred_ingreso, </span>
+<span id="cb13-118"><a href="imputacion_censal.html#cb13-118" tabindex="-1"></a>          <span class="at">pred_ic_ali_nc =</span> pred_ic_ali_nc, </span>
+<span id="cb13-119"><a href="imputacion_censal.html#cb13-119" tabindex="-1"></a>          <span class="at">pred_segsoc =</span> pred_segsoc, </span>
+<span id="cb13-120"><a href="imputacion_censal.html#cb13-120" tabindex="-1"></a>          <span class="at">desv_estandar_residual =</span> desv_estandar_residual),</span>
+<span id="cb13-121"><a href="imputacion_censal.html#cb13-121" tabindex="-1"></a>     <span class="at">file =</span>  <span class="st">&quot;../output/2020/modelos/predicciones.rds&quot;</span>)</span>
+<span id="cb13-122"><a href="imputacion_censal.html#cb13-122" tabindex="-1"></a></span>
+<span id="cb13-123"><a href="imputacion_censal.html#cb13-123" tabindex="-1"></a>muestra_ampliada   <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb13-124"><a href="imputacion_censal.html#cb13-124" tabindex="-1"></a>    <span class="at">ic_asalud =</span> <span class="fu">ifelse</span>(ic_asalud <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb13-125"><a href="imputacion_censal.html#cb13-125" tabindex="-1"></a>    <span class="at">ic_cv =</span> <span class="fu">ifelse</span>(ic_cv <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb13-126"><a href="imputacion_censal.html#cb13-126" tabindex="-1"></a>    <span class="at">ic_sbv =</span> <span class="fu">ifelse</span>(ic_sbv <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb13-127"><a href="imputacion_censal.html#cb13-127" tabindex="-1"></a>    <span class="at">ic_rezedu =</span> <span class="fu">ifelse</span>(ic_rezedu <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>)) </span>
+<span id="cb13-128"><a href="imputacion_censal.html#cb13-128" tabindex="-1"></a></span>
+<span id="cb13-129"><a href="imputacion_censal.html#cb13-129" tabindex="-1"></a></span>
+<span id="cb13-130"><a href="imputacion_censal.html#cb13-130" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb13-131"><a href="imputacion_censal.html#cb13-131" tabindex="-1"></a><span class="co"># Inica el proceso iterativo </span></span>
+<span id="cb13-132"><a href="imputacion_censal.html#cb13-132" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb13-133"><a href="imputacion_censal.html#cb13-133" tabindex="-1"></a></span>
+<span id="cb13-134"><a href="imputacion_censal.html#cb13-134" tabindex="-1"></a>muestra_ampliada_pred <span class="ot">&lt;-</span></span>
+<span id="cb13-135"><a href="imputacion_censal.html#cb13-135" tabindex="-1"></a>  muestra_ampliada <span class="sc">%&gt;%</span> </span>
+<span id="cb13-136"><a href="imputacion_censal.html#cb13-136" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(col_names_muestra),li,lp) <span class="sc">%&gt;%</span></span>
+<span id="cb13-137"><a href="imputacion_censal.html#cb13-137" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-138"><a href="imputacion_censal.html#cb13-138" tabindex="-1"></a>    <span class="at">ic_segsoc =</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> pred_segsoc),</span>
+<span id="cb13-139"><a href="imputacion_censal.html#cb13-139" tabindex="-1"></a>    <span class="at">ic_ali_nc =</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> pred_ic_ali_nc),</span>
+<span id="cb13-140"><a href="imputacion_censal.html#cb13-140" tabindex="-1"></a>    <span class="at">ingreso =</span> pred_ingreso <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="fu">n</span>(),<span class="at">mean =</span> <span class="dv">0</span>, desv_estandar_residual),</span>
+<span id="cb13-141"><a href="imputacion_censal.html#cb13-141" tabindex="-1"></a>    <span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span></span>
+<span id="cb13-142"><a href="imputacion_censal.html#cb13-142" tabindex="-1"></a>      ic_sbv <span class="sc">+</span> ic_rezedu</span>
+<span id="cb13-143"><a href="imputacion_censal.html#cb13-143" tabindex="-1"></a>    </span>
+<span id="cb13-144"><a href="imputacion_censal.html#cb13-144" tabindex="-1"></a>  )</span>
+<span id="cb13-145"><a href="imputacion_censal.html#cb13-145" tabindex="-1"></a><span class="co"># Validación de los predict </span></span>
+<span id="cb13-146"><a href="imputacion_censal.html#cb13-146" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ic_ali_nc) <span class="sc">-</span> <span class="fu">mean</span>(pred_ic_ali_nc)</span>
+<span id="cb13-147"><a href="imputacion_censal.html#cb13-147" tabindex="-1"></a></span>
+<span id="cb13-148"><a href="imputacion_censal.html#cb13-148" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ic_segsoc) <span class="sc">-</span> <span class="fu">mean</span>(pred_segsoc)</span>
+<span id="cb13-149"><a href="imputacion_censal.html#cb13-149" tabindex="-1"></a></span>
+<span id="cb13-150"><a href="imputacion_censal.html#cb13-150" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ingreso) <span class="sc">-</span> <span class="fu">mean</span>(pred_ingreso)</span></code></pre></div>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="postbenchmarking_ic_segsoc.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="estimacion_ent_02.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/psirusteam/2023MEXsae/12_Imputacion_censal.qmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.pdf", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.epub", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.mobi"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+},
+"tconfig": null
+});
+});
+</script>
+
+</body>
+
+</html>

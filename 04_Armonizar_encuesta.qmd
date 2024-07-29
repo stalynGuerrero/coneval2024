@@ -1,0 +1,267 @@
+# 04_Armonizar_encuesta.R 
+
+Para la ejecución del presente archivo, debe abrir el archivo **04_Armonizar_encuesta.R** disponible en la ruta *Rcodes/2020/04_Armonizar_encuesta.R*.
+
+El código realiza un análisis completo de datos en varias etapas. Inicialmente, se eliminan todos los objetos del entorno de R para asegurar que el análisis comience con una pizarra limpia. Luego, se cargan las bibliotecas necesarias para el análisis, que incluyen herramientas para la manipulación de datos y la importación/exportación de archivos. A continuación, se leen las bases de datos del censo de personas 2020 y la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH), que se utilizan para identificar y verificar indicadores de carencias sociales. Posteriormente, se definen y validan las variables clave de la encuesta, como códigos de entidad, municipio, área, sexo, edad, nivel educativo, discapacidad y lengua indígena. Luego, se estandarizan las variables de la encuesta para que coincidan con las del censo, se filtran los datos para eliminar inconsistencias, y se guarda el conjunto de datos estandarizado. Además, se actualiza la tabla censal utilizando la técnica de calibración IPFP (Iterative Proportional Fitting Procedure) para asegurar que las distribuciones marginales de las variables estandarizadas coincidan con las del censo. Finalmente, se generan histogramas y gráficos de dispersión para visualizar los resultados de la calibración y se guarda el conjunto de datos ampliado.
+
+```{r, eval=FALSE}
+### Cleaning R environment ###
+rm(list = ls())
+
+#################
+### Libraries ###
+#################
+library(tidyverse)
+library(data.table)
+library(openxlsx)
+library(magrittr)
+library(DataExplorer)
+library(haven)
+library(purrr)
+library(labelled)
+library(sampling)
+cat("\f")
+
+################################################################################
+# Lectura de la base Pobreza_15.dta
+################################################################################
+encuesta_ampliada <- readRDS("../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds")
+
+# Indicadores_MECXX: La base de datos Pobreza_15.dta contiene la información de 
+# variables de carencias sociales a nivel individual (Utiliza como insumo la 
+# información del MEC) 
+enigh <- readRDS("output//2020/enigh.rds")
+
+n_distinct(enigh$ent) # cod_dam
+n_distinct(enigh$cve_mun) # cod_mun
+
+################################################################################
+## Definiciones para la encuesta
+################################################################################
+# codigo municipio
+
+# area urabo o rural 
+enigh %>% group_by(rururb) %>% summarise(n = sum(factor))
+
+enigh %<>% mutate(
+  area = haven::as_factor(rururb, levels  = "values"),
+  area = as.character(area)
+)
+
+enigh %>%   distinct(rururb,area)
+
+# Sexo 
+enigh %>% group_by(sexo) %>% summarise(n = sum(factor))
+# 2	Mujer
+# 1	Hombre
+
+# Edad 
+enigh %>% group_by(edad) %>% summarise(n = sum(factor))
+encuesta_ampliada %>% distinct(edad)
+# 1	Menor de 14 años
+# 2	15 a 29 años
+# 3	30 a 44 años
+# 4	45 a 64 años
+# 5	65 años o más
+
+
+enigh %<>% mutate(g_edad = case_when(edad <= 14 ~ "1", # 0 a 14
+                                             edad <= 29 ~ "2", # 15 a 29
+                                             edad <= 44 ~ "3", # 30 a 44
+                                             edad <= 64 ~ "4", # 45 a 64
+                                             edad >  64 ~ "5", # 65 o mas
+                                             TRUE ~ NA_character_)) 
+enigh %>% group_by(g_edad) %>% summarise(n = sum(factor))
+
+# nivel educativo
+
+enigh %>% group_by(niv_ed) %>%
+  summarise(n = sum(factor),.groups = "drop") %>%
+  mutate(prop = n / sum(n))
+
+enigh %>% 
+  mutate(nivel_edu = haven::as_factor(niv_ed, levels  = "values")) %>%
+  group_by(nivel_edu, g_edad) %>% summarise(n = sum(factor)) %>% 
+data.frame()
+
+# 0 [Con primaria incompleta o menos]                 32682451
+# 1 [Primaria completa o secundaria incompleta]       21725064
+# 2 [Secundaria completa o media superior incompleta] 31740188
+# 3 [Media superior completa o mayor nivel educativo] 36430137
+# NA                                                    4849854 Niños de 0 a 3 años
+
+enigh %<>% mutate(
+  nivel_edu = haven::as_factor(niv_ed, levels  = "values"),
+  nivel_edu = as.character(nivel_edu)
+)
+
+enigh %>%   distinct(niv_ed,nivel_edu)
+
+# Discapacidad
+
+enigh %>% group_by(discap) %>% summarise(n = sum(factor)) 
+
+enigh %<>% mutate(
+  discapacidad = haven::as_factor(discap, levels  = "values"),
+  discapacidad = as.character(discapacidad)
+)
+
+enigh %>%   distinct(discap,discapacidad)
+
+
+# Habla dialecto o lengua indígena
+attributes(enigh$hli)
+
+enigh %>% group_by(hli) %>% summarise(n = sum(factor)) 
+
+enigh %<>% mutate(
+  hlengua = haven::as_factor(hli, levels  = "values"),
+  hlengua = as.character(hlengua)
+)
+
+enigh %>%   distinct(hlengua,hli)
+######################################################
+
+hist(log(enigh$ictpc))
+
+# Indicador de carencia por acceso a servicios de salud
+attributes(enigh$ic_segsoc)
+
+# Indicador de carencia por acceso a la alimentación nutritiva y de calidad
+attributes(enigh$ic_ali_nc)
+
+enigh %>% group_by(ic_segsoc) %>% summarise(n = sum(factor)) 
+
+################################################################################
+encuesta_sta <- enigh %>%
+  transmute(
+    ent = str_pad(
+      string = ent,
+      width = 2,
+      pad = "0"
+    ),
+    cve_mun,
+    area,
+    sexo,
+    edad = ifelse(is.na(g_edad), "99", g_edad),
+    nivel_edu = ifelse(is.na(nivel_edu), "99", nivel_edu),
+    discapacidad = ifelse(is.na(discapacidad), "0", discapacidad),
+    hlengua = ifelse(is.na(hlengua), "0", hlengua),
+    
+    ## Variable de estudio
+    ictpc = as.numeric(ictpc),
+    ic_segsoc = as.numeric(ic_segsoc),
+    ic_ali_nc = as.numeric(ic_ali_nc),
+    ic_rezedu = as.numeric(ic_segsoc),
+    ic_asalud = as.numeric(ic_segsoc),
+    ic_sbv = as.numeric(ic_sbv_hog),
+    ic_cv = as.numeric(ic_cv_hog),
+    
+    ## Variables diseño
+    estrato = est_dis,
+    upm = upm,
+    fep = factor
+  )
+
+
+map(c(
+  "ent",
+  "cve_mun",
+  "area",
+  "sexo",
+  "edad",
+  "nivel_edu",
+  "hlengua",
+  "discapacidad",
+  "ic_segsoc",
+  "ic_ali_nc"
+),
+function(x) {
+  encuesta_sta %>% group_by_at(x ) %>%
+    summarise(Nd = sum(fep)) %>% 
+    mutate(N = sum(Nd),
+           prop = Nd / N)
+})
+
+#Se guarda el conjunto de datos
+
+saveRDS(encuesta_sta, file = "../input/2020/enigh/encuesta_sta.rds")
+
+# Actualización de tabla censal- IPFP -------------------------------------
+names_cov <- c("ent", "cve_mun",  "area",  "sexo",  "edad",  "discapacidad",
+               "hlengua")
+names_cov <- names_cov[names_cov %in% names(encuesta_sta)]
+
+num_cat_censo <- apply(encuesta_ampliada[names_cov], MARGIN  = 2, function(x)
+  length(unique(x)))
+
+num_cat_sample <- apply(encuesta_sta[names_cov], MARGIN  = 2, function(x)
+  length(unique(x)))
+
+names_cov <- names_cov[num_cat_censo==num_cat_sample]
+
+# MatrizCalibrada creada únicamente para los niveles completos 
+# IMPORTANTE: Excluir las covariables que tengan niveles incompletos
+
+auxSuma <- function(dat, col, ni){
+  dat %>% ungroup() %>% select(all_of(col))  %>%
+    fastDummies::dummy_cols(remove_selected_columns = TRUE) %>% 
+    mutate_all(~.*ni) %>% colSums()  
+}
+
+N.g <- map(names_cov,
+           ~ auxSuma(encuesta_sta, col = .x, ni = encuesta_sta$fep)) %>%
+  unlist()
+
+N_censo.g <- map(names_cov,
+                 ~ auxSuma(encuesta_ampliada, col = .x, ni = encuesta_ampliada$n)) %>%
+  unlist()
+
+names_xk <- intersect(names(N.g),names(N_censo.g))
+
+N.g <- N.g[names_xk]
+N_censo.g <- N_censo.g[names_xk]
+
+Xk <- encuesta_ampliada %>% ungroup() %>% select(all_of(names_cov)) %>%
+  fastDummies::dummy_cols(remove_selected_columns = TRUE) %>% 
+  select(all_of(names_xk))
+
+
+gk <- calib(Xs = Xk, 
+            d = encuesta_ampliada$n,
+            total = N.g,
+            method="linear") # linear primera opcion  
+
+checkcalibration(Xs = Xk, 
+                 d = encuesta_ampliada$n,
+                 total = N.g,
+                 g = gk)
+
+
+hist(gk)
+summary(gk)
+ggplot(data.frame(x = gk), aes(x = x)) +
+  geom_histogram(binwidth = diff(range(gk))/20,
+                 color = "black", alpha = 0.7) +
+  labs(title = "", x = "", y = "") +
+  theme_minimal() +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+
+
+n1 <- encuesta_ampliada$n*gk
+
+ggplot(data = data.frame(x = encuesta_ampliada$n, y = n1), aes(x = x, y = y)) +
+  geom_point() +  # Agregar puntos
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") + 
+  labs(title = "", x = "Conteo censales antes", y = "Conteos censales despues") +
+  theme_minimal(20) 
+
+
+encuesta_ampliada$n <- encuesta_ampliada$n*gk
+
+#Se guarda el conjunto de datos ampliado:
+
+saveRDS(encuesta_ampliada, "../output/2020/encuesta_ampliada.rds")
+```

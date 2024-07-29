@@ -1,19 +1,19 @@
-# 09_PostBenchmarking_ictpc.R
+# 11_PostBenchmarking_ic_segsoc
 
-Para la ejecución del presente archivo, debe abrir el archivo **09_PostBenchmarking_ictpc.R** disponible en la ruta *Rcodes/2020/09_PostBenchmarking_ictpc.R*.
+Para la ejecución del presente análisis, se debe abrir el archivo **11_PostBenchmarking_ic_segsoc.R** disponible en la ruta `Rcodes/2020/11_PostBenchmarking_ic_segsoc.R`.
 
-Este script en R se centra en la validación y benchmarking de un modelo multinivel para predecir ingresos, utilizando datos de encuestas y censos. Comienza limpiando el entorno de trabajo (`rm(list = ls())`) y cargando las librerías necesarias. Además, se leen las funciones auxiliares desde archivos externos (`Plot_validacion_bench.R` y `Benchmarking.R`). Posteriormente, se carga el modelo preentrenado desde un archivo RDS (`fit_mrp_ictpc.rds`).
+Este script en R se centra en el proceso de benchmarking y validación de un modelo multinivel previamente ajustado para lala carencia en por cobertura de seguridad social. Inicia con la limpieza del entorno de trabajo y la carga de librerías esenciales como `scales`, `patchwork`, `srvyr`, `survey`, `haven`, `sampling` y `tidyverse`. Luego, se cargan funciones adicionales desde archivos externos para la validación y el benchmarking del modelo.
 
-El proceso de benchmarking se realiza mediante la función `benchmarking`, utilizando covariables específicas como `ent`, `area`, `sexo`, `edad`, `discapacidad` y `hlengua`. El resultado se guarda en `list_bench`. A continuación, se crea un diseño de encuesta (`diseno_encuesta`) y se realizan validaciones a nivel nacional comparando los resultados del modelo ajustado (`yk_lmer`) y del modelo ajustado con benchmarking (`yk_bench`). Estas validaciones se llevan a cabo mediante la comparación de medias ponderadas.
+El modelo ajustado se lee desde un archivo RDS (`fit_mrp_ic_segsoc.rds`) y se procede a la etapa de benchmarking utilizando la función benchmarking, aplicando el método logit sobre un conjunto de covariables específicas (`ent`, `area`, `sexo`, `edad`, `discapacidad`, `hlengua`). Los resultados del benchmarking se incorporan al dataframe de post-estratificación y se recalculan las predicciones ponderadas.
 
-Para validar el modelo a nivel de subgrupos, se definen diversos subgrupos como `ent`, `area`, `sexo`, `edad`, `discapacidad`, `hlengua` y `nivel_edu`. Se crean gráficos de validación para cada subgrupo utilizando la función `plot_uni_validacion`. Estos gráficos se combinan y se guardan en un archivo JPG (`plot_uni.jpg`). Además, se guarda la lista de gráficos y el dataframe postestratificado en archivos RDS (`plot_uni.rds` y `poststrat_df_ictpc.rds` respectivamente), lo que permite una fácil recuperación y análisis posterior.
+El script también realiza validaciones a nivel nacional y por subgrupos (`ent`, `area`, `sexo`, `edad`, `discapacidad`, `hlengua`, `nivel_edu`). Para cada subgrupo, se generan gráficos de validación univariada utilizando la función plot_uni_validacion, que compara las estimaciones directas y ajustadas del modelo. Los gráficos resultantes se combinan y se guardan en un archivo JPG, proporcionando una visualización completa del desempeño del modelo. Finalmente, tanto los gráficos de subgrupos como el dataframe de post-estratificación se guardan en archivos RDS para futuros análisis y referencia.
 
 
 ``` r
 rm(list =ls())
 cat("\f")
 ###############################################################
-# Loading required libraries ----------------------------------------------
+# Loading required libraries ----------------------------------
 ###############################################################
 
 library(scales)
@@ -35,7 +35,7 @@ source("../source/Benchmarking.R", encoding = "UTF-8")
 # Lectura del modelo 
 ###############################################################
 
-fit <- readRDS("../output/2020/modelos/fit_mrp_ictpc.rds")
+fit <- readRDS("../output/2020/modelos/fit_mrp_ic_segsoc.rds")
 
 ###############################################################
 # proceso de benchmarking
@@ -50,15 +50,12 @@ list_bench <- benchmarking(modelo = fit,
                              "hlengua"),                      
              metodo = "logit")
 
-# saveRDS(list_bench,"output/2020/plots/ictpc/list_bench.rds")
-# list_bench <- readRDS("output/2020/plots/ictpc/list_bench.rds")
-
 ##############################################################
 ## Validaciones y plot uni 
 ###############################################################
 
 poststrat_df <- fit$poststrat_df %>% data.frame() %>%  
-  mutate(yk_lmer = yk,
+  mutate(yk_stan_lmer = yk,
          gk_bench = list_bench$gk_bench,
          yk_bench = yk * gk_bench )
 
@@ -74,7 +71,7 @@ cbind(
   diseno_encuesta %>% summarise(Nacional_dir = survey_mean(yk_dir)) %>% 
     select(Nacional_dir),
   poststrat_df %>% summarise(
-    Nacional_lmer = sum(n * yk_lmer) / sum(n),
+    Nacional_stan_lmer = sum(n * yk_stan_lmer) / sum(n),
     Nacional_bench = sum(n * yk_bench) / sum(n*gk_bench),
   )) %>% print()
 
@@ -119,12 +116,12 @@ plot_uni <- plot_subgrupo$ent$gg_plot  /
   )
 
 ggsave(plot = plot_uni,
-       filename = "../output/2020/modelos/plot_uni.jpg",
+       filename = "../output/2020/modelos/plot_uni_ic_segsoc.jpg",
        scale = 3)
 
 saveRDS(object =  plot_subgrupo,
-        file = "../output/2020/modelos/plot_uni.rds")
+        file = "../output/2020/modelos/plot_uni_ic_segsoc.rds")
 
 saveRDS(object =  poststrat_df,
-        file = "../input/2020/muestra_ampliada/poststrat_df_ictpc.rds")
+        file = "../input/2020/muestra_ampliada/poststrat_df_ic_segsoc.rds")
 ```

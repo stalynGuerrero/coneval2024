@@ -1,0 +1,253 @@
+# 15_estimacion_municipios_ipm_pobreza_error.R
+
+Para la ejecución del presente análisis, se debe abrir el archivo **15_estimacion_municipios_ipm_pobreza_error.R** disponible en la ruta **Rcodes/2020/15_estimacion_municipios_ipm_pobreza_error.R**.
+
+
+El script comienza con la limpieza del entorno de trabajo y la carga de librerías necesarias, como `tidyverse` y `survey`. A continuación, se cargan y preparan los datos de `muestra_ampliada`, `encuesta_enigh`, y `LB`. Se calculan las variables relacionadas con la pobreza multidimensional (IPM) en la encuesta, incluyendo la clasificación en categorías como "I", "II", "III", y "IV", y se identifican los casos de pobreza moderada y extrema.
+
+Luego, se procesa la información de los resultados de estimación por municipio, que se leen desde archivos generados en iteraciones previas. Se calculan y combinan las estimaciones, varianzas y medias, y se consolidan en un solo conjunto de datos. Estos resultados se guardan en archivos RDS y Excel para su posterior análisis.
+
+Finalmente, se realiza una visualización comparativa de las estimaciones de pobreza multidimensional. Utilizando `ggplot2`, se crean gráficos que comparan las estimaciones obtenidas de la ENIGH con las de CEPAL para cada entidad, y estos gráficos se exportan en formato PNG. Este paso permite la evaluación visual de la precisión y consistencia de las estimaciones realizadas.
+
+
+
+```{r, eval=FALSE}
+rm(list = ls())
+library(tidyverse)
+library(magrittr)
+library(survey)
+library(srvyr)
+
+################################################################################
+# Lectura de datos 
+################################################################################
+muestra_ampliada <- readRDS("../output/2020/encuesta_ampliada.rds")
+encuesta_enigh <-readRDS("../input/2020/enigh/encuesta_sta.rds") %>%
+  mutate(ingreso = ictpc)
+
+LB <-
+  read.delim(
+    "input/2020/Lineas_Bienestar.csv",
+    header = TRUE,
+    sep = ";",
+    dec = ","
+  ) %>% mutate(area = as.character(area))
+
+
+################################################################################
+# IPM en la enigh
+################################################################################
+encuesta_enigh <-
+  encuesta_enigh %>% inner_join(LB)  %>% 
+  mutate(
+    tol_ic = ic_segsoc + ic_ali_nc + ic_asalud + ic_cv +  ic_sbv + ic_rezedu,
+    ipm   = case_when(
+      # Población en situación de pobreza.
+      ingreso < lp  &  tol_ic >= 1 ~ "I",
+      # Población vulnerable por carencias sociales.
+      ingreso >= lp & tol_ic >= 1 ~ "II",
+      # Poblacion vulnerable por ingresos.
+      ingreso <= lp & tol_ic < 1 ~ "III",
+      # Población no pobre multidimensional y no vulnerable.
+      ingreso >= lp & tol_ic < 1 ~ "IV"
+    ),
+    # Población en situación de pobreza moderada.
+    pobre_moderada = ifelse(c(ingreso > li & ingreso < lp) &
+                              tol_ic > 2, 1, 0),
+    pobre_extrema = ifelse(ipm == "I" & pobre_moderada == 0, 1, 0)
+  )
+
+
+N_mpio <- muestra_ampliada %>% group_by(ent,cve_mun) %>%
+  summarise(N_pers_mpio = sum(factor))
+
+################################################################################
+## Lectura de la bases de datos 
+
+list_estiacion <- list.files("../output/2020/iteraciones/mpio_calib/", 
+                             full.names = TRUE)
+
+list_estiacion <- data.frame(list_estiacion,
+iter = list_estiacion %>% map_dbl(~list.files(.x) %>% length())
+) %>% filter(iter > 0)
+
+
+resul_ent_ipm <- list()
+
+for(ii_ent in list_estiacion$list_estiacion){
+  
+archivos <- list.files(ii_ent, full.names = TRUE)
+datos <- map_df(archivos, ~ readRDS(.x)$estima_calib)
+
+dat_estima <- datos %>% group_by(cve_mun) %>% 
+  summarise_at(vars(!matches("var")), mean) %>% data.frame()
+
+dat_n <- datos %>% group_by(cve_mun) %>% tally()
+dat_B <- datos %>% group_by(cve_mun) %>% 
+  summarise_at(vars(!matches("var")), var) %>% data.frame()
+
+
+dat_Ubar <- datos %>% group_by(cve_mun) %>% 
+  summarise_at(vars(matches("var")), mean) %>% data.frame()
+
+names(dat_Ubar) <- gsub("_var", "", names(dat_Ubar)) 
+
+dat_var <- dat_B %>% 
+  gather(key = "Indicador", value = "B", -cve_mun) %>%
+  inner_join(
+    dat_Ubar %>% gather(key = "Indicador", value = "Ubar", -cve_mun)
+    ) %>% inner_join(dat_n)
+
+var_est <-  dat_var %>% 
+transmute(cve_mun, Indicador ,
+          var = Ubar + (1 +1/n)*B,
+          ee = sqrt(var)) %>% 
+  pivot_wider(
+    data = .,
+    id_cols = "cve_mun",
+    names_from = "Indicador",
+    values_from = c("var", "ee"),values_fill = 0
+  ) 
+
+dat_var <- pivot_wider(
+  data = dat_var,
+  id_cols = "cve_mun",
+  names_from = "Indicador",
+  values_from = c("B", "Ubar"),values_fill = 0
+) 
+
+resul_ent_ipm[[ii_ent]] <- dat_n %>% inner_join(dat_estima) %>%
+  inner_join(dat_var) %>%
+  inner_join(var_est)
+
+}
+
+
+######################
+
+temp <- resul_ent_ipm %>% bind_rows()
+
+temp %<>% inner_join(N_mpio) %>% 
+  select(ent, cve_mun, N_pers_mpio, est_ipm_I, 
+         est_pob_mod,	est_pob_ext, est_ipm_II:est_ipm_IV,
+         ee_ipm_I = ee_est_ipm_I,
+         ee_pob_mod = ee_est_pob_mod,
+         ee_pob_ext = ee_est_pob_ext,
+         ee_ipm_II = ee_est_ipm_II,
+         ee_ipm_III = ee_est_ipm_III,
+         ee_ipm_IV = ee_est_ipm_IV)
+
+temp %>% 
+  saveRDS("../output/Entregas/2020/result_mpios.RDS")
+
+
+openxlsx::write.xlsx(temp,
+                     paste0(
+                       "../output/Entregas/2020/estimacion_numicipal_",
+                       Sys.Date() ,
+                       ".xlsx"
+                     ))
+
+temp2 <- temp %>%
+  select(ent, est_ipm_I:est_ipm_IV, N_pers_mpio) %>%
+  group_by(ent) %>%
+  summarise(across(starts_with("est_"),
+                   ~ sum(.x * N_pers_mpio) / sum(N_pers_mpio)))
+
+openxlsx::write.xlsx(temp2,
+                     paste0(
+                       "../output/Entregas/2020/estimacion_estado_",
+                       Sys.Date() ,
+                       ".xlsx"
+                     ))
+
+
+###############################################################################
+# Plot uni
+###############################################################################
+diseno <- encuesta_enigh %>% na.omit() %>%
+  as_survey_design(
+    ids = upm,
+    weights = fep,
+    nest = TRUE,
+    strata = estrato
+  )
+
+estimad_dir <- diseno %>% group_by(ent,ipm) %>% 
+  summarise(direct = survey_mean(vartype = "ci" ))
+
+estimad_dir_ipm <- pivot_wider(
+  data = estimad_dir,
+  id_cols = "ent",
+  names_from = "ipm",
+  values_from = c("direct", "direct_low","direct_upp")
+) 
+
+estimad_dir <- diseno %>% group_by(ent) %>% 
+  summarise(direct_mod = survey_mean(pobre_moderada, vartype = "ci" ),
+            direct_ext = survey_mean(pobre_extrema, vartype = "ci" ))
+
+estimad_dir %<>% inner_join(estimad_dir_ipm)
+
+ind <- c("I", "II", "III", "IV", "mod", "ext")
+ii_ipm  =1
+for (ii_ipm in 1:6){
+    ii_ipm <- ind[ii_ipm]
+    paso <- paste0("(_|\\b)", ii_ipm,"(_|\\b)" )
+   dat_plot <- inner_join(estimad_dir, temp2) %>% 
+    select(ent, matches(paso))  
+  
+   dat_lim  <- dat_plot %>% select(ent, matches("upp|low"))
+   
+   names(dat_lim) <- c("ent","Lim_Inf", "Lim_Sup")
+   
+   dat_plot %<>% select( -matches("upp|low")) %>% 
+     gather(key = "Origen", value = "Prop", -ent) %>% 
+     mutate(Origen = ifelse(grepl(pattern = "direct", x = Origen), 
+                            "ENIGH", "Estimación CEPAL")) %>% 
+     inner_join(dat_lim)
+   
+  
+   gg_plot <-
+     ggplot(data = dat_plot, aes(x = ent, y = Prop, color = Origen)) +
+     labs(
+       x = "",
+       y = "Estimación",
+       color = "",
+       title = paste0("Estimación de la pobreza multidimensional 2020 - Tipo ", ii_ipm )
+     )+ theme_bw(20) +
+     geom_jitter(width = 0.3) +
+     theme(legend.position = "bottom",
+           plot.title = element_text(hjust = 0.5)) +
+     scale_y_continuous(labels = scales::percent_format(scale = 100))
+   
+   gg_plot <-  gg_plot +
+     geom_errorbar(data = dat_plot %>% filter(Origen   == "ENIGH"),
+                   aes(ymin = Lim_Inf  , 
+                       ymax = Lim_Sup, x = ent),
+                   width = 0.2, linewidth = 1) +
+     scale_color_manual(
+        breaks = c("ENIGH", "Estimación CEPAL"),
+       values = c("red", "blue3")
+     ) +
+     theme(
+       legend.position = "bottom",
+       axis.title = element_text(size = 10),
+       axis.text.y = element_text(size = 10),
+       axis.text.x = element_text(
+         angle = 90,
+         size = 8,
+         vjust = 0.3
+       ),
+       legend.title = element_text(size = 15),
+       legend.text = element_text(size = 15)
+     )
+   
+   ggsave(plot = gg_plot, width = 16, height = 9,
+          filename = paste0("../output/Entregas/2020/plot_uni/ipm_", ii_ipm, ".png"))
+   
+}
+
+
+```
+

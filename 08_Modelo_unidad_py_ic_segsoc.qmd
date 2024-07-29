@@ -1,0 +1,153 @@
+# 08_Modelo_unidad_py_ic_segsoc
+
+Para la ejecución del presente análisis, se debe abrir el archivo **08_Modelo_unidad_py_ic_segsoc.R** disponible en la ruta `Rcodes/2020/08_Modelo_unidad_py_ic_segsoc.R`.
+
+Este script en R se enfoca en la creación de un modelo multinivel para analizar la carencia en por cobertura de seguridad social usando datos de encuestas y censos. El proceso inicia con la limpieza del entorno de trabajo y la carga de librerías esenciales para el análisis. Se define el límite de memoria con `memory.limit(10000000)` para asegurar suficiente espacio durante el procesamiento de datos. Luego, se cargan los datos necesarios (`encuesta_sta`, `censo_sta`, `statelevel_predictors_df`) y se excluyen ciertas variables de los datos de predictores.
+
+La selección de variables relevantes para el modelo se realiza a través de un procedimiento comentado que emplea la técnica de Recursive Feature Elimination (RFE) usando un modelo Random Forest implementado en Python. Las variables seleccionadas se listan explícitamente y se combinan con otras covariantes para formar cov_names. Posteriormente, se construye una fórmula del modelo (`formula_model`) que incluye efectos aleatorios para cve_mun, hlengua y discapacidad, y efectos fijos para las demás variables, considerando tanto la variabilidad dentro de cada grupo como las características específicas de cada variable.
+
+El ajuste del modelo se realiza mediante la función modelo_dummy, transformando la variable de interés (`ic_segsoc`) en formato binario y utilizando los datos de encuesta y censo junto con la fórmula del modelo y las variables de agregación. Los resultados del modelo se guardan en un archivo RDS (`fit_mrp_ic_segsoc.rds`) y se documentan para futuros análisis. Esto incluye la exportación de los resultados del modelo multinivel y la creación de visualizaciones pertinentes para evaluar el desempeño del modelo y la distribución de las predicciones.
+
+```{r, eval=FALSE}
+
+rm(list =ls())
+
+# Loading required libraries ----------------------------------------------
+
+library(patchwork)
+library(nortest)
+library(lme4)
+library(tidyverse)
+library(magrittr)
+library(caret)
+library(car)
+library(randomForest)
+library(reticulate)
+
+pd <- import("pandas")
+sklearn_fs <- import("sklearn.feature_selection")
+sklearn_ensemble <- import("sklearn.ensemble")
+
+memory.limit(10000000)
+source("source/modelos_freq.R")
+# Loading data ------------------------------------------------------------
+
+memory.limit(10000000)
+encuesta_sta <- readRDS("../input/2020/enigh/encuesta_sta.rds")
+censo_sta <- readRDS("../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds")
+statelevel_predictors_df <- readRDS("../input/2020/predictores/statelevel_predictors_df.rds")
+
+cov_names <- names(statelevel_predictors_df)
+cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
+
+## Selección de variables
+
+byAgrega <-
+  c("ent",
+    "cve_mun",
+    "area",
+    "sexo",
+    "edad",
+    "discapacidad",
+    "hlengua",
+    "nivel_edu" )
+
+
+# encuesta_sta2 <- encuesta_sta %>%   mutate(
+#   yk = as.factor(ifelse(ic_asegsoc == 1 ,1,0))) %>%
+#   inner_join(statelevel_predictors_df[, c("cve_mun",cov_names)])
+# 
+# table(encuesta_sta2$yk, encuesta_sta2$ic_segsoc)
+# 
+# # Convertir 'encuesta_sta2' a un dataframe de Python
+# encuesta_sta2_py <- pd$DataFrame(encuesta_sta2)
+# 
+# # Obtener 'X' y 'y' del dataframe de Python
+# X <- encuesta_sta2_py[cov_names]
+# y <- encuesta_sta2_py[['yk']]
+# 
+# # Crear el modelo de clasificación, por ejemplo, un Random Forest
+# modelo <- sklearn_ensemble$RandomForestClassifier()
+# 
+# # Crear el selector RFE con el modelo y el número de características a seleccionar
+# selector <- sklearn_fs$RFE(modelo, n_features_to_select = as.integer(10))
+# 
+# # Ajustar los datos
+# selector$fit(X, y)
+# 
+# # Obtener las variables seleccionadas
+# variables_seleccionadas <- X[selector$support_] %>% names()
+variables_seleccionadas <-
+  c(
+    "porc_rur",
+    "porc_urb",
+    "porc_ing_ilpi_rur",
+    "porc_ing_ilpi_urb",
+    "porc_jub_urb",
+    "porc_segsoc15",
+    "plp15",
+    "ictpc15",
+    "pob_urb",
+    "pob_tot"
+  )
+cov_names <- c(
+  "modifica_humana",
+  "acceso_hosp",
+  "acceso_hosp_caminando",
+  "cubrimiento_cultivo",
+  "cubrimiento_urbano",
+  "luces_nocturnas" ,
+  variables_seleccionadas
+)
+
+cov_registros <-
+  setdiff(
+    cov_names,
+    c(
+      "elec_mun20",
+      "elec_mun19",
+      "transf_gobpc_15_20",
+      "derhab_pea_15_20",
+      "vabpc_15_19" ,
+      "itlpis_15_20"  ,
+      "remespc_15_20",
+      "desem_15_20",
+      "porc_urb" ,  
+      "edad65mas_urb", 
+      "pob_tot" ,
+      "acc_muyalto" ,
+      "smg1",
+      "ql_porc_cpa_rur",
+      "ql_porc_cpa_urb"
+    )
+  )
+
+
+cov_registros <- paste0(cov_registros, collapse = " + ")
+
+formula_model <-
+  paste0(
+    "cbind(si, no) ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) +  nivel_edu + edad  + ent + area + sexo "
+    ,
+    " + ",
+    cov_registros
+  )
+
+
+
+
+fit <- modelo_dummy(
+  encuesta_sta = encuesta_sta %>%  mutate(yk = ifelse(ic_segsoc == 1 ,1,0))  ,
+  predictors = statelevel_predictors_df,
+  censo_sta = censo_sta,
+  formula_mod = formula_model,
+  byAgrega = byAgrega
+)
+
+
+#--- Exporting Bayesian Multilevel Model Results ---#
+
+saveRDS(fit, 
+        file = "output/2020/modelos/fit_mrp_ic_segsoc.rds")
+```
+

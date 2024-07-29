@@ -1,39 +1,18 @@
-# Integración de bases de datos predictoras.
+# 02_Union_predictores.R
 
-```{r, echo=FALSE, warning=FALSE,error=FALSE, message=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  message = FALSE,
-  warning = FALSE,
-  cache = TRUE)
-library(printr)
-library(kableExtra)
-library(tidyverse)
-rstan::rstan_options(auto_write = TRUE) # speed up running time 
-tba <- function(dat, cap = NA){
-  kable(dat,
-      format = "html", digits =  4,
-      caption = cap) %>% 
-     kable_styling(bootstrap_options = "striped", full_width = F)%>%
-         kable_classic(full_width = F, html_font = "Arial Narrow")
-}
-```
+Para la ejecución del presente archivo, debe abrir el archivo **02_Union_predictores.R** disponible en la ruta *Rcodes/2020/02_Union_predictores.R*.
 
-Este código se centra en la selección y procesamiento de variables de covariables a nivel municipal para el año 2020. A continuación, se describe cada bloque del código en términos generales.
+Este script en R está orientado a la integración y limpieza de bases de datos a nivel municipal para el año 2020, combinando datos satelitales y de contexto. Primero, el entorno de trabajo se limpia y se cargan las bibliotecas necesarias para la manipulación y análisis de datos, incluyendo tidyverse, data.table, y openxlsx.
 
-#### Limpieza del Entorno de R {.unnumbered}
-
-Para asegurar un entorno limpio y evitar conflictos con datos previos, se eliminan todas las variables existentes en el entorno de R usando `rm(list = ls())`. Esto permite que el análisis comience sin datos residuales que puedan interferir.
+En la primera parte, se carga una base de datos satelital en formato RDS, se renombra una columna para alinear los nombres y se eliminan columnas no necesarias. Luego, se obtienen los códigos municipales únicos de esta base de datos. A continuación, se carga una base de datos adicional en formato Stata (.dta), se convierten algunas variables a factores y se escalan las variables numéricas. Se realiza un análisis para identificar códigos municipales presentes en la base de datos satelital pero no en la de contexto, y se comprueba si hay columnas sin valores faltantes en la base de datos de contexto. Finalmente, se realiza un inner_join para combinar ambas bases de datos utilizando solo las columnas sin valores faltantes y se guarda el resultado en un archivo RDS para futuros análisis.
 
 ```{r, eval=FALSE}
+### Cleaning R environment ###
 rm(list = ls())
-```
 
-#### Carga de librerías {.unnumbered}
-
-Se cargan varias librerías esenciales para la manipulación y análisis de datos. `tidyverse` se utiliza para la manipulación de datos y visualización; `data.table` para trabajar con grandes conjuntos de datos en formato de tabla; `openxlsx` para la lectura y escritura de archivos Excel; `magrittr` proporciona el operador de tubería (`%>%`) para una sintaxis más clara; `DataExplorer` ayuda en la exploración y visualización de datos; `haven` permite la importación de archivos de datos en formatos como Stata; `purrr` se utiliza para aplicar funciones a listas y vectores; y `labelled` facilita el manejo de variables etiquetadas. Finalmente, `cat("\f")` limpia la consola para un entorno de trabajo más ordenado.
-
-```{r, eval=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+#################
+### Libraries ###
+#################
 library(tidyverse)
 library(data.table)
 library(openxlsx)
@@ -43,17 +22,18 @@ library(haven)
 library(purrr)
 library(labelled)
 cat("\f")
-```
 
-#### Lectura de Bases de Datos de Contexto {.unnumbered}
+################################################################################
+# Lectura de bases de contexto 2020
+################################################################################
+## Covariables
+# Contexto_munXX : la base de datos contexto_20XX.dta contiene información de 
+# variables a nivel municipal. 
 
-La sección de lectura de bases de datos comienza cargando los datos satelitales desde un archivo RDS. Posteriormente, se extraen los códigos municipales únicos de esta base de datos, lo que permite identificar todos los municipios representados en los datos satelitales.
-
-Luego, se carga la base de datos "Contexto_mun20" en formato Stata, que contiene información de diversas variables a nivel municipal. Al convertir estas variables en factores y revisar el número de categorías distintas en cada una, se puede entender mejor la estructura de los datos. Este paso es crucial para preparar los datos para el análisis posterior.
-
-```{r, eval=TRUE, echo=TRUE}
+# Cargar la base de datos satelital y renombrar la columna "CVEGEO" a "cve_mun"
 satelital <-
-  readRDS("../input/2020/predictores/statelevel_predictors_satelite.rds") 
+  readRDS("../input/2020/predictores/statelevel_predictors_satelite.rds") %>%
+  rename(cve_mun  = CVEGEO) %>% mutate(ent = NULL)
 
 # Obtener los códigos municipales únicos de la base de datos satelital
 cod_mun <- satelital %>% distinct(cve_mun)
@@ -62,13 +42,15 @@ cod_mun <- satelital %>% distinct(cve_mun)
 Contexto_mun <- read_dta("../input/2020/predictores/contexto_2020.dta")
 Contexto_mun %>% as_factor() %>% 
   apply(., 2, n_distinct) %>% sort()
-```
 
-#### Procesamiento y Escalado de Variables {.unnumbered}
+Contexto_mun$elec_mun19
+Contexto_mun$elec_mun20
+Contexto_mun$smg1
+Contexto_mun$ql_porc_cpa_urb
+Contexto_mun$ql_porc_cpa_rur   
+Contexto_mun$dec_geologicas 
+Contexto_mun$dec_hidrometeo  
 
-En esta sección, el código procesa la base de datos `Contexto_mun` para asegurar que las variables categóricas sean correctamente identificadas y que las variables numéricas sean escaladas. Primero, se convierte toda la base de datos a factores usando `as_factor()`. Luego, se seleccionan variables específicas (`elec_mun19`, `elec_mun20`, `smg1`, `ql_porc_cpa_urb`, `ql_porc_cpa_rur`, `dec_geologicas`, `dec_hidrometeo`) y se aseguran que se manejen como factores. Además, cualquier columna numérica se escala usando `scale()`, lo que transforma estas variables para que tengan media cero y desviación estándar uno.
-
-```{r}
 Contexto_mun %<>% as_factor() %>%
   mutate_at(
     .vars = c(
@@ -85,42 +67,23 @@ Contexto_mun %<>% as_factor() %>%
   mutate_if(is.numeric, function(x)
     as.numeric(scale(x)))
 
-```
+# Realizar una anti_join para identificar códigos municipales presentes en "cod_mun" pero no en "Contexto_mun"
+anti_join(cod_mun, Contexto_mun)
 
-#### Identificación de Códigos Municipales Faltantes {.unnumbered}
-
-El siguiente paso implica una `anti_join` entre `cod_mun` y `Contexto_mun`. Esto permite identificar los códigos municipales presentes en la base de datos satelital que no están presentes en `Contexto_mun`. Esta operación es útil para detectar inconsistencias o faltantes en los datos municipales que podrían impactar en los análisis posteriores.
-
-```{r}
-anti_join(cod_mun, Contexto_mun) %>% 
-  tba(cap = "Tabla de municipios sin información")
-```
-
-#### Verificación de Columnas Completas {.unnumbered}
-
-Para garantizar que sólo se utilicen columnas sin valores faltantes, se aplica una función que verifica si alguna columna en `Contexto_mun` tiene valores `NA`. El resultado es almacenado en `paso`, y la frecuencia de columnas completas es mostrada con `table(paso)`. Este paso asegura que las columnas usadas en el análisis posterior están completas y no contienen datos faltantes.
-
-```{r, eval=TRUE}
+# Realizar un análisis para determinar si alguna columna de "Contexto_mun" no tiene valores faltantes
 paso <- apply(Contexto_mun, 2, function(x) !any(is.na(x)))
+
+# Mostrar la frecuencia de columnas sin valores faltantes
 table(paso)
-```
 
-#### Combinación de Bases de Datos {.unnumbered}
-
-Se realiza una `inner_join` entre las bases de datos `satelital` y `Contexto_mun`, utilizando únicamente las columnas sin valores faltantes identificadas previamente. Esta combinación asegura que se unan únicamente los datos completos de ambas bases, resultando en una base de datos consolidada `statelevel_predictors`. Las dimensiones de esta nueva base de datos se obtienen usando `dim(statelevel_predictors)`, proporcionando información sobre el tamaño de los datos resultantes.
-```{r, eval=TRUE}
+# Realizar una inner_join entre las bases de datos "satelital" y "Contexto_mun" utilizando solo las columnas sin valores faltantes
 statelevel_predictors <- inner_join(satelital, Contexto_mun[, paso])
+
+# Obtener las dimensiones de la base de datos resultante
 dim(statelevel_predictors)
-```
 
-
-#### Guardado de la Base de Datos Final {.unnumbered}
-
-Finalmente, la base de datos consolidada `statelevel_predictors` se guarda en un archivo RDS para su uso posterior, utilizando `saveRDS()`. Este archivo es almacenado en la ruta especificada, permitiendo que los datos procesados estén disponibles para futuros análisis sin necesidad de repetir los pasos de limpieza y combinación.
-
-```{r. eval = FALSE}
+## Guardar 
 saveRDS(statelevel_predictors,file = "../input/2020/predictores/statelevel_predictors_df.rds")
-
 
 ```
 

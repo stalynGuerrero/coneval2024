@@ -8,8 +8,7 @@ El proceso de benchmarking se realiza mediante la función `benchmarking`, utili
 
 Para validar el modelo a nivel de subgrupos, se definen diversos subgrupos como `ent`, `area`, `sexo`, `edad`, `discapacidad`, `hlengua` y `nivel_edu`. Se crean gráficos de validación para cada subgrupo utilizando la función `plot_uni_validacion`. Estos gráficos se combinan y se guardan en un archivo JPG (`plot_uni.jpg`). Además, se guarda la lista de gráficos y el dataframe postestratificado en archivos RDS (`plot_uni.rds` y `poststrat_df_ictpc.rds` respectivamente), lo que permite una fácil recuperación y análisis posterior.
 
-
-``` r
+```{r, eval=FALSE}
 rm(list =ls())
 cat("\f")
 ###############################################################
@@ -127,4 +126,6 @@ saveRDS(object =  plot_subgrupo,
 
 saveRDS(object =  poststrat_df,
         file = "../input/2020/muestra_ampliada/poststrat_df_ictpc.rds")
+
+
 ```

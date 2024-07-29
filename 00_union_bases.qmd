@@ -1,4 +1,4 @@
-# Lectura y consolidación de bases de datos
+# 00_union_bases.R
 
 ```{r, echo=FALSE, warning=FALSE,error=FALSE, message=FALSE}
 knitr::opts_chunk$set(
@@ -19,23 +19,19 @@ tba <- function(dat, cap = NA){
 }
 ```
 
-En el siguiente apartado se describe el proceso de integración y ordenamiento de las bases de datos proporcionadas por la Universidad Nacional Autónoma de México (UNAM) y el Consejo Nacional de Evaluación de la Política de Desarrollo Social (CONEVAL). Este proceso tiene como propósito asegurar el adecuado desarrollo de los scripts necesarios para el análisis.
+Para la ejecución del presente archivo, debe abrir el archivo **00_union_bases.R** disponible en la ruta *Rcodes/2020/00_union_bases.R*.
 
-## Consolidando la base de datos de la encuesta ampliada del censo 
+El código comienza limpiando el entorno de R y cargando varias bibliotecas esenciales para la manipulación y análisis de datos. Posteriormente, define un conjunto de variables a validar y obtiene listas de archivos de datos en formato `.dta` correspondientes a diferentes conjuntos de datos del censo 2020. A continuación, el código itera sobre estos archivos para leer, combinar y almacenar los datos de cada estado en archivos `.rds` individuales. Estos datos se combinan en un único dataframe que se guarda para su uso posterior.
 
-### Limpieza del espacio de trabajo {-}
-   Esta línea elimina todos los objetos del espacio de trabajo actual. Es útil para asegurar que no haya objetos residuales que puedan interferir con el nuevo análisis.
+En la sección final, el código se centra en los datos de la ENIGH 2020. Lee los archivos de hogares y pobreza, y los combina utilizando un `inner_join`. Se seleccionan y renombran variables clave para asegurar la consistencia en el análisis. Finalmente, el dataframe combinado se guarda en un archivo `.rds` para facilitar el acceso y análisis futuros.
 
-```{r, echo=TRUE, eval=FALSE}
+
+```{r, eval=FALSE}
 rm(list = ls())
-```
 
-
-
-### Carga de bibliotecas {-}
-   Estas líneas cargan diversas bibliotecas en R:
-
-```{r, warning=FALSE,error=FALSE}
+#################
+### Libraries ###
+#################
 library(tidyverse)
 library(data.table)
 library(openxlsx)
@@ -45,58 +41,40 @@ library(haven)
 library(purrr)
 library(furrr)
 library(labelled)
-```
+cat("\f")
 
-### Definición de variables para validación {-}
-   Se define un vector `validar_var` que contiene una lista de nombres de variables. Estos nombres podrían ser utilizados más adelante para validar o verificar datos en el análisis.
-```{r, warning=FALSE,error=FALSE}
-validar_var <- c("ic_rezedu",
-                 "ic_asalud",
-                 "ic_segsoc",
-                 "ic_cv",
-                 "ic_sbv",
-                 "ic_ali_nc",
-                 "ictpc")
-```
+###############################################################
+validar_var <- c(
+  "ic_rezedu",
+  "ic_asalud",
+  "ic_segsoc",
+  "ic_cv",
+  "ic_sbv",
+  "ic_ali_nc",
+  "ictpc"
+)
+# Obtener la lista de archivos .dta
 
-### Obtener la lista de archivos .dta {-}
-  Estas líneas generan listas de archivos con extensión `.dta` en los directorios especificados:
-  
-   - `file_muestra_censo_2020_estado`: Contiene la lista de archivos `.dta` en el directorio `SegSocial/SegSoc/`.
-   
-   - `file_muestra_censo_2020_estado_complemento`: Contiene la lista de archivos `.dta` en el directorio `Complemento_SegSoc/`.
-   
-   - `muestra_cuestionario_ampliado_censo_2020_estado`: Contiene la lista de archivos `.dta` en el directorio `IndicadoresCenso/`.
-
-```{r, warning=FALSE,error=FALSE}
-(file_muestra_censo_2020_estado <-
+file_muestra_censo_2020_estado <-
   list.files(
     "../input/2020/muestra_ampliada/SegSocial/SegSoc/",
     full.names = TRUE,
     pattern = "dta$"
-  ))
-
-(file_muestra_censo_2020_estado_complemento <-
+  )
+file_muestra_censo_2020_estado_complemento <-
   list.files(
     "../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/",
     full.names = TRUE,
     pattern = "dta$"
-  ))
+  )
 
-(muestra_cuestionario_ampliado_censo_2020_estado <-
+muestra_cuestionario_ampliado_censo_2020_estado <-
   list.files(
     "../input/2020/muestra_ampliada/IndicadoresCenso/",
     full.names = TRUE,
     pattern = "dta$"
-  ))
-```
+  )
 
-### Conslidar bases de la muestra ampliada {-}
-
-El código inicia creando un dataframe vacío y cargando las bibliotecas necesarias para el análisis de datos. Luego, itera sobre los archivos `.dta` para leer y combinar datos de diferentes fuentes, realizando uniones internas y ajustes según sea necesario. Cada conjunto de datos combinado se guarda en archivos `.rds` individuales durante el proceso. Después, los datos combinados de cada archivo se acumulan en un dataframe principal. Finalmente, el dataframe completo se guarda en un archivo `.rds`. Este procedimiento facilita la integración y el análisis de grandes volúmenes de datos provenientes de diversas fuentes.
-
-
-```{r, eval=FALSE}
 
 # Crear un dataframe vacío para almacenar los datos
 df <- data.frame()
@@ -105,12 +83,10 @@ df <- data.frame()
 for (ii in 1:32) {
   muestra_censo_2020_estado_ii <-
     read_dta(file_muestra_censo_2020_estado[ii])
- 
-   muestra_censo_2020_estado_complemento_ii <-
+  muestra_censo_2020_estado_complemento_ii <-
     read_dta(file_muestra_censo_2020_estado_complemento[ii]) %>%
     mutate(id_per = id_persona)
-  
-   muestra_cuestionario_ampliado_censo_2020_estado_ii <-
+  muestra_cuestionario_ampliado_censo_2020_estado_ii <-
     read_dta(muestra_cuestionario_ampliado_censo_2020_estado[ii])
   
   muestra_censo <-
@@ -120,22 +96,25 @@ for (ii in 1:32) {
     inner_join(muestra_cuestionario_ampliado_censo_2020_estado_ii)
   
   saveRDS(muestra_censo,
-          paste0("output/2020/muestra_censo/depto_", ii, ".rds"))
+          paste0("../output/2020/muestra_censo/depto_", ii, ".rds"))
   
   df <- bind_rows(df, muestra_censo)
   cat(file_muestra_censo_2020_estado[ii], "\n")
 }
 
 # Guardar el dataframe en un archivo .rds
-saveRDS(df, file = "output/2020/muestra_cuestionario_ampliado.rds")
+saveRDS(df, file = "../output/2020/muestra_cuestionario_ampliado.rds")
 
-```
+intersect(names(df), validar_var)
+dim(df)
+# "ic_cv"     "ic_sbv"    "ic_rezedu" "ic_asalud"
 
-## Cambiando de formato .dta a .rds la base de la ENIGH. 
 
-El código se enfoca en la integración y preparación de datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH). Primero, lee archivos de datos relevantes para los hogares y la pobreza desde fuentes especificadas. Luego, combina estos datos mediante uniones internas, basándose en identificadores comunes para asegurar una correcta correspondencia entre registros. Se ajustan algunas variables, como la creación de una nueva columna para los datos de ictpc, y se elimina una columna innecesaria. Finalmente, el dataframe combinado se guarda en un archivo .rds para su posterior análisis. Este proceso facilita la consolidación y preparación de los datos de la ENIGH para análisis más detallados.
+################################################################################
+# enigh
+################################################################################
 
-```{r, eval=FALSE}
+# enigh_personas <- read_dta("input/2020/enigh/base_personas_MEC20.dta")
 enigh_hogares <- read_dta("../input/2020/enigh/base_hogares20.dta")
 enigh_pobreza <- read_dta("../input/2020/enigh/pobreza_20.dta") %>% 
   select(-ent)
@@ -158,7 +137,8 @@ enigh$ictpc_pers
 enigh$ictpc <- enigh$ictpc_pers
 enigh$ic_segsoc
 
-#saveRDS(enigh, file = "output/2020/enigh.rds")
+saveRDS(enigh, file = "../output/2020/enigh.rds")
+
 
 ```
 

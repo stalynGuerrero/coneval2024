@@ -1,0 +1,210 @@
+# 03_Estandarizar_muestra_cuestionario_ampliado.R
+
+Para la ejecución del presente archivo, debe abrir el archivo **02_Union_predictores.R** disponible en la ruta *Rcodes/2020/02_Union_predictores.R*.
+
+El código ejecuta un análisis de datos en varias etapas. Primero, limpia el entorno de R eliminando todos los objetos actuales para empezar con un espacio de trabajo vacío. Luego, carga las bibliotecas necesarias, como `tidyverse` y `data.table`, que facilitan la manipulación y análisis de datos, así como la importación y exportación de archivos. A continuación, lee las bases de datos del censo de personas 2020 y de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH). Estas bases se utilizan para identificar indicadores clave relacionados con la carencia en salud, calidad de vivienda, servicios básicos y rezago educativo. Seguidamente, valida y armoniza las variables entre ambas bases para garantizar que los códigos y etiquetas sean consistentes, comparando variables como códigos de entidad y municipio, áreas urbanas y rurales, sexo, edad, nivel educativo, discapacidad y lengua indígena. Posteriormente, estandariza las variables del censo para alinearlas con las de la encuesta y filtra los datos para eliminar inconsistencias. Finalmente, resume el conjunto de datos estandarizado por grupo, y guarda los datos procesados en dos versiones: una con los datos estandarizados y otra con los datos resumidos.
+
+```{r, eval=FALSE}
+### Cleaning R environment ###
+rm(list = ls())
+
+#################
+### Libraries ###
+#################
+library(tidyverse)
+library(data.table)
+library(openxlsx)
+library(magrittr)
+library(DataExplorer)
+library(haven)
+library(purrr)
+library(labelled)
+library(sampling)
+cat("\f")
+
+################################################################################
+# Lectura de bases censo persona 2020
+################################################################################
+muestra_cuestionario_ampliado <-
+  readRDS(
+    "../output/2020/muestra_cuestionario_ampliado.rds"
+  )
+enigh <- readRDS("../output/2020/enigh.rds")
+muestra_cuestionario_ampliado %>% dim()
+
+################################################################################
+# Identificando indicadores 
+################################################################################
+# Indicador de carencia por acceso a los servicios de salud (CENSO)
+head(muestra_cuestionario_ampliado$ic_asalud)
+
+# Carencia por la calidad y espacios de la vivienda. (CENSO)
+attributes(muestra_cuestionario_ampliado$ic_cv)$label	
+
+# Carencia por servicios básicos en la vivienda. (CENSO)
+attributes(muestra_cuestionario_ampliado$ic_sbv)$label
+
+# Carencia por rezago educativo. 
+attributes( muestra_cuestionario_ampliado$ic_rezedu)$label
+
+################################################################################
+## Validaciones para la armonización de variables
+################################################################################
+
+## codigos de ent y municipio 
+
+## Encuesta 
+n_distinct(enigh$ent) # cod_dam
+n_distinct(enigh$cve_mun) # cod_mun
+
+## censo 
+n_distinct(muestra_cuestionario_ampliado$ent)
+n_distinct(muestra_cuestionario_ampliado$cve_mun)
+
+################################################################################
+
+## area 
+
+## Encuesta 
+attributes(enigh$rururb) 
+
+## censo 
+table(muestra_cuestionario_ampliado$rururb, useNA = "a")
+# 0	Urbano
+# 1	Rural
+
+
+################################################################################
+
+## Sexo 
+
+## Encuesta 
+attributes(enigh$sexo) 
+# 2	Mujer
+# 1	Hombre
+
+## censo 
+table(muestra_cuestionario_ampliado$sexo, useNA = "a")
+# 0	Mujer
+# 1	Hombre
+
+################################################################################
+## edad 
+
+## Encuesta 
+attributes(enigh$edad) 
+
+## censo 
+head(muestra_cuestionario_ampliado$edad_cat)
+
+################################################################################
+## nivel_edu # 
+
+## Encuesta 
+attributes(enigh$niv_ed) 
+
+# 0 [Con primaria incompleta o menos]                 
+# 1 [Primaria completa o secundaria incompleta]       
+# 2 [Secundaria completa o media superior incompleta] 
+# 3 [Media superior completa o mayor nivel educativo] 
+# NA  Niños de 0 a 3 años
+
+## censo 
+attributes(muestra_cuestionario_ampliado$niv_ed)
+
+# 0 [Con primaria incompleta o menos]                 
+# 1 [Primaria completa o secundaria incompleta]       
+# 2 [Secundaria completa o media superior incompleta] 
+# 3 [Media superior completa o mayor nivel educativo] 
+# NA  Niños de 0 a 3 años
+
+
+################################################################################
+## Discapacidad # 
+## se puede eliminar o solicitar que sea enviada en el mismo formato que la encuesta 
+
+## Encuesta 
+attributes(enigh$discap) 
+
+## censo
+attributes(muestra_cuestionario_ampliado$discap) 
+
+
+################################################################################
+## Habla dialecto o lengua indígena
+
+## Encuesta 
+attributes(enigh$hli) 
+
+
+## censo
+attributes(muestra_cuestionario_ampliado$hli) 
+
+################################################################################
+## Estandarizando el censo 
+################################################################################
+
+censo_sta <- muestra_cuestionario_ampliado %>%
+  transmute(
+    ent,
+    cve_mun,
+    upm,
+    estrato,
+    area = as.character(rururb),
+    sexo = if_else(sexo == 1, "1", "2"),
+    edad = as.character(edad_cat),
+    nivel_edu = haven::as_factor(niv_ed, levels  = "values"),
+    discapacidad = as.character(discap),
+    discapacidad = if_else(is.na(discapacidad), "0", discapacidad),
+    hlengua = as.character(hli),
+    hlengua = if_else(is.na(hlengua), "0", hlengua),
+    
+    ic_asalud= haven::as_factor(ic_asalud, levels  = "values"),
+    ic_cv = haven::as_factor(ic_cv, levels  = "values"),
+    ic_sbv = haven::as_factor(ic_sbv, levels  = "values"),
+    ic_rezedu = haven::as_factor(ic_rezedu, levels  = "values"),
+    factor
+  ) %>% 
+  filter( !cve_mun %in% c("04012", "07125", "29048"))
+
+
+
+
+censo_sta2 <- censo_sta %>%
+  filter(
+    !is.na(nivel_edu),
+    !is.na(edad),
+    !is.na(ic_sbv),
+    !is.na(ic_cv),
+    !is.na(ic_rezedu),
+    !is.na(ic_asalud),
+  )
+
+sum(censo_sta2$factor) / sum(censo_sta$factor)
+
+#Se guarda el conjunto de datos estandarizado:
+
+saveRDS(censo_sta2,"../output/2020/encuesta_ampliada.rds")
+
+#Se resumen los datos por grupo:
+
+censo_sta2 %<>% group_by(
+  ent,
+  cve_mun,
+  area,
+  hlengua,
+  sexo,
+  edad,
+  nivel_edu,
+  discapacidad,
+  ic_asalud,
+  ic_cv,
+  ic_sbv,
+  ic_rezedu
+) %>%
+  summarise(n = sum(factor), .groups = "drop") 
+
+#Se guarda el conjunto de datos resumido:
+
+saveRDS(censo_sta2, "../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds")
+```
