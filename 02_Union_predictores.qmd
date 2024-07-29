@@ -1,0 +1,126 @@
+# Integración de bases de datos predictoras.
+
+```{r, echo=FALSE, warning=FALSE,error=FALSE, message=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  cache = TRUE)
+library(printr)
+library(kableExtra)
+library(tidyverse)
+rstan::rstan_options(auto_write = TRUE) # speed up running time 
+tba <- function(dat, cap = NA){
+  kable(dat,
+      format = "html", digits =  4,
+      caption = cap) %>% 
+     kable_styling(bootstrap_options = "striped", full_width = F)%>%
+         kable_classic(full_width = F, html_font = "Arial Narrow")
+}
+```
+
+Este código se centra en la selección y procesamiento de variables de covariables a nivel municipal para el año 2020. A continuación, se describe cada bloque del código en términos generales.
+
+#### Limpieza del Entorno de R {.unnumbered}
+
+Para asegurar un entorno limpio y evitar conflictos con datos previos, se eliminan todas las variables existentes en el entorno de R usando `rm(list = ls())`. Esto permite que el análisis comience sin datos residuales que puedan interferir.
+
+```{r, eval=FALSE}
+rm(list = ls())
+```
+
+#### Carga de librerías {.unnumbered}
+
+Se cargan varias librerías esenciales para la manipulación y análisis de datos. `tidyverse` se utiliza para la manipulación de datos y visualización; `data.table` para trabajar con grandes conjuntos de datos en formato de tabla; `openxlsx` para la lectura y escritura de archivos Excel; `magrittr` proporciona el operador de tubería (`%>%`) para una sintaxis más clara; `DataExplorer` ayuda en la exploración y visualización de datos; `haven` permite la importación de archivos de datos en formatos como Stata; `purrr` se utiliza para aplicar funciones a listas y vectores; y `labelled` facilita el manejo de variables etiquetadas. Finalmente, `cat("\f")` limpia la consola para un entorno de trabajo más ordenado.
+
+```{r, eval=TRUE, message=FALSE, warning=FALSE, error=FALSE}
+library(tidyverse)
+library(data.table)
+library(openxlsx)
+library(magrittr)
+library(DataExplorer)
+library(haven)
+library(purrr)
+library(labelled)
+cat("\f")
+```
+
+#### Lectura de Bases de Datos de Contexto {.unnumbered}
+
+La sección de lectura de bases de datos comienza cargando los datos satelitales desde un archivo RDS. Posteriormente, se extraen los códigos municipales únicos de esta base de datos, lo que permite identificar todos los municipios representados en los datos satelitales.
+
+Luego, se carga la base de datos "Contexto_mun20" en formato Stata, que contiene información de diversas variables a nivel municipal. Al convertir estas variables en factores y revisar el número de categorías distintas en cada una, se puede entender mejor la estructura de los datos. Este paso es crucial para preparar los datos para el análisis posterior.
+
+```{r, eval=TRUE, echo=TRUE}
+satelital <-
+  readRDS("../input/2020/predictores/statelevel_predictors_satelite.rds") 
+
+# Obtener los códigos municipales únicos de la base de datos satelital
+cod_mun <- satelital %>% distinct(cve_mun)
+
+# Cargar la base de datos "Contexto_mun20" en formato Stata y renombrar la columna "CVEGEO" a "cve_mun"
+Contexto_mun <- read_dta("../input/2020/predictores/contexto_2020.dta")
+Contexto_mun %>% as_factor() %>% 
+  apply(., 2, n_distinct) %>% sort()
+```
+
+#### Procesamiento y Escalado de Variables {.unnumbered}
+
+En esta sección, el código procesa la base de datos `Contexto_mun` para asegurar que las variables categóricas sean correctamente identificadas y que las variables numéricas sean escaladas. Primero, se convierte toda la base de datos a factores usando `as_factor()`. Luego, se seleccionan variables específicas (`elec_mun19`, `elec_mun20`, `smg1`, `ql_porc_cpa_urb`, `ql_porc_cpa_rur`, `dec_geologicas`, `dec_hidrometeo`) y se aseguran que se manejen como factores. Además, cualquier columna numérica se escala usando `scale()`, lo que transforma estas variables para que tengan media cero y desviación estándar uno.
+
+```{r}
+Contexto_mun %<>% as_factor() %>%
+  mutate_at(
+    .vars = c(
+      "elec_mun19",
+      "elec_mun20",
+      "smg1",
+      "ql_porc_cpa_urb",
+      "ql_porc_cpa_rur",
+      "dec_geologicas",
+      "dec_hidrometeo"
+    ),
+    as.factor
+  ) %>%
+  mutate_if(is.numeric, function(x)
+    as.numeric(scale(x)))
+
+```
+
+#### Identificación de Códigos Municipales Faltantes {.unnumbered}
+
+El siguiente paso implica una `anti_join` entre `cod_mun` y `Contexto_mun`. Esto permite identificar los códigos municipales presentes en la base de datos satelital que no están presentes en `Contexto_mun`. Esta operación es útil para detectar inconsistencias o faltantes en los datos municipales que podrían impactar en los análisis posteriores.
+
+```{r}
+anti_join(cod_mun, Contexto_mun) %>% 
+  tba(cap = "Tabla de municipios sin información")
+```
+
+#### Verificación de Columnas Completas {.unnumbered}
+
+Para garantizar que sólo se utilicen columnas sin valores faltantes, se aplica una función que verifica si alguna columna en `Contexto_mun` tiene valores `NA`. El resultado es almacenado en `paso`, y la frecuencia de columnas completas es mostrada con `table(paso)`. Este paso asegura que las columnas usadas en el análisis posterior están completas y no contienen datos faltantes.
+
+```{r, eval=TRUE}
+paso <- apply(Contexto_mun, 2, function(x) !any(is.na(x)))
+table(paso)
+```
+
+#### Combinación de Bases de Datos {.unnumbered}
+
+Se realiza una `inner_join` entre las bases de datos `satelital` y `Contexto_mun`, utilizando únicamente las columnas sin valores faltantes identificadas previamente. Esta combinación asegura que se unan únicamente los datos completos de ambas bases, resultando en una base de datos consolidada `statelevel_predictors`. Las dimensiones de esta nueva base de datos se obtienen usando `dim(statelevel_predictors)`, proporcionando información sobre el tamaño de los datos resultantes.
+```{r, eval=TRUE}
+statelevel_predictors <- inner_join(satelital, Contexto_mun[, paso])
+dim(statelevel_predictors)
+```
+
+
+#### Guardado de la Base de Datos Final {.unnumbered}
+
+Finalmente, la base de datos consolidada `statelevel_predictors` se guarda en un archivo RDS para su uso posterior, utilizando `saveRDS()`. Este archivo es almacenado en la ruta especificada, permitiendo que los datos procesados estén disponibles para futuros análisis sin necesidad de repetir los pasos de limpieza y combinación.
+
+```{r. eval = FALSE}
+saveRDS(statelevel_predictors,file = "../input/2020/predictores/statelevel_predictors_df.rds")
+
+
+```
+

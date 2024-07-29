@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4.1 Configurar el entorno de R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024</title>
+  <meta name="description" content="Manual de procesamiento." />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4.1 Configurar el entorno de R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Manual de procesamiento." />
+  <meta name="github-repo" content="psirusteam/coneval" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4.1 Configurar el entorno de R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
+  
+  <meta name="twitter:description" content="Manual de procesamiento." />
+  
+
+<meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
+
+
+<meta name="date" content="2024-07-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="proceso-para-la-descarga-de-imágenes-satelitales.html"/>
+<link rel="next" href="preparación-de-la-shapefile.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Taller de instalación de capacidades en SAE</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introducción</a>
+<ul>
+<li class="chapter" data-level="" data-path="respositodio-de-códigos.html"><a href="respositodio-de-códigos.html"><i class="fa fa-check"></i>Respositodio de códigos</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="librerias-de-r-y-otros-insumos.html"><a href="librerias-de-r-y-otros-insumos.html"><i class="fa fa-check"></i><b>2</b> Librerias de <em>R</em> y otros insumos</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html"><i class="fa fa-check"></i><b>2.1</b> Librerías Utilizadas</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#manipulación-y-transformación-de-datos"><i class="fa fa-check"></i><b>2.1.1</b> Manipulación y Transformación de Datos</a></li>
+<li class="chapter" data-level="2.1.2" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#lectura-y-escritura-de-datos"><i class="fa fa-check"></i><b>2.1.2</b> Lectura y Escritura de Datos</a></li>
+<li class="chapter" data-level="2.1.3" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#análisis-de-datos-de-encuestas"><i class="fa fa-check"></i><b>2.1.3</b> Análisis de Datos de Encuestas</a></li>
+<li class="chapter" data-level="2.1.4" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#modelado-y-análisis-estadístico"><i class="fa fa-check"></i><b>2.1.4</b> Modelado y Análisis Estadístico</a></li>
+<li class="chapter" data-level="2.1.5" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#visualización-de-datos"><i class="fa fa-check"></i><b>2.1.5</b> Visualización de Datos</a></li>
+<li class="chapter" data-level="2.1.6" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#informes-y-reproducibilidad"><i class="fa fa-check"></i><b>2.1.6</b> Informes y Reproducibilidad</a></li>
+<li class="chapter" data-level="2.1.7" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#integración-con-otros-lenguajes"><i class="fa fa-check"></i><b>2.1.7</b> Integración con Otros Lenguajes</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="bases-de-datos-utilizadas.html"><a href="bases-de-datos-utilizadas.html"><i class="fa fa-check"></i><b>2.2</b> Bases de Datos Utilizadas</a></li>
+<li class="chapter" data-level="2.3" data-path="estructura-del-proyecto.html"><a href="estructura-del-proyecto.html"><i class="fa fa-check"></i><b>2.3</b> Estructura del Proyecto</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="lectura-y-consolidación-de-bases-de-datos.html"><a href="lectura-y-consolidación-de-bases-de-datos.html"><i class="fa fa-check"></i><b>3</b> Lectura y consolidación de bases de datos</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html"><a href="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html"><i class="fa fa-check"></i><b>3.1</b> Consolidando la base de datos de la encuesta ampliada del censo</a>
+<ul>
+<li class="chapter" data-level="" data-path="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html"><a href="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html#limpieza-del-espacio-de-trabajo"><i class="fa fa-check"></i>Limpieza del espacio de trabajo</a></li>
+<li class="chapter" data-level="" data-path="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html"><a href="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html#carga-de-bibliotecas"><i class="fa fa-check"></i>Carga de bibliotecas</a></li>
+<li class="chapter" data-level="" data-path="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html"><a href="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html#definición-de-variables-para-validación"><i class="fa fa-check"></i>Definición de variables para validación</a></li>
+<li class="chapter" data-level="" data-path="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html"><a href="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html#obtener-la-lista-de-archivos-.dta"><i class="fa fa-check"></i>Obtener la lista de archivos .dta</a></li>
+<li class="chapter" data-level="" data-path="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html"><a href="consolidando-la-base-de-datos-de-la-encuesta-ampliada-del-censo.html#conslidar-bases-de-la-muestra-ampliada"><i class="fa fa-check"></i>Conslidar bases de la muestra ampliada</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="cambiando-de-formato-.dta-a-.rds-la-base-de-la-enigh..html"><a href="cambiando-de-formato-.dta-a-.rds-la-base-de-la-enigh..html"><i class="fa fa-check"></i><b>3.2</b> Cambiando de formato .dta a .rds la base de la ENIGH.</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="proceso-para-la-descarga-de-imágenes-satelitales.html"><a href="proceso-para-la-descarga-de-imágenes-satelitales.html"><i class="fa fa-check"></i><b>4</b> Proceso para la descarga de imágenes satelitales</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="configurar-el-entorno-de-r.html"><a href="configurar-el-entorno-de-r.html"><i class="fa fa-check"></i><b>4.1</b> Configurar el entorno de <em>R</em></a></li>
+<li class="chapter" data-level="4.2" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html"><i class="fa fa-check"></i><b>4.2</b> Preparación de la <strong>Shapefile</strong></a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#definición-del-sistema-de-referencia-espacial"><i class="fa fa-check"></i><b>4.2.1</b> Definición del Sistema de Referencia Espacial</a></li>
+<li class="chapter" data-level="4.2.2" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#transformación-y-combinación-de-shapefiles"><i class="fa fa-check"></i><b>4.2.2</b> Transformación y Combinación de Shapefiles</a></li>
+<li class="chapter" data-level="4.2.3" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#corrección-de-la-codificación-de-los-nombres-geográficos"><i class="fa fa-check"></i><b>4.2.3</b> Corrección de la Codificación de los Nombres Geográficos</a></li>
+<li class="chapter" data-level="4.2.4" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#guardado-del-shapefile-transformado"><i class="fa fa-check"></i><b>4.2.4</b> Guardado del Shapefile Transformado</a></li>
+<li class="chapter" data-level="4.2.5" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#limpieza-del-espacio-de-trabajo-1"><i class="fa fa-check"></i><b>4.2.5</b> Limpieza del Espacio de Trabajo</a></li>
+<li class="chapter" data-level="4.2.6" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#lectura-de-shapefile-transformado"><i class="fa fa-check"></i><b>4.2.6</b> Lectura de Shapefile Transformado</a></li>
+<li class="chapter" data-level="4.2.7" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#cobertura-urbana-y-uso-del-suelo"><i class="fa fa-check"></i><b>4.2.7</b> Cobertura urbana y uso del suelo</a></li>
+<li class="chapter" data-level="4.2.8" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#distancia-a-hospitales"><i class="fa fa-check"></i><b>4.2.8</b> Distancia a hospitales</a></li>
+<li class="chapter" data-level="4.2.9" data-path="preparación-de-la-shapefile.html"><a href="preparación-de-la-shapefile.html#global-human-modification-ghm"><i class="fa fa-check"></i><b>4.2.9</b> Global Human Modification (GHM)</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="conslidar-y-guardar-las-variables-satelitales.html"><a href="conslidar-y-guardar-las-variables-satelitales.html"><i class="fa fa-check"></i><b>4.3</b> Conslidar y guardar las variables satelitales</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="integración-de-bases-de-datos-predictoras..html"><a href="integración-de-bases-de-datos-predictoras..html"><i class="fa fa-check"></i><b>5</b> Integración de bases de datos predictoras.</a></li>
+<li class="divider"></li>
+<li><a Taller de instalación de capacidades en SAE </a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="configurar-el-entorno-de-r" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Configurar el entorno de <em>R</em><a href="configurar-el-entorno-de-r.html#configurar-el-entorno-de-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El código configura el entorno de trabajo en R para el análisis de datos geográficos y la conexión con Google Earth Engine. Primero, limpia el espacio de trabajo y establece un límite de memoria. Luego, carga varias bibliotecas necesarias para la manipulación de datos, el muestreo, la conexión con Google Earth Engine, y el manejo de datos geográficos.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="configurar-el-entorno-de-r.html#cb12-1" tabindex="-1"></a><span class="co"># rm(list = ls())</span></span>
+<span id="cb12-2"><a href="configurar-el-entorno-de-r.html#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="configurar-el-entorno-de-r.html#cb12-3" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">500000</span>)</span></code></pre></div>
+<pre><code>## [1] Inf</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="configurar-el-entorno-de-r.html#cb14-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb14-2"><a href="configurar-el-entorno-de-r.html#cb14-2" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb14-3"><a href="configurar-el-entorno-de-r.html#cb14-3" tabindex="-1"></a><span class="fu">library</span>(rgee) <span class="co"># Conexión con Google Earth Engine</span></span>
+<span id="cb14-4"><a href="configurar-el-entorno-de-r.html#cb14-4" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># Paquete para manejar datos geográficos</span></span>
+<span id="cb14-5"><a href="configurar-el-entorno-de-r.html#cb14-5" tabindex="-1"></a><span class="fu">library</span>(concaveman)</span>
+<span id="cb14-6"><a href="configurar-el-entorno-de-r.html#cb14-6" tabindex="-1"></a><span class="fu">library</span>(geojsonio)</span>
+<span id="cb14-7"><a href="configurar-el-entorno-de-r.html#cb14-7" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb14-8"><a href="configurar-el-entorno-de-r.html#cb14-8" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
+<span id="cb14-9"><a href="configurar-el-entorno-de-r.html#cb14-9" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code></pre></div>
+<p>El siguiente código configura el entorno de Python necesario para trabajar con Google Earth Engine a través de <code>reticulate</code>, asegurando que el entorno <code>rgee_py</code> esté correctamente instalado y configurado. Finalmente, inicializa la conexión con Google Earth Engine, habilitando el acceso a los recursos de Google Drive. Este proceso prepara el entorno para realizar análisis avanzados que combinan capacidades de R y Python.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="configurar-el-entorno-de-r.html#cb15-1" tabindex="-1"></a>rgee_environment_dir <span class="ot">&lt;-</span>reticulate<span class="sc">::</span><span class="fu">conda_list</span>()</span>
+<span id="cb15-2"><a href="configurar-el-entorno-de-r.html#cb15-2" tabindex="-1"></a>rgee_environment_dir <span class="ot">&lt;-</span> rgee_environment_dir[rgee_environment_dir<span class="sc">$</span>name <span class="sc">==</span> <span class="st">&quot;rgee_py&quot;</span>,<span class="dv">2</span>]</span>
+<span id="cb15-3"><a href="configurar-el-entorno-de-r.html#cb15-3" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_python</span>(rgee_environment_dir, <span class="at">required =</span> T )</span>
+<span id="cb15-4"><a href="configurar-el-entorno-de-r.html#cb15-4" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">py_config</span>()</span>
+<span id="cb15-5"><a href="configurar-el-entorno-de-r.html#cb15-5" tabindex="-1"></a><span class="fu">library</span>(reticulate) <span class="co"># Conexión con Python</span></span>
+<span id="cb15-6"><a href="configurar-el-entorno-de-r.html#cb15-6" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="configurar-el-entorno-de-r.html#cb15-7" tabindex="-1"></a>rgee<span class="sc">::</span><span class="fu">ee_install_set_pyenv</span>(<span class="at">py_path =</span> rgee_environment_dir, <span class="at">py_env =</span> <span class="st">&quot;rgee_py&quot;</span>)</span>
+<span id="cb15-8"><a href="configurar-el-entorno-de-r.html#cb15-8" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">RETICULATE_PYTHON =</span> rgee_environment_dir)</span>
+<span id="cb15-9"><a href="configurar-el-entorno-de-r.html#cb15-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">EARTHENGINE_PYTHON =</span> rgee_environment_dir)</span>
+<span id="cb15-10"><a href="configurar-el-entorno-de-r.html#cb15-10" tabindex="-1"></a>rgee<span class="sc">::</span><span class="fu">ee_Initialize</span>(<span class="at">drive =</span> T)</span></code></pre></div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="proceso-para-la-descarga-de-imágenes-satelitales.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="preparación-de-la-shapefile.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/psirusteam/2023MEXsae/01_Descarga_satelitales.qmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.pdf", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.epub", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.mobi"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+},
+"tconfig": null
+});
+});
+</script>
+
+</body>
+
+</html>
