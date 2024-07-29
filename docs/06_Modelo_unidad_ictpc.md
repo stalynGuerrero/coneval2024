@@ -21,7 +21,7 @@ library(tidyverse)
 library(magrittr)
 library(caret)
 library(car)
-source("source/modelos_freq.R")
+source("../source/modelos_freq.R")
 
 
 byAgrega <-
@@ -36,9 +36,9 @@ byAgrega <-
 
 # Loading data ------------------------------------------------------------
 memory.limit(10000000)
-encuesta_sta <- readRDS("input/2020/enigh/encuesta_sta.rds")
-censo_sta <- readRDS("input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds")
-statelevel_predictors_df <- readRDS("input/2020/predictores/statelevel_predictors_df.rds")
+encuesta_sta <- readRDS("../input/2020/enigh/encuesta_sta.rds")
+censo_sta <- readRDS("../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds")
+statelevel_predictors_df <- readRDS("../input/2020/predictores/statelevel_predictors_df.rds")
 
 cov_names <- names(statelevel_predictors_df)
 cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
@@ -121,10 +121,10 @@ fit <- modelo_ingreso(
 #--- Exporting Bayesian Multilevel Model Results ---#
 
 saveRDS(fit, 
-        file = "output/2020/modelos/fit_mrp_ictpc.rds")
+        file = "../output/2020/modelos/fit_mrp_ictpc.rds")
 
 ggsave(plot = fit$plot_densy,
-       "output/2020/plots/01_densidad_ictpc.png",scale = 3)
+       "../output/2020/plots/01_densidad_ictpc.png",scale = 3)
 fit$plot_hist_post
 ```
 

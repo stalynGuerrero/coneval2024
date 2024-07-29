@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="validacion_encuestas.html"/>
-
+<link rel="next" href="modelo_unidad_py_ic_ali_nc.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -166,6 +166,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i><b>5</b> 04_Armonizar_encuesta.R</a></li>
 <li class="chapter" data-level="6" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i><b>6</b> 05_Validacion_encuestas.R</a></li>
 <li class="chapter" data-level="7" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i><b>7</b> 06_Modelo_unidad_ictpc.R</a></li>
+<li class="chapter" data-level="8" data-path="modelo_unidad_py_ic_ali_nc.html"><a href="modelo_unidad_py_ic_ali_nc.html"><i class="fa fa-check"></i><b>8</b> 07_Modelo_unidad_py_ic_ali_nc.R</a></li>
+<li class="chapter" data-level="9" data-path="modelo_unidad_py_ic_segsoc.html"><a href="modelo_unidad_py_ic_segsoc.html"><i class="fa fa-check"></i><b>9</b> 08_Modelo_unidad_py_ic_segsoc</a></li>
+<li class="chapter" data-level="10" data-path="postbenchmarking_ictpc.html"><a href="postbenchmarking_ictpc.html"><i class="fa fa-check"></i><b>10</b> 09_PostBenchmarking_ictpc.R</a></li>
+<li class="chapter" data-level="11" data-path="postbenchmarking_ic_ali_nc.html"><a href="postbenchmarking_ic_ali_nc.html"><i class="fa fa-check"></i><b>11</b> 10_PostBenchmarking_ic_ali_nc.R</a></li>
 <li class="divider"></li>
 <li><a Taller de instalación de capacidades en SAE </a></li>
 
@@ -203,7 +207,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-9"><a href="modelo_unidad_ictpc.html#cb7-9" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
 <span id="cb7-10"><a href="modelo_unidad_ictpc.html#cb7-10" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
 <span id="cb7-11"><a href="modelo_unidad_ictpc.html#cb7-11" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb7-12"><a href="modelo_unidad_ictpc.html#cb7-12" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;source/modelos_freq.R&quot;</span>)</span>
+<span id="cb7-12"><a href="modelo_unidad_ictpc.html#cb7-12" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/modelos_freq.R&quot;</span>)</span>
 <span id="cb7-13"><a href="modelo_unidad_ictpc.html#cb7-13" tabindex="-1"></a></span>
 <span id="cb7-14"><a href="modelo_unidad_ictpc.html#cb7-14" tabindex="-1"></a></span>
 <span id="cb7-15"><a href="modelo_unidad_ictpc.html#cb7-15" tabindex="-1"></a>byAgrega <span class="ot">&lt;-</span></span>
@@ -218,9 +222,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-24"><a href="modelo_unidad_ictpc.html#cb7-24" tabindex="-1"></a></span>
 <span id="cb7-25"><a href="modelo_unidad_ictpc.html#cb7-25" tabindex="-1"></a><span class="co"># Loading data ------------------------------------------------------------</span></span>
 <span id="cb7-26"><a href="modelo_unidad_ictpc.html#cb7-26" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">10000000</span>)</span>
-<span id="cb7-27"><a href="modelo_unidad_ictpc.html#cb7-27" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;input/2020/enigh/encuesta_sta.rds&quot;</span>)</span>
-<span id="cb7-28"><a href="modelo_unidad_ictpc.html#cb7-28" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
-<span id="cb7-29"><a href="modelo_unidad_ictpc.html#cb7-29" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
+<span id="cb7-27"><a href="modelo_unidad_ictpc.html#cb7-27" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>)</span>
+<span id="cb7-28"><a href="modelo_unidad_ictpc.html#cb7-28" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
+<span id="cb7-29"><a href="modelo_unidad_ictpc.html#cb7-29" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
 <span id="cb7-30"><a href="modelo_unidad_ictpc.html#cb7-30" tabindex="-1"></a></span>
 <span id="cb7-31"><a href="modelo_unidad_ictpc.html#cb7-31" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">names</span>(statelevel_predictors_df)</span>
 <span id="cb7-32"><a href="modelo_unidad_ictpc.html#cb7-32" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> cov_names[<span class="sc">!</span><span class="fu">grepl</span>(<span class="at">x =</span> cov_names,<span class="at">pattern =</span> <span class="st">&quot;^hog_|cve_mun&quot;</span>)]</span>
@@ -303,27 +307,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-109"><a href="modelo_unidad_ictpc.html#cb7-109" tabindex="-1"></a><span class="co">#--- Exporting Bayesian Multilevel Model Results ---#</span></span>
 <span id="cb7-110"><a href="modelo_unidad_ictpc.html#cb7-110" tabindex="-1"></a></span>
 <span id="cb7-111"><a href="modelo_unidad_ictpc.html#cb7-111" tabindex="-1"></a><span class="fu">saveRDS</span>(fit, </span>
-<span id="cb7-112"><a href="modelo_unidad_ictpc.html#cb7-112" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)</span>
+<span id="cb7-112"><a href="modelo_unidad_ictpc.html#cb7-112" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)</span>
 <span id="cb7-113"><a href="modelo_unidad_ictpc.html#cb7-113" tabindex="-1"></a></span>
 <span id="cb7-114"><a href="modelo_unidad_ictpc.html#cb7-114" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">plot =</span> fit<span class="sc">$</span>plot_densy,</span>
-<span id="cb7-115"><a href="modelo_unidad_ictpc.html#cb7-115" tabindex="-1"></a>       <span class="st">&quot;output/2020/plots/01_densidad_ictpc.png&quot;</span>,<span class="at">scale =</span> <span class="dv">3</span>)</span>
+<span id="cb7-115"><a href="modelo_unidad_ictpc.html#cb7-115" tabindex="-1"></a>       <span class="st">&quot;../output/2020/plots/01_densidad_ictpc.png&quot;</span>,<span class="at">scale =</span> <span class="dv">3</span>)</span>
 <span id="cb7-116"><a href="modelo_unidad_ictpc.html#cb7-116" tabindex="-1"></a>fit<span class="sc">$</span>plot_hist_post</span></code></pre></div>
 
 </div>
-
-
-
-
-
-
-
             </section>
 
           </div>
         </div>
       </div>
-<a href="validacion_encuestas.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="validacion_encuestas.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="modelo_unidad_py_ic_ali_nc.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -1,0 +1,147 @@
+# 07_Modelo_unidad_py_ic_ali_nc.R
+
+Para la ejecución del presente archivo, debe abrir el archivo **07_Modelo_unidad_py_ic_ali_nc.R** disponible en la ruta *Rcodes/2020/07_Modelo_unidad_py_ic_ali_nc.R*.
+
+Este script en R se centra en la creación de un modelo  multinivel para predecir la carencia en  alimentos nutritivos y de calidad , utilizando datos de encuestas y censos. Comienza limpiando el entorno de trabajo (`rm(list = ls())`) y cargando las librerías necesarias  para la integración con Python. Además, se importan los módulos `pandas` y las bibliotecas `sklearn.feature_selection` y `sklearn.ensemble` de Python. También se carga una fuente externa de modelos (`source("source/modelos_freq.R")`). Luego, se definen las variables para la agregación (`byAgrega`) y se aumenta el límite de memoria disponible. Las bases de datos necesarias (`encuesta_sta`, `censo_sta` y `statelevel_predictors_df`) se cargan, y se seleccionan las variables covariantes relevantes excluyendo aquellas que comienzan con `hog_` o `cve_mun`.
+
+El script incluye un paso comentado para la selección de características utilizando el método RFE de `caret` y Python, pero en esta versión, se listan explícitamente las variables seleccionadas (`variables_seleccionadas`) y se combinan con otras covariantes para formar `cov_names`. Luego, se construye la fórmula del modelo (`formula_model`), que incluye efectos aleatorios para `cve_mun`, `hlengua` y `discapacidad`, así como efectos fijos para las demás variables. Se ajusta el modelo utilizando la función `modelo_dummy`, que está definida en el archivo fuente cargado previamente. Los datos de entrada incluyen `encuesta_sta` (con una nueva variable `yk`), `statelevel_predictors_df`, `censo_sta` y la fórmula del modelo. Este enfoque permite una modelización robusta y ajustada a las especificaciones de los datos disponibles.
+
+Finalmente, los resultados del modelo se guardan en un archivo RDS (`fit_mrp_ic_ali_nc.rds`). Este paso asegura que los resultados del análisis estén disponibles para futuras referencias y análisis adicionales. Guardar los resultados en un archivo RDS facilita su recuperación y análisis posterior, permitiendo a los investigadores y analistas continuar trabajando con los resultados sin necesidad de recalcular el modelo cada vez. Además, se generan gráficos de densidad y histogramas de las distribuciones posteriores utilizando ggsave, lo que proporciona una visualización clara y comprensible de los resultados del modelo.
+
+
+``` r
+rm(list =ls())
+
+# Loading required libraries ----------------------------------------------
+
+library(patchwork)
+library(nortest)
+library(lme4)
+library(tidyverse)
+library(magrittr)
+library(caret)
+library(car)
+library(randomForest)
+library(reticulate)
+
+pd <- import("pandas")
+sklearn_fs <- import("sklearn.feature_selection")
+sklearn_ensemble <- import("sklearn.ensemble")
+
+
+source("source/modelos_freq.R")
+# Loading data ------------------------------------------------------------
+
+memory.limit(10000000)
+encuesta_sta <- readRDS("../input/2020/enigh/encuesta_sta.rds")
+censo_sta <- readRDS("../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds")
+statelevel_predictors_df <- readRDS("../input/2020/predictores/statelevel_predictors_df.rds")
+
+cov_names <- names(statelevel_predictors_df)
+cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
+
+## Selección de variables
+
+byAgrega <-
+  c("ent",
+    "cve_mun",
+    "area",
+    "sexo",
+    "edad",
+    "discapacidad",
+    "hlengua",
+    "nivel_edu" )
+
+
+# encuesta_sta2 <- encuesta_sta %>%   mutate(
+#   yk = as.factor(ifelse(ic_ali_nc == 1 ,1,0))) %>%
+#   inner_join(statelevel_predictors_df[, c("cve_mun",cov_names)])
+# 
+# # Convertir 'encuesta_sta2' a un dataframe de Python
+# encuesta_sta2_py <- pd$DataFrame(encuesta_sta2)
+# 
+# # Obtener 'X' y 'y' del dataframe de Python
+# X <- encuesta_sta2_py[cov_names]
+# y <- encuesta_sta2_py[['yk']]
+# 
+# # Crear el modelo de clasificación, por ejemplo, un Random Forest
+# modelo <- sklearn_ensemble$RandomForestClassifier()
+# 
+# # Crear el selector RFE con el modelo y el número de características a seleccionar
+# selector <- sklearn_fs$RFE(modelo, n_features_to_select = as.integer(10))
+# 
+# # Ajustar los datos
+# selector$fit(X, y)
+# # Obtener las variables seleccionadas
+# variables_seleccionadas <- X[selector$support_] %>% names()
+
+variables_seleccionadas <- c(
+  "porc_ing_ilpi_urb",
+  "pob_ind_rur",
+  "pob_ind_urb",
+  "porc_hogremesas_rur",
+  "porc_segsoc15",
+  "porc_ali15",
+  "plp15",
+  "pob_rur",
+  "altitud1000"
+)
+cov_names <- c(
+  "modifica_humana",  "acceso_hosp",           
+  "acceso_hosp_caminando",  "cubrimiento_cultivo",   
+  "cubrimiento_urbano",     "luces_nocturnas" ,
+  variables_seleccionadas
+)
+
+cov_registros <-
+  setdiff(
+    cov_names,
+    c(
+      "elec_mun20",
+      "elec_mun19",
+      "transf_gobpc_15_20",
+      "derhab_pea_15_20",
+      "vabpc_15_19" ,
+      "itlpis_15_20"  ,
+      "remespc_15_20",
+      "desem_15_20",
+      "porc_urb" ,  
+      "edad65mas_urb", 
+      "pob_tot" ,
+      "acc_muyalto" ,
+      "smg1",
+      "ql_porc_cpa_rur",
+      "ql_porc_cpa_urb"
+    )
+  )
+
+
+cov_registros <- paste0(cov_registros, collapse = " + ")
+
+formula_model <-
+  paste0(
+    "cbind(si, no) ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) +  nivel_edu + edad  + ent + area + sexo "
+    ,
+    " + ",
+    cov_registros
+  )
+
+
+
+
+fit <- modelo_dummy(
+  encuesta_sta = encuesta_sta %>%  
+    mutate(yk = ifelse(ic_ali_nc == 1 , 1, 0))  ,
+  predictors = statelevel_predictors_df,
+  censo_sta = censo_sta,
+  formula_mod = formula_model,
+  byAgrega = byAgrega
+)
+
+
+#--- Exporting Bayesian Multilevel Model Results ---#
+
+saveRDS(fit, 
+        file = "../output/2020/modelos/fit_mrp_ic_ali_nc.rds")
+```
+
