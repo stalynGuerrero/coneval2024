@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="estandarizar_muestra_cuestionario_ampliado.html"/>
-
+<link rel="next" href="validacion_encuestas.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -164,6 +164,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i><b>3</b> 02_Union_predictores.R</a></li>
 <li class="chapter" data-level="4" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i><b>4</b> 03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
 <li class="chapter" data-level="5" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i><b>5</b> 04_Armonizar_encuesta.R</a></li>
+<li class="chapter" data-level="6" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i><b>6</b> 05_Validacion_encuestas.R</a></li>
+<li class="chapter" data-level="7" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i><b>7</b> 06_Modelo_unidad_ictpc.R</a></li>
 <li class="divider"></li>
 <li><a Taller de instalación de capacidades en SAE </a></li>
 
@@ -186,7 +188,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="armonizar_encuesta.r" class="section level1 hasAnchor" number="5">
 <h1><span class="header-section-number">Capítulo 5</span> 04_Armonizar_encuesta.R<a href="armonizar_encuesta.html#armonizar_encuesta.r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Para la ejecución del presente análisis, se debe abrir el archivo <em>04_Armonizar_encuesta.R</em> disponible en la ruta <code>Rcodes/2020/04_Armonizar_encuesta.R</code>.</p>
+<p>Para la ejecución del presente archivo, debe abrir el archivo <strong>04_Armonizar_encuesta.R</strong> disponible en la ruta <em>Rcodes/2020/04_Armonizar_encuesta.R</em>.</p>
 <p>El código realiza un análisis completo de datos en varias etapas. Inicialmente, se eliminan todos los objetos del entorno de R para asegurar que el análisis comience con una pizarra limpia. Luego, se cargan las bibliotecas necesarias para el análisis, que incluyen herramientas para la manipulación de datos y la importación/exportación de archivos. A continuación, se leen las bases de datos del censo de personas 2020 y la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH), que se utilizan para identificar y verificar indicadores de carencias sociales. Posteriormente, se definen y validan las variables clave de la encuesta, como códigos de entidad, municipio, área, sexo, edad, nivel educativo, discapacidad y lengua indígena. Luego, se estandarizan las variables de la encuesta para que coincidan con las del censo, se filtran los datos para eliminar inconsistencias, y se guarda el conjunto de datos estandarizado. Además, se actualiza la tabla censal utilizando la técnica de calibración IPFP (Iterative Proportional Fitting Procedure) para asegurar que las distribuciones marginales de las variables estandarizadas coincidan con las del censo. Finalmente, se generan histogramas y gráficos de dispersión para visualizar los resultados de la calibración y se guarda el conjunto de datos ampliado.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="armonizar_encuesta.html#cb5-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
 <span id="cb5-2"><a href="armonizar_encuesta.html#cb5-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
@@ -449,20 +451,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-259"><a href="armonizar_encuesta.html#cb5-259" tabindex="-1"></a><span class="fu">saveRDS</span>(encuesta_ampliada, <span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span></code></pre></div>
 
 </div>
-
-
-
-
-
-
-
             </section>
 
           </div>
         </div>
       </div>
-<a href="estandarizar_muestra_cuestionario_ampliado.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="estandarizar_muestra_cuestionario_ampliado.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="validacion_encuestas.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

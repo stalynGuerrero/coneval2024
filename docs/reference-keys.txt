@@ -3,3 +3,5 @@ descarga_satelitales.r
 union_predictores.r
 estandarizar_muestra_cuestionario_ampliado.r
 armonizar_encuesta.r
+validacion_encuestas.r
+modelo_unidad_ictpc.r
