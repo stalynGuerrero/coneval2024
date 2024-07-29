@@ -380,7 +380,213 @@ cve_mun
 <p>Finalmente, la base de datos consolidada <code>statelevel_predictors</code> se guarda en un archivo RDS para su uso posterior, utilizando <code>saveRDS()</code>. Este archivo es almacenado en la ruta especificada, permitiendo que los datos procesados estén disponibles para futuros análisis sin necesidad de repetir los pasos de limpieza y combinación.</p>
 <p>```{r. eval = FALSE}
 saveRDS(statelevel_predictors,file = “../input/2020/predictores/statelevel_predictors_df.rds”)</p>
-<p>```</p>
+<pre><code>
+
+&lt;!--chapter:end:02_Union_predictores.qmd--&gt;
+
+# Estandarizar muestra cuestionario ampliado. 
+
+
+
+En esta sección se realiza la estandarización del formulario ampliado. El objetivo de este apartado es armonizar la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH) con la información disponible en la muestra ampliada del censo. De esta manera, se busca obtener una coincidencia precisa entre las variables predictoras de la ENIGH y las de la muestra ampliada, asegurando la comparabilidad y coherencia entre ambas fuentes de datos.
+
+# Limpieza del entorno de R {.unnumbered}
+
+Inicialmente se eliminan todos los objetos del entorno de R para asegurar que el análisis comience con una pizarra limpia.
+
+
+``` r
+rm(list = ls())</code></pre>
+</div>
+<div id="carga-de-librerías-1" class="section level4 unnumbered hasAnchor">
+<h4>Carga de librerías<a href="integración-de-bases-de-datos-predictoras..html#carga-de-librerías-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se cargan las bibliotecas necesarias para el análisis de datos. Estas bibliotecas proporcionan herramientas para la manipulación de datos, importación/exportación de archivos y otras funciones útiles:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="integración-de-bases-de-datos-predictoras..html#cb38-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb38-2"><a href="integración-de-bases-de-datos-predictoras..html#cb38-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb38-3"><a href="integración-de-bases-de-datos-predictoras..html#cb38-3" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb38-4"><a href="integración-de-bases-de-datos-predictoras..html#cb38-4" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb38-5"><a href="integración-de-bases-de-datos-predictoras..html#cb38-5" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
+<span id="cb38-6"><a href="integración-de-bases-de-datos-predictoras..html#cb38-6" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb38-7"><a href="integración-de-bases-de-datos-predictoras..html#cb38-7" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb38-8"><a href="integración-de-bases-de-datos-predictoras..html#cb38-8" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
+<span id="cb38-9"><a href="integración-de-bases-de-datos-predictoras..html#cb38-9" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb38-10"><a href="integración-de-bases-de-datos-predictoras..html#cb38-10" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div style="page-break-after: always;"></div>
+</div>
+<div id="lectura-de-bases" class="section level4 unnumbered hasAnchor">
+<h4>Lectura de Bases<a href="integración-de-bases-de-datos-predictoras..html#lectura-de-bases" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se leen las bases de datos de la muestra ampliada y ENIGH. Estas bases se utilizarán para identificar y armonizar variables:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="integración-de-bases-de-datos-predictoras..html#cb39-1" tabindex="-1"></a>muestra_cuestionario_ampliado <span class="ot">&lt;-</span></span>
+<span id="cb39-2"><a href="integración-de-bases-de-datos-predictoras..html#cb39-2" tabindex="-1"></a>  <span class="fu">readRDS</span>(</span>
+<span id="cb39-3"><a href="integración-de-bases-de-datos-predictoras..html#cb39-3" tabindex="-1"></a>    <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span></span>
+<span id="cb39-4"><a href="integración-de-bases-de-datos-predictoras..html#cb39-4" tabindex="-1"></a>  )</span>
+<span id="cb39-5"><a href="integración-de-bases-de-datos-predictoras..html#cb39-5" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span>
+<span id="cb39-6"><a href="integración-de-bases-de-datos-predictoras..html#cb39-6" tabindex="-1"></a>muestra_cuestionario_ampliado <span class="sc">%&gt;%</span> <span class="fu">dim</span>()</span></code></pre></div>
+</div>
+<div id="identificación-de-indicadores" class="section level4 unnumbered hasAnchor">
+<h4>Identificación de Indicadores<a href="integración-de-bases-de-datos-predictoras..html#identificación-de-indicadores" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se identifican y verifican diferentes indicadores del censo. Estos indicadores se relacionan con carencias en acceso a servicios de salud, calidad de vivienda, servicios básicos en la vivienda y rezago educativo:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="integración-de-bases-de-datos-predictoras..html#cb40-1" tabindex="-1"></a><span class="co"># Indicador de carencia por acceso a los servicios de salud (CENSO)</span></span>
+<span id="cb40-2"><a href="integración-de-bases-de-datos-predictoras..html#cb40-2" tabindex="-1"></a><span class="fu">head</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_asalud)</span>
+<span id="cb40-3"><a href="integración-de-bases-de-datos-predictoras..html#cb40-3" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="integración-de-bases-de-datos-predictoras..html#cb40-4" tabindex="-1"></a><span class="co"># Carencia por la calidad y espacios de la vivienda. (CENSO)</span></span>
+<span id="cb40-5"><a href="integración-de-bases-de-datos-predictoras..html#cb40-5" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_cv)<span class="sc">$</span>label   </span>
+<span id="cb40-6"><a href="integración-de-bases-de-datos-predictoras..html#cb40-6" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="integración-de-bases-de-datos-predictoras..html#cb40-7" tabindex="-1"></a><span class="co"># Carencia por servicios básicos en la vivienda. (CENSO)</span></span>
+<span id="cb40-8"><a href="integración-de-bases-de-datos-predictoras..html#cb40-8" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_sbv)<span class="sc">$</span>label</span>
+<span id="cb40-9"><a href="integración-de-bases-de-datos-predictoras..html#cb40-9" tabindex="-1"></a></span>
+<span id="cb40-10"><a href="integración-de-bases-de-datos-predictoras..html#cb40-10" tabindex="-1"></a><span class="co"># Carencia por rezago educativo. </span></span>
+<span id="cb40-11"><a href="integración-de-bases-de-datos-predictoras..html#cb40-11" tabindex="-1"></a><span class="fu">attributes</span>( muestra_cuestionario_ampliado<span class="sc">$</span>ic_rezedu)<span class="sc">$</span>label</span></code></pre></div>
+</div>
+<div id="validaciones-para-la-armonización-de-variables" class="section level4 unnumbered hasAnchor">
+<h4>Validaciones para la Armonización de Variables<a href="integración-de-bases-de-datos-predictoras..html#validaciones-para-la-armonización-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se validan las variables para asegurar la armonización entre las diferentes bases de datos, verificando que los códigos y etiquetas sean consistentes entre el censo y la encuesta. Se comparan los códigos de entidad y municipio entre la encuesta y el censo para asegurar la consistencia; Se validan los códigos que representan áreas urbanas y rurales; Se comparan los códigos de sexo, edad, nivel educativo, discapacidad y habla dialecto o lengua indígena entre la encuesta y el censo.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="integración-de-bases-de-datos-predictoras..html#cb41-1" tabindex="-1"></a><span class="do">## codigos de ent y municipio </span></span>
+<span id="cb41-2"><a href="integración-de-bases-de-datos-predictoras..html#cb41-2" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="integración-de-bases-de-datos-predictoras..html#cb41-3" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb41-4"><a href="integración-de-bases-de-datos-predictoras..html#cb41-4" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>ent) <span class="co"># cod_dam</span></span>
+<span id="cb41-5"><a href="integración-de-bases-de-datos-predictoras..html#cb41-5" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>cve_mun) <span class="co"># cod_mun</span></span>
+<span id="cb41-6"><a href="integración-de-bases-de-datos-predictoras..html#cb41-6" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="integración-de-bases-de-datos-predictoras..html#cb41-7" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb41-8"><a href="integración-de-bases-de-datos-predictoras..html#cb41-8" tabindex="-1"></a><span class="fu">n_distinct</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ent)</span>
+<span id="cb41-9"><a href="integración-de-bases-de-datos-predictoras..html#cb41-9" tabindex="-1"></a><span class="fu">n_distinct</span>(muestra_cuestionario_ampliado<span class="sc">$</span>cve_mun)</span>
+<span id="cb41-10"><a href="integración-de-bases-de-datos-predictoras..html#cb41-10" tabindex="-1"></a></span>
+<span id="cb41-11"><a href="integración-de-bases-de-datos-predictoras..html#cb41-11" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb41-12"><a href="integración-de-bases-de-datos-predictoras..html#cb41-12" tabindex="-1"></a></span>
+<span id="cb41-13"><a href="integración-de-bases-de-datos-predictoras..html#cb41-13" tabindex="-1"></a><span class="do">## area </span></span>
+<span id="cb41-14"><a href="integración-de-bases-de-datos-predictoras..html#cb41-14" tabindex="-1"></a></span>
+<span id="cb41-15"><a href="integración-de-bases-de-datos-predictoras..html#cb41-15" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb41-16"><a href="integración-de-bases-de-datos-predictoras..html#cb41-16" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>rururb) </span>
+<span id="cb41-17"><a href="integración-de-bases-de-datos-predictoras..html#cb41-17" tabindex="-1"></a></span>
+<span id="cb41-18"><a href="integración-de-bases-de-datos-predictoras..html#cb41-18" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb41-19"><a href="integración-de-bases-de-datos-predictoras..html#cb41-19" tabindex="-1"></a><span class="fu">table</span>(muestra_cuestionario_ampliado<span class="sc">$</span>rururb, <span class="at">useNA =</span> <span class="st">&quot;a&quot;</span>)</span>
+<span id="cb41-20"><a href="integración-de-bases-de-datos-predictoras..html#cb41-20" tabindex="-1"></a><span class="co"># 0 Urbano</span></span>
+<span id="cb41-21"><a href="integración-de-bases-de-datos-predictoras..html#cb41-21" tabindex="-1"></a><span class="co"># 1 Rural</span></span>
+<span id="cb41-22"><a href="integración-de-bases-de-datos-predictoras..html#cb41-22" tabindex="-1"></a></span>
+<span id="cb41-23"><a href="integración-de-bases-de-datos-predictoras..html#cb41-23" tabindex="-1"></a></span>
+<span id="cb41-24"><a href="integración-de-bases-de-datos-predictoras..html#cb41-24" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb41-25"><a href="integración-de-bases-de-datos-predictoras..html#cb41-25" tabindex="-1"></a></span>
+<span id="cb41-26"><a href="integración-de-bases-de-datos-predictoras..html#cb41-26" tabindex="-1"></a><span class="do">## Sexo </span></span>
+<span id="cb41-27"><a href="integración-de-bases-de-datos-predictoras..html#cb41-27" tabindex="-1"></a></span>
+<span id="cb41-28"><a href="integración-de-bases-de-datos-predictoras..html#cb41-28" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb41-29"><a href="integración-de-bases-de-datos-predictoras..html#cb41-29" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>sexo) </span>
+<span id="cb41-30"><a href="integración-de-bases-de-datos-predictoras..html#cb41-30" tabindex="-1"></a><span class="co"># 2 Mujer</span></span>
+<span id="cb41-31"><a href="integración-de-bases-de-datos-predictoras..html#cb41-31" tabindex="-1"></a><span class="co"># 1 Hombre</span></span>
+<span id="cb41-32"><a href="integración-de-bases-de-datos-predictoras..html#cb41-32" tabindex="-1"></a></span>
+<span id="cb41-33"><a href="integración-de-bases-de-datos-predictoras..html#cb41-33" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb41-34"><a href="integración-de-bases-de-datos-predictoras..html#cb41-34" tabindex="-1"></a><span class="fu">table</span>(muestra_cuestionario_ampliado<span class="sc">$</span>sexo, <span class="at">useNA =</span> <span class="st">&quot;a&quot;</span>)</span>
+<span id="cb41-35"><a href="integración-de-bases-de-datos-predictoras..html#cb41-35" tabindex="-1"></a><span class="co"># 0 Mujer</span></span>
+<span id="cb41-36"><a href="integración-de-bases-de-datos-predictoras..html#cb41-36" tabindex="-1"></a><span class="co"># 1 Hombre</span></span>
+<span id="cb41-37"><a href="integración-de-bases-de-datos-predictoras..html#cb41-37" tabindex="-1"></a></span>
+<span id="cb41-38"><a href="integración-de-bases-de-datos-predictoras..html#cb41-38" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb41-39"><a href="integración-de-bases-de-datos-predictoras..html#cb41-39" tabindex="-1"></a><span class="do">## edad </span></span>
+<span id="cb41-40"><a href="integración-de-bases-de-datos-predictoras..html#cb41-40" tabindex="-1"></a></span>
+<span id="cb41-41"><a href="integración-de-bases-de-datos-predictoras..html#cb41-41" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb41-42"><a href="integración-de-bases-de-datos-predictoras..html#cb41-42" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>edad) </span>
+<span id="cb41-43"><a href="integración-de-bases-de-datos-predictoras..html#cb41-43" tabindex="-1"></a></span>
+<span id="cb41-44"><a href="integración-de-bases-de-datos-predictoras..html#cb41-44" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb41-45"><a href="integración-de-bases-de-datos-predictoras..html#cb41-45" tabindex="-1"></a><span class="fu">head</span>(muestra_cuestionario_ampliado<span class="sc">$</span>edad_cat)</span>
+<span id="cb41-46"><a href="integración-de-bases-de-datos-predictoras..html#cb41-46" tabindex="-1"></a></span>
+<span id="cb41-47"><a href="integración-de-bases-de-datos-predictoras..html#cb41-47" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb41-48"><a href="integración-de-bases-de-datos-predictoras..html#cb41-48" tabindex="-1"></a><span class="do">## nivel_edu # </span></span>
+<span id="cb41-49"><a href="integración-de-bases-de-datos-predictoras..html#cb41-49" tabindex="-1"></a></span>
+<span id="cb41-50"><a href="integración-de-bases-de-datos-predictoras..html#cb41-50" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb41-51"><a href="integración-de-bases-de-datos-predictoras..html#cb41-51" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>niv_ed) </span>
+<span id="cb41-52"><a href="integración-de-bases-de-datos-predictoras..html#cb41-52" tabindex="-1"></a></span>
+<span id="cb41-53"><a href="integración-de-bases-de-datos-predictoras..html#cb41-53" tabindex="-1"></a><span class="co"># 0 [Con primaria incompleta o menos]                 </span></span>
+<span id="cb41-54"><a href="integración-de-bases-de-datos-predictoras..html#cb41-54" tabindex="-1"></a><span class="co"># 1 [Primaria completa o secundaria incompleta]       </span></span>
+<span id="cb41-55"><a href="integración-de-bases-de-datos-predictoras..html#cb41-55" tabindex="-1"></a><span class="co"># 2 [Secundaria completa o media superior incompleta] </span></span>
+<span id="cb41-56"><a href="integración-de-bases-de-datos-predictoras..html#cb41-56" tabindex="-1"></a><span class="co"># 3 [Media superior completa o mayor nivel educativo] </span></span>
+<span id="cb41-57"><a href="integración-de-bases-de-datos-predictoras..html#cb41-57" tabindex="-1"></a><span class="co"># NA  Niños de 0 a 3 años</span></span>
+<span id="cb41-58"><a href="integración-de-bases-de-datos-predictoras..html#cb41-58" tabindex="-1"></a></span>
+<span id="cb41-59"><a href="integración-de-bases-de-datos-predictoras..html#cb41-59" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb41-60"><a href="integración-de-bases-de-datos-predictoras..html#cb41-60" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>niv_ed)</span>
+<span id="cb41-61"><a href="integración-de-bases-de-datos-predictoras..html#cb41-61" tabindex="-1"></a></span>
+<span id="cb41-62"><a href="integración-de-bases-de-datos-predictoras..html#cb41-62" tabindex="-1"></a><span class="co"># 0 [Con primaria incompleta o menos]                 </span></span>
+<span id="cb41-63"><a href="integración-de-bases-de-datos-predictoras..html#cb41-63" tabindex="-1"></a><span class="co"># 1 [Primaria completa o secundaria incompleta]       </span></span>
+<span id="cb41-64"><a href="integración-de-bases-de-datos-predictoras..html#cb41-64" tabindex="-1"></a><span class="co"># 2 [Secundaria completa o media superior incompleta] </span></span>
+<span id="cb41-65"><a href="integración-de-bases-de-datos-predictoras..html#cb41-65" tabindex="-1"></a><span class="co"># 3 [Media superior completa o mayor nivel educativo] </span></span>
+<span id="cb41-66"><a href="integración-de-bases-de-datos-predictoras..html#cb41-66" tabindex="-1"></a><span class="co"># NA  Niños de 0 a 3 años</span></span>
+<span id="cb41-67"><a href="integración-de-bases-de-datos-predictoras..html#cb41-67" tabindex="-1"></a></span>
+<span id="cb41-68"><a href="integración-de-bases-de-datos-predictoras..html#cb41-68" tabindex="-1"></a></span>
+<span id="cb41-69"><a href="integración-de-bases-de-datos-predictoras..html#cb41-69" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb41-70"><a href="integración-de-bases-de-datos-predictoras..html#cb41-70" tabindex="-1"></a><span class="do">## Discapacidad # </span></span>
+<span id="cb41-71"><a href="integración-de-bases-de-datos-predictoras..html#cb41-71" tabindex="-1"></a></span>
+<span id="cb41-72"><a href="integración-de-bases-de-datos-predictoras..html#cb41-72" tabindex="-1"></a></span>
+<span id="cb41-73"><a href="integración-de-bases-de-datos-predictoras..html#cb41-73" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb41-74"><a href="integración-de-bases-de-datos-predictoras..html#cb41-74" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>discap) </span>
+<span id="cb41-75"><a href="integración-de-bases-de-datos-predictoras..html#cb41-75" tabindex="-1"></a></span>
+<span id="cb41-76"><a href="integración-de-bases-de-datos-predictoras..html#cb41-76" tabindex="-1"></a><span class="do">## censo</span></span>
+<span id="cb41-77"><a href="integración-de-bases-de-datos-predictoras..html#cb41-77" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>discap) </span>
+<span id="cb41-78"><a href="integración-de-bases-de-datos-predictoras..html#cb41-78" tabindex="-1"></a></span>
+<span id="cb41-79"><a href="integración-de-bases-de-datos-predictoras..html#cb41-79" tabindex="-1"></a></span>
+<span id="cb41-80"><a href="integración-de-bases-de-datos-predictoras..html#cb41-80" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb41-81"><a href="integración-de-bases-de-datos-predictoras..html#cb41-81" tabindex="-1"></a><span class="do">## Habla dialecto o lengua indígena</span></span>
+<span id="cb41-82"><a href="integración-de-bases-de-datos-predictoras..html#cb41-82" tabindex="-1"></a></span>
+<span id="cb41-83"><a href="integración-de-bases-de-datos-predictoras..html#cb41-83" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb41-84"><a href="integración-de-bases-de-datos-predictoras..html#cb41-84" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>hli) </span>
+<span id="cb41-85"><a href="integración-de-bases-de-datos-predictoras..html#cb41-85" tabindex="-1"></a></span>
+<span id="cb41-86"><a href="integración-de-bases-de-datos-predictoras..html#cb41-86" tabindex="-1"></a></span>
+<span id="cb41-87"><a href="integración-de-bases-de-datos-predictoras..html#cb41-87" tabindex="-1"></a><span class="do">## censo</span></span>
+<span id="cb41-88"><a href="integración-de-bases-de-datos-predictoras..html#cb41-88" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>hli) </span></code></pre></div>
+</div>
+<div id="estandarización-del-censo" class="section level4 unnumbered hasAnchor">
+<h4>Estandarización del Censo<a href="integración-de-bases-de-datos-predictoras..html#estandarización-del-censo" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se estandarizan las variables del censo para que coincidan con las de la encuesta, permitiendo una comparación y análisis coherentes:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="integración-de-bases-de-datos-predictoras..html#cb42-1" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> muestra_cuestionario_ampliado <span class="sc">%&gt;%</span></span>
+<span id="cb42-2"><a href="integración-de-bases-de-datos-predictoras..html#cb42-2" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb42-3"><a href="integración-de-bases-de-datos-predictoras..html#cb42-3" tabindex="-1"></a>    ent,</span>
+<span id="cb42-4"><a href="integración-de-bases-de-datos-predictoras..html#cb42-4" tabindex="-1"></a>    cve_mun,</span>
+<span id="cb42-5"><a href="integración-de-bases-de-datos-predictoras..html#cb42-5" tabindex="-1"></a>    upm,</span>
+<span id="cb42-6"><a href="integración-de-bases-de-datos-predictoras..html#cb42-6" tabindex="-1"></a>    estrato,</span>
+<span id="cb42-7"><a href="integración-de-bases-de-datos-predictoras..html#cb42-7" tabindex="-1"></a>    <span class="at">area =</span> <span class="fu">as.character</span>(rururb),</span>
+<span id="cb42-8"><a href="integración-de-bases-de-datos-predictoras..html#cb42-8" tabindex="-1"></a>    <span class="at">sexo =</span> <span class="fu">if_else</span>(sexo <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;2&quot;</span>),</span>
+<span id="cb42-9"><a href="integración-de-bases-de-datos-predictoras..html#cb42-9" tabindex="-1"></a>    <span class="at">edad =</span> <span class="fu">as.character</span>(edad_cat),</span>
+<span id="cb42-10"><a href="integración-de-bases-de-datos-predictoras..html#cb42-10" tabindex="-1"></a>    <span class="at">nivel_edu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(niv_ed, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb42-11"><a href="integración-de-bases-de-datos-predictoras..html#cb42-11" tabindex="-1"></a>    <span class="at">discapacidad =</span> <span class="fu">as.character</span>(discap),</span>
+<span id="cb42-12"><a href="integración-de-bases-de-datos-predictoras..html#cb42-12" tabindex="-1"></a>    <span class="at">discapacidad =</span> <span class="fu">if_else</span>(<span class="fu">is.na</span>(discapacidad), <span class="st">&quot;0&quot;</span>, discapacidad),</span>
+<span id="cb42-13"><a href="integración-de-bases-de-datos-predictoras..html#cb42-13" tabindex="-1"></a>    <span class="at">hlengua =</span> <span class="fu">as.character</span>(hli),</span>
+<span id="cb42-14"><a href="integración-de-bases-de-datos-predictoras..html#cb42-14" tabindex="-1"></a>    <span class="at">hlengua =</span> <span class="fu">if_else</span>(<span class="fu">is.na</span>(hlengua), <span class="st">&quot;0&quot;</span>, hlengua),</span>
+<span id="cb42-15"><a href="integración-de-bases-de-datos-predictoras..html#cb42-15" tabindex="-1"></a>    </span>
+<span id="cb42-16"><a href="integración-de-bases-de-datos-predictoras..html#cb42-16" tabindex="-1"></a>    <span class="at">ic_asalud=</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_asalud, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb42-17"><a href="integración-de-bases-de-datos-predictoras..html#cb42-17" tabindex="-1"></a>    <span class="at">ic_cv =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_cv, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb42-18"><a href="integración-de-bases-de-datos-predictoras..html#cb42-18" tabindex="-1"></a>    <span class="at">ic_sbv =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_sbv, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb42-19"><a href="integración-de-bases-de-datos-predictoras..html#cb42-19" tabindex="-1"></a>    <span class="at">ic_rezedu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_rezedu, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb42-20"><a href="integración-de-bases-de-datos-predictoras..html#cb42-20" tabindex="-1"></a>    factor</span>
+<span id="cb42-21"><a href="integración-de-bases-de-datos-predictoras..html#cb42-21" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-22"><a href="integración-de-bases-de-datos-predictoras..html#cb42-22" tabindex="-1"></a>  <span class="fu">filter</span>( <span class="sc">!</span>cve_mun <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;04012&quot;</span>, <span class="st">&quot;07125&quot;</span>, <span class="st">&quot;29048&quot;</span>))</span></code></pre></div>
+<p>El siguiente bloque de código tiene como objetivo filtrar los datos del censo para eliminar registros con valores faltantes en variables clave y calcular la proporción de los factores de expansión antes y después de la filtración.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="integración-de-bases-de-datos-predictoras..html#cb43-1" tabindex="-1"></a>censo_sta2 <span class="ot">&lt;-</span> censo_sta <span class="sc">%&gt;%</span></span>
+<span id="cb43-2"><a href="integración-de-bases-de-datos-predictoras..html#cb43-2" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb43-3"><a href="integración-de-bases-de-datos-predictoras..html#cb43-3" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(nivel_edu),</span>
+<span id="cb43-4"><a href="integración-de-bases-de-datos-predictoras..html#cb43-4" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(edad),</span>
+<span id="cb43-5"><a href="integración-de-bases-de-datos-predictoras..html#cb43-5" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_sbv),</span>
+<span id="cb43-6"><a href="integración-de-bases-de-datos-predictoras..html#cb43-6" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_cv),</span>
+<span id="cb43-7"><a href="integración-de-bases-de-datos-predictoras..html#cb43-7" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_rezedu),</span>
+<span id="cb43-8"><a href="integración-de-bases-de-datos-predictoras..html#cb43-8" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_asalud),</span>
+<span id="cb43-9"><a href="integración-de-bases-de-datos-predictoras..html#cb43-9" tabindex="-1"></a>  )</span>
+<span id="cb43-10"><a href="integración-de-bases-de-datos-predictoras..html#cb43-10" tabindex="-1"></a></span>
+<span id="cb43-11"><a href="integración-de-bases-de-datos-predictoras..html#cb43-11" tabindex="-1"></a><span class="fu">sum</span>(censo_sta2<span class="sc">$</span>factor) <span class="sc">/</span> <span class="fu">sum</span>(censo_sta<span class="sc">$</span>factor)</span></code></pre></div>
+<p>Se guarda el conjunto de datos estandarizado:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="integración-de-bases-de-datos-predictoras..html#cb44-1" tabindex="-1"></a><span class="fu">saveRDS</span>(censo_sta2,<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span></code></pre></div>
+<p>Se resumen los datos por grupo:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="integración-de-bases-de-datos-predictoras..html#cb45-1" tabindex="-1"></a>censo_sta2 <span class="sc">%&lt;&gt;%</span> <span class="fu">group_by</span>(</span>
+<span id="cb45-2"><a href="integración-de-bases-de-datos-predictoras..html#cb45-2" tabindex="-1"></a>  ent,</span>
+<span id="cb45-3"><a href="integración-de-bases-de-datos-predictoras..html#cb45-3" tabindex="-1"></a>  cve_mun,</span>
+<span id="cb45-4"><a href="integración-de-bases-de-datos-predictoras..html#cb45-4" tabindex="-1"></a>  area,</span>
+<span id="cb45-5"><a href="integración-de-bases-de-datos-predictoras..html#cb45-5" tabindex="-1"></a>  hlengua,</span>
+<span id="cb45-6"><a href="integración-de-bases-de-datos-predictoras..html#cb45-6" tabindex="-1"></a>  sexo,</span>
+<span id="cb45-7"><a href="integración-de-bases-de-datos-predictoras..html#cb45-7" tabindex="-1"></a>  edad,</span>
+<span id="cb45-8"><a href="integración-de-bases-de-datos-predictoras..html#cb45-8" tabindex="-1"></a>  nivel_edu,</span>
+<span id="cb45-9"><a href="integración-de-bases-de-datos-predictoras..html#cb45-9" tabindex="-1"></a>  discapacidad,</span>
+<span id="cb45-10"><a href="integración-de-bases-de-datos-predictoras..html#cb45-10" tabindex="-1"></a>  ic_asalud,</span>
+<span id="cb45-11"><a href="integración-de-bases-de-datos-predictoras..html#cb45-11" tabindex="-1"></a>  ic_cv,</span>
+<span id="cb45-12"><a href="integración-de-bases-de-datos-predictoras..html#cb45-12" tabindex="-1"></a>  ic_sbv,</span>
+<span id="cb45-13"><a href="integración-de-bases-de-datos-predictoras..html#cb45-13" tabindex="-1"></a>  ic_rezedu</span>
+<span id="cb45-14"><a href="integración-de-bases-de-datos-predictoras..html#cb45-14" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb45-15"><a href="integración-de-bases-de-datos-predictoras..html#cb45-15" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) </span></code></pre></div>
+<p>Se guarda el conjunto de datos resumido:</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="integración-de-bases-de-datos-predictoras..html#cb46-1" tabindex="-1"></a><span class="fu">saveRDS</span>(censo_sta2, <span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>
@@ -428,7 +634,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/psirusteam/2023MEXsae/02_Union_predictores.qmd",
+"link": "https://github.com/psirusteam/2023MEXsae/03_Estandarizar_muestra_cuestionario_ampliado..qmd",
 "text": "Edit"
 },
 "history": {

@@ -30,7 +30,7 @@ output:
 
 
 
-# Introducción
+# Introducción {-}
 
 Este manual se desarrolla como una herramienta para detallar el paso a paso seguido por la Comisión Económica para América Latina y el Caribe (CEPAL) en la obtención de estimaciones del indicador multidimensional de pobreza en México. El proceso utiliza técnicas de estimación de áreas pequeñas y métodos de Monte Carlo. Aunque el procedimiento se describe con los códigos de 2020, el proceso para 2015 es similar, con pequeñas variaciones. Sin embargo, la esencia y los principios fundamentales son los mismos en ambos periodos.
 
@@ -38,13 +38,13 @@ Este manual se desarrolla como una herramienta para detallar el paso a paso segu
 
 -   En el siguiente enlace encontrará las rutinas de R desarrolladas para la estimación del IPM [Descargar](https://git.cepal.org/ATsae/coneval2024)
 
-# Librerias de *R* y otros insumos
+# Librerias de *R* y otros insumos {-}
 
 En el siguiente apartado, se describe el conjunto de librerías utilizadas para el desarrollo de este proyecto, así como una breve descripción de las bases de datos empleadas.
 
-## Librerías Utilizadas
+## Librerías Utilizadas {-}
 
-### Manipulación y Transformación de Datos
+### Manipulación y Transformación de Datos {-}
 
 -   **`tidyverse`**: Conjunto de paquetes (incluyendo `dplyr`, `ggplot2`, `tibble`, `readr`, `purrr`, `tidyr`, y `stringr`) que facilitan la manipulación y visualización de datos de manera coherente y eficiente.
 -   **`data.table`**: Proporciona herramientas rápidas y eficientes para la manipulación de grandes conjuntos de datos tabulares.
@@ -55,13 +55,13 @@ En el siguiente apartado, se describe el conjunto de librerías utilizadas para 
 -   **`stringr`**: Simplifica la manipulación de cadenas de caracteres mediante funciones intuitivas.
 -   **`labelled`**: Facilita la manipulación de datos etiquetados, comúnmente utilizados en encuestas y datos sociológicos.
 
-### Lectura y Escritura de Datos
+### Lectura y Escritura de Datos {-}
 
 -   **`openxlsx`**: Permite la creación, lectura y manipulación de archivos Excel sin depender de software adicional.
 -   **`haven`**: Permite leer y escribir datos en formatos usados por otros programas estadísticos como SPSS, Stata y SAS.
 -   **`readstata13`**: Especializado en la lectura de archivos Stata versión 13, asegurando compatibilidad con datos antiguos.
 
-### Análisis de Datos de Encuestas
+### Análisis de Datos de Encuestas {-}
 
 -   **`survey`**: Proporciona herramientas para el análisis de datos de encuestas complejas, incluyendo ponderaciones y diseños de muestras.
 -   **`srvyr`**: Ofrece una interfaz más amigable basada en `dplyr` para trabajar con el paquete `survey`.
@@ -69,7 +69,7 @@ En el siguiente apartado, se describe el conjunto de librerías utilizadas para 
 -   **`samplesize4surveys`**: Facilita el cálculo del tamaño de muestra necesario para encuestas, asegurando resultados estadísticamente significativos.
 -   **`convey`**: Extiende `survey` para analizar medidas de desigualdad y pobreza en datos de encuestas.
 
-### Modelado y Análisis Estadístico
+### Modelado y Análisis Estadístico {-}
 
 -   **`rstan`**: Interfaz de R para Stan, que realiza modelado bayesiano avanzado, permitiendo la creación de modelos complejos.
 -   **`lme4`**: Proporciona herramientas para ajustar y analizar modelos lineales y no lineales de efectos mixtos.
@@ -78,7 +78,7 @@ En el siguiente apartado, se describe el conjunto de librerías utilizadas para 
 -   **`caret`**: Ofrece una amplia gama de herramientas para la creación y validación de modelos de aprendizaje automático.
 -   **`nortest`**: Contiene pruebas para evaluar la normalidad de los datos, esencial en muchos análisis estadísticos.
 
-### Visualización de Datos
+### Visualización de Datos {-}
 
 -   **`ggplot2`**: Parte del `tidyverse`, es una potente herramienta para la visualización de datos basada en la gramática de gráficos.
 -   **`DataExplorer`**: Simplifica la exploración inicial y la generación de reportes de datos.
@@ -87,16 +87,16 @@ En el siguiente apartado, se describe el conjunto de librerías utilizadas para 
 -   **`tmap`**: Especializado en la creación de mapas temáticos, útil para visualizar datos geoespaciales.
 -   **`sf`**: Proporciona una estructura eficiente para manipular datos espaciales, facilitando la integración con `ggplot2` y `tmap`.
 
-### Informes y Reproducibilidad
+### Informes y Reproducibilidad {-}
 
 -   **`printr`**: Mejora el formato de la impresión de resultados en R Markdown, haciendo los informes más legibles.
 -   **`knitr`**: Herramienta clave para la creación de informes dinámicos y reproducibles, integrando código y texto.
 
-### Integración con Otros Lenguajes
+### Integración con Otros Lenguajes {-}
 
 -   **`reticulate`**: Facilita la interoperabilidad entre R y Python, permitiendo ejecutar código de Python dentro de un entorno de R.
 
-## Bases de Datos Utilizadas
+## Bases de Datos Utilizadas {-}
 
 Para este proyecto, se emplearon diversas bases de datos que incluyen:
 
@@ -107,7 +107,7 @@ Para este proyecto, se emplearon diversas bases de datos que incluyen:
 
 Estas librerías y bases de datos son fundamentales para la implementación de la metodología de estimación del Índice de Pobreza Multidimensional (IPM) y otras carencias en los distintos municipios de México.
 
-## Estructura del Proyecto
+## Estructura del Proyecto {-}
 
 Para el desarrollo de los scripts, se estructuró un proyecto en *R* que cuenta con la siguiente organización:
 

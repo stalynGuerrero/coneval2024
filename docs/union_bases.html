@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 1 00_union_bases.R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024</title>
+  <meta name="description" content="Manual de procesamiento." />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 1 00_union_bases.R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Manual de procesamiento." />
+  <meta name="github-repo" content="psirusteam/coneval" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 1 00_union_bases.R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
+  
+  <meta name="twitter:description" content="Manual de procesamiento." />
+  
+
+<meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
+
+
+<meta name="date" content="2024-07-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="estructura-del-proyecto.html"/>
+<link rel="next" href="descarga_satelitales.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Taller de instalación de capacidades en SAE</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introducción</a>
+<ul>
+<li class="chapter" data-level="" data-path="respositodio-de-códigos.html"><a href="respositodio-de-códigos.html"><i class="fa fa-check"></i>Respositodio de códigos</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="librerias-de-r-y-otros-insumos.html"><a href="librerias-de-r-y-otros-insumos.html"><i class="fa fa-check"></i>Librerias de <em>R</em> y otros insumos</a>
+<ul>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html"><i class="fa fa-check"></i>Librerías Utilizadas</a>
+<ul>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#manipulación-y-transformación-de-datos"><i class="fa fa-check"></i>Manipulación y Transformación de Datos</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#lectura-y-escritura-de-datos"><i class="fa fa-check"></i>Lectura y Escritura de Datos</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#análisis-de-datos-de-encuestas"><i class="fa fa-check"></i>Análisis de Datos de Encuestas</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#modelado-y-análisis-estadístico"><i class="fa fa-check"></i>Modelado y Análisis Estadístico</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#visualización-de-datos"><i class="fa fa-check"></i>Visualización de Datos</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#informes-y-reproducibilidad"><i class="fa fa-check"></i>Informes y Reproducibilidad</a></li>
+<li class="chapter" data-level="" data-path="librerías-utilizadas.html"><a href="librerías-utilizadas.html#integración-con-otros-lenguajes"><i class="fa fa-check"></i>Integración con Otros Lenguajes</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="bases-de-datos-utilizadas.html"><a href="bases-de-datos-utilizadas.html"><i class="fa fa-check"></i>Bases de Datos Utilizadas</a></li>
+<li class="chapter" data-level="" data-path="estructura-del-proyecto.html"><a href="estructura-del-proyecto.html"><i class="fa fa-check"></i>Estructura del Proyecto</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i><b>1</b> 00_union_bases.R</a></li>
+<li class="chapter" data-level="2" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i><b>2</b> 01_Descarga_satelitales.R</a></li>
+<li class="chapter" data-level="3" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i><b>3</b> 02_Union_predictores.R</a></li>
+<li class="chapter" data-level="4" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i><b>4</b> 03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
+<li class="chapter" data-level="5" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i><b>5</b> 04_Armonizar_encuesta.R</a></li>
+<li class="divider"></li>
+<li><a Taller de instalación de capacidades en SAE </a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="union_bases.r" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Capítulo 1</span> 00_union_bases.R<a href="union_bases.html#union_bases.r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Para la ejecución del presente archivo, debe abrir el archivo <strong>00_union_bases.R</strong> disponible en la ruta <em>Rcodes/2020/00_union_bases.R</em>.</p>
+<p>El código comienza limpiando el entorno de R y cargando varias bibliotecas esenciales para la manipulación y análisis de datos. Posteriormente, define un conjunto de variables a validar y obtiene listas de archivos de datos en formato <code>.dta</code> correspondientes a diferentes conjuntos de datos del censo 2020. A continuación, el código itera sobre estos archivos para leer, combinar y almacenar los datos de cada estado en archivos <code>.rds</code> individuales. Estos datos se combinan en un único dataframe que se guarda para su uso posterior.</p>
+<p>En la sección final, el código se centra en los datos de la ENIGH 2020. Lee los archivos de hogares y pobreza, y los combina utilizando un <code>inner_join</code>. Se seleccionan y renombran variables clave para asegurar la consistencia en el análisis. Finalmente, el dataframe combinado se guarda en un archivo <code>.rds</code> para facilitar el acceso y análisis futuros.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="union_bases.html#cb1-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="union_bases.html#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="union_bases.html#cb1-3" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb1-4"><a href="union_bases.html#cb1-4" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
+<span id="cb1-5"><a href="union_bases.html#cb1-5" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb1-6"><a href="union_bases.html#cb1-6" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-7"><a href="union_bases.html#cb1-7" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb1-8"><a href="union_bases.html#cb1-8" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb1-9"><a href="union_bases.html#cb1-9" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb1-10"><a href="union_bases.html#cb1-10" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
+<span id="cb1-11"><a href="union_bases.html#cb1-11" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb1-12"><a href="union_bases.html#cb1-12" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb1-13"><a href="union_bases.html#cb1-13" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
+<span id="cb1-14"><a href="union_bases.html#cb1-14" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
+<span id="cb1-15"><a href="union_bases.html#cb1-15" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
+<span id="cb1-16"><a href="union_bases.html#cb1-16" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="union_bases.html#cb1-17" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb1-18"><a href="union_bases.html#cb1-18" tabindex="-1"></a>validar_var <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-19"><a href="union_bases.html#cb1-19" tabindex="-1"></a>  <span class="st">&quot;ic_rezedu&quot;</span>,</span>
+<span id="cb1-20"><a href="union_bases.html#cb1-20" tabindex="-1"></a>  <span class="st">&quot;ic_asalud&quot;</span>,</span>
+<span id="cb1-21"><a href="union_bases.html#cb1-21" tabindex="-1"></a>  <span class="st">&quot;ic_segsoc&quot;</span>,</span>
+<span id="cb1-22"><a href="union_bases.html#cb1-22" tabindex="-1"></a>  <span class="st">&quot;ic_cv&quot;</span>,</span>
+<span id="cb1-23"><a href="union_bases.html#cb1-23" tabindex="-1"></a>  <span class="st">&quot;ic_sbv&quot;</span>,</span>
+<span id="cb1-24"><a href="union_bases.html#cb1-24" tabindex="-1"></a>  <span class="st">&quot;ic_ali_nc&quot;</span>,</span>
+<span id="cb1-25"><a href="union_bases.html#cb1-25" tabindex="-1"></a>  <span class="st">&quot;ictpc&quot;</span></span>
+<span id="cb1-26"><a href="union_bases.html#cb1-26" tabindex="-1"></a>)</span>
+<span id="cb1-27"><a href="union_bases.html#cb1-27" tabindex="-1"></a><span class="co"># Obtener la lista de archivos .dta</span></span>
+<span id="cb1-28"><a href="union_bases.html#cb1-28" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="union_bases.html#cb1-29" tabindex="-1"></a>file_muestra_censo_2020_estado <span class="ot">&lt;-</span></span>
+<span id="cb1-30"><a href="union_bases.html#cb1-30" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb1-31"><a href="union_bases.html#cb1-31" tabindex="-1"></a>    <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/SegSoc/&quot;</span>,</span>
+<span id="cb1-32"><a href="union_bases.html#cb1-32" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-33"><a href="union_bases.html#cb1-33" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
+<span id="cb1-34"><a href="union_bases.html#cb1-34" tabindex="-1"></a>  )</span>
+<span id="cb1-35"><a href="union_bases.html#cb1-35" tabindex="-1"></a>file_muestra_censo_2020_estado_complemento <span class="ot">&lt;-</span></span>
+<span id="cb1-36"><a href="union_bases.html#cb1-36" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb1-37"><a href="union_bases.html#cb1-37" tabindex="-1"></a>    <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/&quot;</span>,</span>
+<span id="cb1-38"><a href="union_bases.html#cb1-38" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-39"><a href="union_bases.html#cb1-39" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
+<span id="cb1-40"><a href="union_bases.html#cb1-40" tabindex="-1"></a>  )</span>
+<span id="cb1-41"><a href="union_bases.html#cb1-41" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="union_bases.html#cb1-42" tabindex="-1"></a>muestra_cuestionario_ampliado_censo_2020_estado <span class="ot">&lt;-</span></span>
+<span id="cb1-43"><a href="union_bases.html#cb1-43" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb1-44"><a href="union_bases.html#cb1-44" tabindex="-1"></a>    <span class="st">&quot;../input/2020/muestra_ampliada/IndicadoresCenso/&quot;</span>,</span>
+<span id="cb1-45"><a href="union_bases.html#cb1-45" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-46"><a href="union_bases.html#cb1-46" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
+<span id="cb1-47"><a href="union_bases.html#cb1-47" tabindex="-1"></a>  )</span>
+<span id="cb1-48"><a href="union_bases.html#cb1-48" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="union_bases.html#cb1-49" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="union_bases.html#cb1-50" tabindex="-1"></a><span class="co"># Crear un dataframe vacío para almacenar los datos</span></span>
+<span id="cb1-51"><a href="union_bases.html#cb1-51" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb1-52"><a href="union_bases.html#cb1-52" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="union_bases.html#cb1-53" tabindex="-1"></a><span class="co"># Iterar sobre cada archivo y leerlo</span></span>
+<span id="cb1-54"><a href="union_bases.html#cb1-54" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">32</span>) {</span>
+<span id="cb1-55"><a href="union_bases.html#cb1-55" tabindex="-1"></a>  muestra_censo_2020_estado_ii <span class="ot">&lt;-</span></span>
+<span id="cb1-56"><a href="union_bases.html#cb1-56" tabindex="-1"></a>    <span class="fu">read_dta</span>(file_muestra_censo_2020_estado[ii])</span>
+<span id="cb1-57"><a href="union_bases.html#cb1-57" tabindex="-1"></a>  muestra_censo_2020_estado_complemento_ii <span class="ot">&lt;-</span></span>
+<span id="cb1-58"><a href="union_bases.html#cb1-58" tabindex="-1"></a>    <span class="fu">read_dta</span>(file_muestra_censo_2020_estado_complemento[ii]) <span class="sc">%&gt;%</span></span>
+<span id="cb1-59"><a href="union_bases.html#cb1-59" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">id_per =</span> id_persona)</span>
+<span id="cb1-60"><a href="union_bases.html#cb1-60" tabindex="-1"></a>  muestra_cuestionario_ampliado_censo_2020_estado_ii <span class="ot">&lt;-</span></span>
+<span id="cb1-61"><a href="union_bases.html#cb1-61" tabindex="-1"></a>    <span class="fu">read_dta</span>(muestra_cuestionario_ampliado_censo_2020_estado[ii])</span>
+<span id="cb1-62"><a href="union_bases.html#cb1-62" tabindex="-1"></a>  </span>
+<span id="cb1-63"><a href="union_bases.html#cb1-63" tabindex="-1"></a>  muestra_censo <span class="ot">&lt;-</span></span>
+<span id="cb1-64"><a href="union_bases.html#cb1-64" tabindex="-1"></a>    <span class="fu">inner_join</span>(muestra_censo_2020_estado_ii,</span>
+<span id="cb1-65"><a href="union_bases.html#cb1-65" tabindex="-1"></a>               muestra_censo_2020_estado_complemento_ii) <span class="sc">%&gt;%</span></span>
+<span id="cb1-66"><a href="union_bases.html#cb1-66" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>tamloc) <span class="sc">%&gt;%</span></span>
+<span id="cb1-67"><a href="union_bases.html#cb1-67" tabindex="-1"></a>    <span class="fu">inner_join</span>(muestra_cuestionario_ampliado_censo_2020_estado_ii)</span>
+<span id="cb1-68"><a href="union_bases.html#cb1-68" tabindex="-1"></a>  </span>
+<span id="cb1-69"><a href="union_bases.html#cb1-69" tabindex="-1"></a>  <span class="fu">saveRDS</span>(muestra_censo,</span>
+<span id="cb1-70"><a href="union_bases.html#cb1-70" tabindex="-1"></a>          <span class="fu">paste0</span>(<span class="st">&quot;../output/2020/muestra_censo/depto_&quot;</span>, ii, <span class="st">&quot;.rds&quot;</span>))</span>
+<span id="cb1-71"><a href="union_bases.html#cb1-71" tabindex="-1"></a>  </span>
+<span id="cb1-72"><a href="union_bases.html#cb1-72" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df, muestra_censo)</span>
+<span id="cb1-73"><a href="union_bases.html#cb1-73" tabindex="-1"></a>  <span class="fu">cat</span>(file_muestra_censo_2020_estado[ii], <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb1-74"><a href="union_bases.html#cb1-74" tabindex="-1"></a>}</span>
+<span id="cb1-75"><a href="union_bases.html#cb1-75" tabindex="-1"></a></span>
+<span id="cb1-76"><a href="union_bases.html#cb1-76" tabindex="-1"></a><span class="co"># Guardar el dataframe en un archivo .rds</span></span>
+<span id="cb1-77"><a href="union_bases.html#cb1-77" tabindex="-1"></a><span class="fu">saveRDS</span>(df, <span class="at">file =</span> <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
+<span id="cb1-78"><a href="union_bases.html#cb1-78" tabindex="-1"></a></span>
+<span id="cb1-79"><a href="union_bases.html#cb1-79" tabindex="-1"></a><span class="fu">intersect</span>(<span class="fu">names</span>(df), validar_var)</span>
+<span id="cb1-80"><a href="union_bases.html#cb1-80" tabindex="-1"></a><span class="fu">dim</span>(df)</span>
+<span id="cb1-81"><a href="union_bases.html#cb1-81" tabindex="-1"></a><span class="co"># &quot;ic_cv&quot;     &quot;ic_sbv&quot;    &quot;ic_rezedu&quot; &quot;ic_asalud&quot;</span></span>
+<span id="cb1-82"><a href="union_bases.html#cb1-82" tabindex="-1"></a></span>
+<span id="cb1-83"><a href="union_bases.html#cb1-83" tabindex="-1"></a></span>
+<span id="cb1-84"><a href="union_bases.html#cb1-84" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb1-85"><a href="union_bases.html#cb1-85" tabindex="-1"></a><span class="co"># enigh</span></span>
+<span id="cb1-86"><a href="union_bases.html#cb1-86" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb1-87"><a href="union_bases.html#cb1-87" tabindex="-1"></a></span>
+<span id="cb1-88"><a href="union_bases.html#cb1-88" tabindex="-1"></a><span class="co"># enigh_personas &lt;- read_dta(&quot;input/2020/enigh/base_personas_MEC20.dta&quot;)</span></span>
+<span id="cb1-89"><a href="union_bases.html#cb1-89" tabindex="-1"></a>enigh_hogares <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/base_hogares20.dta&quot;</span>)</span>
+<span id="cb1-90"><a href="union_bases.html#cb1-90" tabindex="-1"></a>enigh_pobreza <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/pobreza_20.dta&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-91"><a href="union_bases.html#cb1-91" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ent)</span>
+<span id="cb1-92"><a href="union_bases.html#cb1-92" tabindex="-1"></a></span>
+<span id="cb1-93"><a href="union_bases.html#cb1-93" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_pobreza<span class="sc">$</span>folioviv)</span>
+<span id="cb1-94"><a href="union_bases.html#cb1-94" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_hogares<span class="sc">$</span>folioviv)</span>
+<span id="cb1-95"><a href="union_bases.html#cb1-95" tabindex="-1"></a></span>
+<span id="cb1-96"><a href="union_bases.html#cb1-96" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(</span>
+<span id="cb1-97"><a href="union_bases.html#cb1-97" tabindex="-1"></a>  enigh_pobreza,</span>
+<span id="cb1-98"><a href="union_bases.html#cb1-98" tabindex="-1"></a>  enigh_hogares,</span>
+<span id="cb1-99"><a href="union_bases.html#cb1-99" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">join_by</span>(</span>
+<span id="cb1-100"><a href="union_bases.html#cb1-100" tabindex="-1"></a>    folioviv, foliohog, est_dis, upm,</span>
+<span id="cb1-101"><a href="union_bases.html#cb1-101" tabindex="-1"></a>    factor, rururb, ubica_geo</span>
+<span id="cb1-102"><a href="union_bases.html#cb1-102" tabindex="-1"></a>  ), </span>
+<span id="cb1-103"><a href="union_bases.html#cb1-103" tabindex="-1"></a>  <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">&quot;_pers&quot;</span>, <span class="st">&quot;_hog&quot;</span>),</span>
+<span id="cb1-104"><a href="union_bases.html#cb1-104" tabindex="-1"></a>)</span>
+<span id="cb1-105"><a href="union_bases.html#cb1-105" tabindex="-1"></a></span>
+<span id="cb1-106"><a href="union_bases.html#cb1-106" tabindex="-1"></a>enigh<span class="sc">$</span>ic_ali_nc</span>
+<span id="cb1-107"><a href="union_bases.html#cb1-107" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc_pers</span>
+<span id="cb1-108"><a href="union_bases.html#cb1-108" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc <span class="ot">&lt;-</span> enigh<span class="sc">$</span>ictpc_pers</span>
+<span id="cb1-109"><a href="union_bases.html#cb1-109" tabindex="-1"></a>enigh<span class="sc">$</span>ic_segsoc</span>
+<span id="cb1-110"><a href="union_bases.html#cb1-110" tabindex="-1"></a></span>
+<span id="cb1-111"><a href="union_bases.html#cb1-111" tabindex="-1"></a><span class="fu">saveRDS</span>(enigh, <span class="at">file =</span> <span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span></code></pre></div>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="estructura-del-proyecto.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="descarga_satelitales.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/psirusteam/2023MEXsae/00_union_bases.qmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.pdf", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.epub", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.mobi"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+},
+"tconfig": null
+});
+});
+</script>
+
+</body>
+
+</html>
