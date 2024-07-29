@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Capítulo 12 11_PostBenchmarking_ic_segsoc | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024</title>
+  <title>Capítulo 12 11_PostBenchmarking_ic_segsoc.r | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024</title>
   <meta name="description" content="Manual de procesamiento." />
   <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Capítulo 12 11_PostBenchmarking_ic_segsoc | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
+  <meta property="og:title" content="Capítulo 12 11_PostBenchmarking_ic_segsoc.r | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Manual de procesamiento." />
   <meta name="github-repo" content="psirusteam/coneval" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Capítulo 12 11_PostBenchmarking_ic_segsoc | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
+  <meta name="twitter:title" content="Capítulo 12 11_PostBenchmarking_ic_segsoc.r | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2024" />
   
   <meta name="twitter:description" content="Manual de procesamiento." />
   
@@ -170,13 +170,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="9" data-path="modelo_unidad_py_ic_segsoc.html"><a href="modelo_unidad_py_ic_segsoc.html"><i class="fa fa-check"></i><b>9</b> 08_Modelo_unidad_py_ic_segsoc</a></li>
 <li class="chapter" data-level="10" data-path="postbenchmarking_ictpc.html"><a href="postbenchmarking_ictpc.html"><i class="fa fa-check"></i><b>10</b> 09_PostBenchmarking_ictpc.R</a></li>
 <li class="chapter" data-level="11" data-path="postbenchmarking_ic_ali_nc.html"><a href="postbenchmarking_ic_ali_nc.html"><i class="fa fa-check"></i><b>11</b> 10_PostBenchmarking_ic_ali_nc.R</a></li>
-<li class="chapter" data-level="12" data-path="postbenchmarking_ic_segsoc.html"><a href="postbenchmarking_ic_segsoc.html"><i class="fa fa-check"></i><b>12</b> 11_PostBenchmarking_ic_segsoc</a></li>
-<li class="chapter" data-level="13" data-path="imputacion_censal.html"><a href="imputacion_censal.html"><i class="fa fa-check"></i><b>13</b> 12_Imputacion_censal</a></li>
+<li class="chapter" data-level="12" data-path="postbenchmarking_ic_segsoc.html"><a href="postbenchmarking_ic_segsoc.html"><i class="fa fa-check"></i><b>12</b> 11_PostBenchmarking_ic_segsoc.r</a></li>
+<li class="chapter" data-level="13" data-path="imputacion_censal.html"><a href="imputacion_censal.html"><i class="fa fa-check"></i><b>13</b> 12_Imputacion_censal.R</a></li>
 <li class="chapter" data-level="14" data-path="estimacion_ent_02.html"><a href="estimacion_ent_02.html"><i class="fa fa-check"></i><b>14</b> 13_Estimacion_ent_02.R</a></li>
 <li class="chapter" data-level="15" data-path="estimacion_municipios_ipm_pobreza.html"><a href="estimacion_municipios_ipm_pobreza.html"><i class="fa fa-check"></i><b>15</b> 14_estimacion_municipios_ipm_pobreza.R</a></li>
 <li class="chapter" data-level="16" data-path="estimacion_municipios_ipm_pobreza_error.html"><a href="estimacion_municipios_ipm_pobreza_error.html"><i class="fa fa-check"></i><b>16</b> 15_estimacion_municipios_ipm_pobreza_error.R</a></li>
 <li class="chapter" data-level="17" data-path="mapas.html"><a href="mapas.html"><i class="fa fa-check"></i><b>17</b> 16_Mapas.R</a></li>
 <li class="chapter" data-level="18" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i><b>18</b> 17_estimacion_municipios_carencias.R</a></li>
+<li class="chapter" data-level="19" data-path="estimacion_municipios_carencias_error.html"><a href="estimacion_municipios_carencias_error.html"><i class="fa fa-check"></i><b>19</b> 18_estimacion_municipios_carencias_error.R</a></li>
+<li class="chapter" data-level="20" data-path="mapas_carencias.html"><a href="mapas_carencias.html"><i class="fa fa-check"></i><b>20</b> 19_Mapas_carencias.R</a></li>
 <li class="divider"></li>
 <li><a Taller de instalación de capacidades en SAE </a></li>
 
@@ -197,9 +199,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="postbenchmarking_ic_segsoc" class="section level1 hasAnchor" number="12">
-<h1><span class="header-section-number">Capítulo 12</span> 11_PostBenchmarking_ic_segsoc<a href="postbenchmarking_ic_segsoc.html#postbenchmarking_ic_segsoc" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Para la ejecución del presente análisis, se debe abrir el archivo <strong>11_PostBenchmarking_ic_segsoc.R</strong> disponible en la ruta <code>Rcodes/2020/11_PostBenchmarking_ic_segsoc.R</code>.</p>
+<div id="postbenchmarking_ic_segsoc.r" class="section level1 hasAnchor" number="12">
+<h1><span class="header-section-number">Capítulo 12</span> 11_PostBenchmarking_ic_segsoc.r<a href="postbenchmarking_ic_segsoc.html#postbenchmarking_ic_segsoc.r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Para la ejecución del presente análisis, se debe abrir el archivo <strong>11_PostBenchmarking_ic_segsoc.R</strong> disponible en la ruta <em>Rcodes/2020/11_PostBenchmarking_ic_segsoc.R</em>.</p>
 <p>Este script en R se centra en el proceso de benchmarking y validación de un modelo multinivel previamente ajustado para lala carencia en por cobertura de seguridad social. Inicia con la limpieza del entorno de trabajo y la carga de librerías esenciales como <code>scales</code>, <code>patchwork</code>, <code>srvyr</code>, <code>survey</code>, <code>haven</code>, <code>sampling</code> y <code>tidyverse</code>. Luego, se cargan funciones adicionales desde archivos externos para la validación y el benchmarking del modelo.</p>
 <p>El modelo ajustado se lee desde un archivo RDS (<code>fit_mrp_ic_segsoc.rds</code>) y se procede a la etapa de benchmarking utilizando la función benchmarking, aplicando el método logit sobre un conjunto de covariables específicas (<code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code>, <code>hlengua</code>). Los resultados del benchmarking se incorporan al dataframe de post-estratificación y se recalculan las predicciones ponderadas.</p>
 <p>El script también realiza validaciones a nivel nacional y por subgrupos (<code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code>, <code>hlengua</code>, <code>nivel_edu</code>). Para cada subgrupo, se generan gráficos de validación univariada utilizando la función plot_uni_validacion, que compara las estimaciones directas y ajustadas del modelo. Los gráficos resultantes se combinan y se guardan en un archivo JPG, proporcionando una visualización completa del desempeño del modelo. Finalmente, tanto los gráficos de subgrupos como el dataframe de post-estratificación se guardan en archivos RDS para futuros análisis y referencia.</p>

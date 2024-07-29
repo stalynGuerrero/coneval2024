@@ -1,0 +1,397 @@
+# 18_estimacion_municipios_carencias_error.R
+
+Para la ejecución del presente análisis, se debe abrir el archivo **18_estimacion_municipios_carencias_error.R** disponible en la ruta *Rcodes/2020/18_estimacion_municipios_carencias_error.R*.
+
+Este script en R está diseñado para procesar y analizar datos de encuestas sobre pobreza en México para el año 2020. El código comienza limpiando el entorno de trabajo con `rm(list = ls())` y cargando las bibliotecas necesarias (`tidyverse`, `magrittr`, `survey`, `srvyr`, `tidyselect`) para la manipulación de datos y análisis estadístico.
+
+La primera sección del script se enfoca en la lectura de datos. Se cargan dos conjuntos de datos usando `readRDS()`: `encuesta_ampliada` y `encuesta_enigh`, este último con una modificación en la columna `ingreso`. También se lee un archivo CSV con `read.delim()`, que contiene datos sobre las líneas de bienestar, y se convierte la columna `area` a formato de carácter.
+
+En la sección del Índice de Pobreza Multidimensional en la encuesta ENIGH, se realiza una combinación interna (`inner_join()`) entre `encuesta_enigh` y `LB` para añadir variables relacionadas con carencias sociales y pobreza. Se crean nuevas variables en `encuesta_enigh`, tales como `tol_ic` (suma de indicadores de carencia social), `pobrea_lp` (indicador de pobreza por ingresos) y `pobrea_li` (indicador de pobreza extrema por ingresos). Además, se genera un resumen del número de personas por municipio en `N_mpio`. A continuación, el script lee una lista de archivos de estimación de carencia desde un directorio específico, y procesa estos archivos para calcular diversas estadísticas como media, varianza y errores estándar de las estimaciones. Utiliza la función `map_df()` para combinar datos de múltiples archivos, y realiza cálculos de varianza y errores estándar para cada indicador de pobreza. Los resultados se almacenan en una lista y se combinan en un único marco de datos.
+
+Los resultados combinados (`temp`) se enriquecen con información de población de `N_mpio` y se guardan en archivos RDS y Excel utilizando `saveRDS()` y `write.xlsx()`. Se calcula también un resumen a nivel estatal, agregando los resultados por entidad. En la última sección del script, se realiza un análisis gráfico de las estimaciones de pobreza. Se convierte `encuesta_enigh` en un diseño de encuesta usando `as_survey_design()`, y se calculan las estimaciones de pobreza por entidad. Luego, se generan gráficos con `ggplot2` para comparar las estimaciones de carencia entre los datos de la encuesta ENIGH y las estimaciones de CEPAL. Los gráficos se guardan como archivos PNG utilizando `ggsave()`.
+
+En resumen, el script se encarga de procesar y visualizar datos sobre pobreza multidimensional en México, generando estadísticas descriptivas y gráficos comparativos para ayudar en la interpretación de los datos.
+
+
+``` r
+### Cleaning R environment ###
+
+rm(list = ls())
+gc()
+
+#################
+### Libraries ###
+#################
+library(dplyr)
+library(data.table)
+library(haven)
+library(magrittr)
+library(stringr)
+library(openxlsx)
+library(tmap)
+library(sf)
+select <- dplyr::select
+
+###------------ Definiendo el límite de la memoria RAM a emplear ------------###
+
+memory.limit(250000000)
+
+################################################################################
+###----------------------------- Loading datasets ---------------------------###
+################################################################################
+ipm_mpios <- 
+  readRDS("../output/Entregas/2020/result_mpios.RDS") %>% 
+mutate(est_pob_ext = ifelse(est_pob_ext <0, 0,est_pob_ext))  
+
+ShapeDAM <- read_sf("../shapefile/2020/MEX_2020.shp")
+ShapeDAM %<>% mutate(cve_mun = CVEGEO ,
+                     ent = substr(cve_mun, 1, 2),
+                     CVEGEO = NULL) 
+
+cortes <- c(0,  15, 30, 50, 80, 100 )/100
+
+P1_mpio_norte <-
+  tm_shape(ShapeDAM %>%
+             inner_join(ipm_mpios,   by = "cve_mun"))
+
+Mapa_I <-
+  P1_mpio_norte + tm_polygons(
+                          breaks  = cortes,
+                        "est_ipm_I",
+                        # style = "quantile",
+                        title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo I",
+                        palette = "Greens",
+                        colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_I,
+  filename =  "../../output/Entregas/2020/mapas/IPM_I.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+Mapa_II <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "est_ipm_II",
+    # style = "quantile",
+    title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo II",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_II,
+  filename =  "../output/Entregas/2020/mapas/IPM_II.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+Mapa_III <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "est_ipm_III",
+    # style = "quantile",
+    title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo III",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_III,
+  filename =  "../output/Entregas/2020/mapas/IPM_III.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+Mapa_IV <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "est_ipm_IV",
+    # style = "quantile",
+    title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo IV",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_IV,
+  filename =  "../output/Entregas/2020/mapas/IPM_IV.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+cortes <- c(0,  15, 30, 50, 80, 100 )/100
+
+summary(ipm_mpios$est_pob_ext)
+
+
+
+Mapa_ext <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "est_pob_ext",
+    # style = "quantile",
+    title = "Estimación de la pobreza extrema",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_ext,
+  filename =  "../output/Entregas/2020/mapas/pob_ext.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+# cortes <- c(0.00, 0.01, 0.03, 0.05, 0.1, 0.2)
+summary(ipm_mpios$est_pob_mod)
+
+Mapa_mod <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "est_pob_mod",
+    # style = "quantile",
+    title = "Estimación de la pobreza moderada",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_mod,
+  filename =  "../output/Entregas/2020/mapas/pob_mod.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+################################################################################
+## Errores 
+################################################################################
+cortes <- c(0,  1,5,10, 25,  50,  100 )/100
+
+Mapa_I_ee <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "ee_ipm_I",
+    # style = "quantile",
+    title = "Error de estimación de la pobreza \nmultidimensional 2020 - Tipo I",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_I_ee,
+  filename =  "../output/Entregas/2020/mapas/IPM_I_ee.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+Mapa_II_ee <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "ee_ipm_II",
+    # style = "quantile",
+    title = "Error de estimación de la pobreza \nmultidimensional 2020 - Tipo II",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_II_ee,
+  filename =  "../output/Entregas/2020/mapas/IPM_II_ee.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+Mapa_III_ee <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "ee_ipm_III",
+    # style = "quantile",
+    title = "Error de estimación de la pobreza \nmultidimensional 2020 - Tipo III",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_III_ee,
+  filename =  "../output/Entregas/2020/mapas/IPM_III_ee.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+Mapa_IV_ee <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "ee_ipm_IV",
+    # style = "quantile",
+    title = "Error de estimación de la pobreza \nmultidimensional 2020 - Tipo IV",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_IV_ee,
+  filename =  "../output/Entregas/2020/mapas/IPM_IV_ee.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+
+Mapa_ext_ee <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "ee_pob_ext",
+    # style = "quantile",
+    title = "Error de estimación de la pobreza extrema",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_ext_ee,
+  filename =  "../output/Entregas/2020/mapas/pob_ext_ee.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+
+
+Mapa_mod_ee <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    "ee_pob_mod",
+    # style = "quantile",
+    title = "Error de estimación de la pobreza moderada",
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_mod_ee,
+  filename =  "../output/Entregas/2020/mapas/pob_mod_ee.png",
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+```
+

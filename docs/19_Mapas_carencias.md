@@ -1,0 +1,126 @@
+# 19_Mapas_carencias.R
+
+Para la ejecución del presente análisis, se debe abrir el archivo **19_Mapas_carencias.R** disponible en la ruta *Rcodes/2020/19_Mapas_carencias.R*.
+
+El código proporciona un procedimiento para la visualización de estimaciones de carencias y errores de estimación en un formato de mapa utilizando `tmap` y datos geoespaciales. Primero, limpia el entorno de trabajo en R y establece un límite para el uso de memoria RAM. Luego, carga las librerías necesarias y los datasets relevantes, incluyendo los resultados de estimación de carencia y un shapefile de México que se ajusta para incluir las claves municipales y regionales.
+
+A continuación, define los cortes para la clasificación de los datos en porcentajes y genera mapas temáticos para cada indicador de carencia (como pobreza por ingresos, carencias sociales, etc.). Utiliza el objeto `ShapeDAM` combinado con `ipm_mpios` para crear mapas que visualizan estos indicadores con una paleta de colores verde. Cada mapa se guarda como una imagen PNG con alta resolución.
+
+Finalmente, el código realiza un proceso similar para visualizar los errores de estimación asociados a cada indicador. Los cortes para los errores se definen de manera diferente, y se generan mapas temáticos que muestran la magnitud de estos errores. Cada mapa se guarda en formato PNG con especificaciones similares.
+
+
+``` r
+rm(list = ls())
+gc()
+
+#################
+### Libraries ###
+#################
+library(dplyr)
+library(data.table)
+library(haven)
+library(magrittr)
+library(stringr)
+library(openxlsx)
+library(tmap)
+library(sf)
+select <- dplyr::select
+
+###------------ Definiendo el límite de la memoria RAM a emplear ------------###
+
+memory.limit(250000000)
+
+################################################################################
+###----------------------------- Loading datasets ---------------------------###
+################################################################################
+ipm_mpios <- 
+  readRDS("../output/Entregas/2020/result_mpios_carencia.RDS")   
+
+ShapeDAM <- read_sf("../shapefile/2020/MEX_2020.shp")
+ShapeDAM %<>% mutate(cve_mun = CVEGEO ,
+                     ent = substr(cve_mun, 1, 2),
+                     CVEGEO = NULL) 
+
+cortes <- c(0,  15, 30, 50, 80, 100 )/100
+
+P1_mpio_norte <-
+  tm_shape(ShapeDAM %>%
+             left_join(ipm_mpios,   by = "cve_mun"))
+names(ipm_mpios)
+
+ind <- c("pobrea_lp", "pobrea_li","tol_ic_1","tol_ic_2","ic_segsoc", 
+         "ic_ali_nc")
+
+
+for(yks_ind in ind){
+
+  Mapa_I <-
+    P1_mpio_norte + tm_polygons(
+      breaks  = cortes,
+      yks_ind,
+      # style = "quantile",
+      title =  paste0("Estimación de la carencia 2020 -", yks_ind ),
+      palette = "Greens",
+      colorNA = "white"
+    ) + tm_layout(legend.show = TRUE,
+                  #legend.outside = TRUE,
+                  legend.text.size =  1.5, 
+                  legend.outside.position = 'left',
+                  legend.hist.width = 1,
+                  legend.hist.height = 3,
+                  legend.stack = 'vertical',
+                  legend.title.fontface = 'bold',
+                  legend.text.fontface = 'bold') 
+  
+  
+  tmap_save(
+    Mapa_I,
+    filename =  paste0("../output/Entregas/2020/mapas/carencia_", yks_ind, ".png"),
+    width = 4000,
+    height = 3000,
+    asp = 0
+  )
+  
+    
+}
+
+
+
+################################################################################
+## Errores 
+################################################################################
+cortes <- c(0,  1,5,10, 25,  50,  100 )/100
+
+ind_ee <- paste0("ee_", ind)
+
+for(yks_ind in ind_ee){
+
+  Mapa_I_ee <-
+  P1_mpio_norte + tm_polygons(
+    breaks  = cortes,
+    yks_ind,
+    # style = "quantile",
+    title = paste0("Error de estimación de la carencia 2020 - ", yks_ind),
+    palette = "Greens",
+    colorNA = "white"
+  ) + tm_layout(legend.show = TRUE,
+                #legend.outside = TRUE,
+                legend.text.size =  1.5, 
+                legend.outside.position = 'left',
+                legend.hist.width = 1,
+                legend.hist.height = 3,
+                legend.stack = 'vertical',
+                legend.title.fontface = 'bold',
+                legend.text.fontface = 'bold') 
+
+
+tmap_save(
+  Mapa_I_ee,
+  filename =  paste0("../output/Entregas/2020/mapas/carencia_", yks_ind, ".png"),
+  width = 4000,
+  height = 3000,
+  asp = 0
+)
+}
+```
+

@@ -9,8 +9,8 @@ modelo_unidad_py_ic_ali_nc.r
 modelo_unidad_py_ic_segsoc
 postbenchmarking_ictpc.r
 postbenchmarking_ic_ali_nc.r
-postbenchmarking_ic_segsoc
-imputacion_censal
+postbenchmarking_ic_segsoc.r
+imputacion_censal.r
 estimacion_ent_02.r
 predicción-con-los-modelos-ajustados
 creación-de-variables-dummy-y-preparación-de-datos
@@ -24,3 +24,5 @@ estimacion_municipios_ipm_pobreza.r
 estimacion_municipios_ipm_pobreza_error.r
 mapas.r
 estimacion_municipios_carencias.r
+estimacion_municipios_carencias_error.r
+mapas_carencias.r

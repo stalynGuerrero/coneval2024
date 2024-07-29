@@ -1,6 +1,6 @@
-# 11_PostBenchmarking_ic_segsoc
+# 11_PostBenchmarking_ic_segsoc.r
 
-Para la ejecución del presente análisis, se debe abrir el archivo **11_PostBenchmarking_ic_segsoc.R** disponible en la ruta `Rcodes/2020/11_PostBenchmarking_ic_segsoc.R`.
+Para la ejecución del presente análisis, se debe abrir el archivo **11_PostBenchmarking_ic_segsoc.R** disponible en la ruta *Rcodes/2020/11_PostBenchmarking_ic_segsoc.R*.
 
 Este script en R se centra en el proceso de benchmarking y validación de un modelo multinivel previamente ajustado para lala carencia en por cobertura de seguridad social. Inicia con la limpieza del entorno de trabajo y la carga de librerías esenciales como `scales`, `patchwork`, `srvyr`, `survey`, `haven`, `sampling` y `tidyverse`. Luego, se cargan funciones adicionales desde archivos externos para la validación y el benchmarking del modelo.
 
