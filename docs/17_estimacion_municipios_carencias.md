@@ -9,14 +9,12 @@ Posteriormente, el script filtra y prepara los datos de la encuesta para cada en
 Finalmente, se guarda cada iteración de los resultados calibrados en archivos RDS y se calcula el tiempo total de ejecución. Cada archivo contiene estimaciones para los indicadores de pobreza en cada municipio. El script utiliza técnicas de muestreo y calibración para asegurar que las estimaciones sean consistentes con las características de la población y se gestionan errores potenciales durante el proceso de calibración.
 
 
+#### Configuración y carga de librerías{-}
+
 
 ``` r
 ### Cleaning R environment ###
 rm(list = ls())
-
-#################
-### Libraries ###
-#################
 library(tidyverse)
 library(data.table)
 library(openxlsx)
@@ -28,62 +26,66 @@ library(lme4)
 library(survey)
 library(srvyr)
 source("../source/benchmarking_indicador.R")
+```
+
+#### Lectura de datos{-}
+
+
+``` r
 ################################################################################
 # Lectura de datos 
 ################################################################################
-
-predicciones <- readRDS( "../output/2020/modelos/predicciones.rds")
+predicciones <- readRDS("../output/2020/modelos/predicciones.rds")
 encuesta_ampliada <- readRDS("../output/2020/encuesta_ampliada.rds")
-encuesta_enigh <-readRDS("../input/2020/enigh/encuesta_sta.rds") %>%
+encuesta_enigh <- readRDS("../input/2020/enigh/encuesta_sta.rds") %>%
   mutate(ingreso = ictpc)
 
-LB <-
-  read.delim(
-    "../input/2020/Lineas_Bienestar.csv",
-    header = TRUE,
-    sep = ";",
-    dec = ","
-  ) %>% mutate(area = as.character(area))
+LB <- read.delim(
+  "../input/2020/Lineas_Bienestar.csv",
+  header = TRUE,
+  sep = ";",
+  dec = ","
+) %>% mutate(area = as.character(area))
+```
+
+#### IPM en la ENIGH  {-}
 
 
-
+``` r
 ################################################################################
 # IPM en la enigh
 ################################################################################
-encuesta_enigh <-
-  encuesta_enigh %>% inner_join(LB)  %>% 
+encuesta_enigh <- encuesta_enigh %>%
+  inner_join(LB) %>%
   mutate(
-    tol_ic = ic_segsoc + ic_ali_nc + ic_asalud + ic_cv +  ic_sbv + ic_rezedu,
-    
-    # Población con un ingreso inferior a la línea de pobreza por ingresos.
+    tol_ic = ic_segsoc + ic_ali_nc + ic_asalud + ic_cv + ic_sbv + ic_rezedu,
     pobrea_lp = ifelse(ingreso < lp, 1, 0),
-    
-    #  Población con un ingreso inferior a la línea de pobreza extrema por ingresos.
-    pobrea_li = ifelse(ingreso < li, 1, 0 ),
-    
-    # Población con al menos una carencia social.
-    tol_ic_1 = ifelse(tol_ic > 0, 1, 0 ),
-    
-    #Población con al menos tres carencias sociales.
-    tol_ic_2 = ifelse(tol_ic > 2, 1, 0 )
-    
+    pobrea_li = ifelse(ingreso < li, 1, 0),
+    tol_ic_1 = ifelse(tol_ic > 0, 1, 0),
+    tol_ic_2 = ifelse(tol_ic > 2, 1, 0)
   )
-################################################################################
-# preparando  encuesta intercensal
-################################################################################
+```
 
-encuesta_ampliada <- encuesta_ampliada %>% inner_join(LB) 
-encuesta_ampliada   %<>% mutate(
-  ic_asalud = ifelse(ic_asalud == 1, 1,0),
-  ic_cv = ifelse(ic_cv == 1, 1,0),
-  ic_sbv = ifelse(ic_sbv == 1, 1,0),
-  ic_rezedu = ifelse(ic_rezedu == 1, 1,0),
-  tol_ic4 = ic_asalud + ic_cv +  ic_sbv + ic_rezedu,
-  pred_segsoc = predicciones$pred_segsoc,
-  pred_ingreso = predicciones$pred_ingreso,
-  desv_estandar_residual = predicciones$desv_estandar_residual,
-  pred_ic_ali_nc = predicciones$pred_ic_ali_nc
-) 
+#### Preparación de encuesta intercensal {-}
+
+
+``` r
+################################################################################
+# preparando encuesta intercensal
+################################################################################
+encuesta_ampliada <- encuesta_ampliada %>%
+  inner_join(LB) %>%
+  mutate(
+    ic_asalud = ifelse(ic_asalud == 1, 1, 0),
+    ic_cv = ifelse(ic_cv == 1, 1, 0),
+    ic_sbv = ifelse(ic_sbv == 1, 1, 0),
+    ic_rezedu = ifelse(ic_rezedu == 1, 1, 0),
+    tol_ic4 = ic_asalud + ic_cv + ic_sbv + ic_rezedu,
+    pred_segsoc = predicciones$pred_segsoc,
+    pred_ingreso = predicciones$pred_ingreso,
+    desv_estandar_residual = predicciones$desv_estandar_residual,
+    pred_ic_ali_nc = predicciones$pred_ic_ali_nc
+  )
 
 # dir.create("output/2020/iteraciones/mpio_calib_carencia")
 # map(
@@ -96,142 +98,114 @@ encuesta_ampliada   %<>% mutate(
 
 rm(predicciones)
 
-c("03", "06", "23", "04", "01", "22", "27", "25", "18",
-  "05", "17", "28", "10", "26", "09", "32", "08", "19", "29", 
-  "24", "11", "31", "13", "16", "12", "14", "15", "07", "21", 
-  "30",  "20" ,"02")
 ii_ent <- "20"
 
+list_yks <- list(
+  c("pobrea_lp"),
+  c("pobrea_li"),
+  c("tol_ic_1", "tol_ic_2", "ic_segsoc", "ic_ali_nc")
+)
+```
+
+#### Iteraciones y calibración {-}
 
 
-list_yks <- list(c("pobrea_lp"),
-                 c( "pobrea_li"),
-                 c("tol_ic_1","tol_ic_2","ic_segsoc", 
-                   "ic_ali_nc"))
-
+``` r
 for(ii_ent in c("03", "06", "23", "04", "01", "22", "27", "25", "18",
-  "05", "17", "28", "10", "26", "09", "32", "08", "19", "29", 
-  "24", "11", "31", "13", "16", "12", "14", "15", "07", "21", 
-  "30",  "20" ,"02" )){
+                 "05", "17", "28", "10", "26", "09", "32", "08", "19", "29",
+                 "24", "11", "31", "13", "16", "12", "14", "15", "07", "21",
+                 "30", "20", "02")) {
+
+  cat("####################################################################\n")
+  inicio <- Sys.time()
+  print(inicio)
+
+  yks <- unlist(list_yks)
+  muestra_post <- encuesta_ampliada %>% filter(ent == ii_ent)
   
-cat("####################################################################\n")
-inicio <- Sys.time()
-print(inicio)
+  total_mpio <- muestra_post %>% group_by(cve_mun) %>%
+    summarise(den_mpio = sum(factor), .groups = "drop") %>%
+    mutate(tot_ent = sum(den_mpio))
+  
+  encuesta_sta <- encuesta_enigh %>% filter(ent == ii_ent) %>% na.omit()
+  
+  tot_pob <- encuesta_sta %>%
+    summarise_at(.vars = yks, .funs = list(
+      ~ weighted.mean(., w = fep, na.rm = TRUE) * sum(total_mpio$den_mpio)
+    ))
 
-yks <- unlist(list_yks)
+  top_caren <- unlist(as.vector(tot_pob))
+  tx_mun <- setNames(total_mpio$den_mpio, paste0("cve_mun_", total_mpio$cve_mun))
+  Tx_hat <- c(top_caren, tx_mun)
 
-muestra_post = encuesta_ampliada %>% filter(ent == ii_ent)
-
-total_mpio  <- muestra_post %>% group_by(cve_mun) %>% 
-  summarise(den_mpio = sum(factor),.groups = "drop") %>% 
-  mutate(tot_ent = sum(den_mpio))
-
-
-encuesta_sta = encuesta_enigh %>% filter(ent == ii_ent)
-
-encuesta_sta %<>% na.omit()
-
-
-tot_pob <- encuesta_sta %>%
-  summarise_at(.vars = yks, .funs = list(
-    ~ weighted.mean(., w = fep, na.rm = TRUE) * sum(total_mpio$den_mpio)
-  ))
-
-
-top_caren <- unlist(as.vector(tot_pob))
-
-tx_mun <- setNames(total_mpio$den_mpio,
-                   paste0("cve_mun_",total_mpio$cve_mun))
-
-Tx_hat <- c(top_caren ,  tx_mun)
-
-for( iter in 1:5){
-  cat("\n municipio = ", ii_ent,"\n\n")
-  cat("\n iteracion = ", iter,"\n\n")
- 
-
-
-############################################
-muestra_post %<>% 
-  mutate(
-    ic_segsoc = rbinom(n = n(), size = 1, prob = pred_segsoc),
-    ic_ali_nc = rbinom(n = n(), size = 1, prob = pred_ic_ali_nc),
-    ingreso = pred_ingreso + rnorm(n = n(),mean = 0,
-                                   desv_estandar_residual),
-    tol_ic = tol_ic4 + ic_segsoc + ic_ali_nc
-  ) %>% mutate(
-    # Población con un ingreso inferior a la línea de pobreza por ingresos.
-    pobrea_lp = ifelse(ingreso < lp, 1, 0),
+  for(iter in 1:200) {
+    cat("\n municipio = ", ii_ent, "\n\n")
+    cat("\n iteracion = ", iter, "\n\n")
     
-    #  Población con un ingreso inferior a la línea de pobreza extrema por ingresos.
-    pobrea_li = ifelse(ingreso < li, 1, 0 ),
+    ############################################
+    muestra_post <- muestra_post %>%
+      mutate(
+        ic_segsoc = rbinom(n = n(), size = 1, prob = pred_segsoc),
+        ic_ali_nc = rbinom(n = n(), size = 1, prob = pred_ic_ali_nc),
+        ingreso = pred_ingreso + rnorm(n = n(), mean = 0, sd = desv_estandar_residual),
+        tol_ic = tol_ic4 + ic_segsoc + ic_ali_nc
+      ) %>%
+      mutate(
+        pobrea_lp = ifelse(ingreso < lp, 1, 0),
+        pobrea_li = ifelse(ingreso < li, 1, 0),
+        tol_ic_1 = ifelse(tol_ic > 0, 1, 0),
+        tol_ic_2 = ifelse(tol_ic > 2, 1, 0)
+      )
+
+    estima_calib_ipm <- list()
+    for(ii in 1:length(list_yks)) {
+      yks <- list_yks[[ii]]
+      
+      var_calib <- c(yks, names(tx_mun))
+      Xk <- muestra_post %>% select("cve_mun") %>%
+        fastDummies::dummy_columns(select_columns = c("cve_mun"), remove_selected_columns = TRUE)
+      
+      diseno_post <- bind_cols(muestra_post, Xk) %>%
+        mutate(fep = factor) %>%
+        as_survey_design(
+          ids = upm,
+          weights = fep,
+          nest = TRUE
+        )
+      
+      mod_calib <- as.formula(paste0("~ -1 +", paste0(var_calib, collapse = " + ")))
+      diseno_calib <- tryCatch({
+        calibrate(diseno_post, formula = mod_calib, 
+                  population = Tx_hat[var_calib], calfun = "raking",
+                  maxit = 50)
+      }, error = function(e) {
+        message("Error en la calibración: ", yks)
+        return(NULL)
+      })
+      
+      if (is.null(diseno_calib)) {
+        next
+      }
+      
+      estima_calib_ipm[[ii]] <- diseno_calib %>% group_by(cve_mun) %>%
+        summarise_at(.vars = yks, .funs = list(
+          ~ survey_mean(., vartype = "var", na.rm = TRUE))
+        )
+    }
     
-    # Población con al menos una carencia social.
-    tol_ic_1 = ifelse(tol_ic > 0, 1, 0 ),
+    estima_calib_ipm <- keep(estima_calib_ipm, ~ !is.null(.)) %>%
+      reduce(inner_join)
     
-    #Población con al menos tres carencias sociales.
-    tol_ic_2 = ifelse(tol_ic > 2, 1, 0 ),
-    )  
-
-  estima_calib_ipm <- list()
-for(ii in 1:length(list_yks)){
-  yks <-  list_yks[[ii]]
+    saveRDS(list(estima_calib = estima_calib_ipm),
+            file = paste0("../output/2020/iteraciones/mpio_calib_carencia/",
+                           ii_ent, "/iter", iter, ".rds"))
+    gc()
+  }
   
-# yks <-c("tol_ic_1","tol_ic_2","ic_segsoc", 
-#         "ic_ali_nc")
-
-var_calib <- c(yks, names(tx_mun))
-  
-Xk <- muestra_post %>% select( "cve_mun") %>% 
-  fastDummies::dummy_columns(select_columns = c( "cve_mun"),remove_selected_columns = TRUE) 
-
-diseno_post <- bind_cols(muestra_post,Xk) %>% 
-  mutate(fep = factor) %>%
-  as_survey_design(
-    ids = upm,
-    weights = fep,
-    nest = TRUE,
-    # strata = estrato
-  )
-
-mod_calib <-  as.formula(paste0("~ -1 +",paste0(var_calib, collapse = " + ")))
-diseno_calib <- 
-tryCatch({
-  calibrate(diseno_post, formula = mod_calib, 
-            population = Tx_hat[var_calib],calfun = "raking",
-            maxit = 50)
-}, error = function(e) {
-  message("Error en la calibración: ", yks)
-  return(NULL)  # Puedes retornar NULL o algún valor indicador de error
-})
-
-if(is.null(diseno_calib)){
-   next
-}
-  
-
-estima_calib_ipm[[ii]]  <- diseno_calib %>% group_by(cve_mun) %>% 
-  summarise_at(.vars = yks, .funs = list(
-    ~ survey_mean(., vartype ="var", na.rm = TRUE))
-  )
-
-
-
-}
-
-estima_calib_ipm %<>% keep(~ !is.null(.)) %>% 
-  reduce(inner_join)
-  
-saveRDS(list( estima_calib = estima_calib_ipm),
-        file = paste0( "../output/2020/iteraciones/mpio_calib_carencia/",
-                       ii_ent,"/iter",iter,".rds"))
-gc()
-}
   fin <- Sys.time()
   tiempo_total <- difftime(fin, inicio, units = "mins")
   print(tiempo_total)
   cat("####################################################################\n")
-  
 }
 ```
 

@@ -36,11 +36,12 @@ source("../source/Benchmarking.R", encoding = "UTF-8")
 ###############################################################
 
 fit <- readRDS("../output/2020/modelos/fit_mrp_ic_segsoc.rds")
+```
 
-###############################################################
-# proceso de benchmarking
-###############################################################
+#### proceso de benchmarking{-}
 
+
+``` r
 list_bench <- benchmarking(modelo = fit,
              names_cov =   c("ent",
                              "area",
@@ -49,11 +50,12 @@ list_bench <- benchmarking(modelo = fit,
                              "discapacidad",
                              "hlengua"),                      
              metodo = "logit")
+```
 
-##############################################################
-## Validaciones y plot uni 
-###############################################################
+#### Validaciones y plot uni{-}
 
+
+``` r
 poststrat_df <- fit$poststrat_df %>% data.frame() %>%  
   mutate(yk_stan_lmer = yk,
          gk_bench = list_bench$gk_bench,
@@ -74,12 +76,12 @@ cbind(
     Nacional_stan_lmer = sum(n * yk_stan_lmer) / sum(n),
     Nacional_bench = sum(n * yk_bench) / sum(n*gk_bench),
   )) %>% print()
+```
+
+#### Validaciones por subgrupo completo {-}
 
 
-###########################################
-### Validaciones por subgrupo completo  ###
-###########################################
-
+``` r
 subgrupo <- c("ent",
               "area",
               "sexo",

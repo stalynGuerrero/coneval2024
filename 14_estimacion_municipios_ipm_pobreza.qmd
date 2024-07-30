@@ -13,13 +13,10 @@ Dentro de cada iteración, se realiza una calibración de los datos utilizando e
 Este enfoque permite realizar un ajuste fino de los modelos predictivos y asegurar que las estimaciones de pobreza sean lo más precisas posible, utilizando simulaciones y técnicas avanzadas de calibración.
 
 
-```{r, eval=FALSE}
-### Cleaning R environment ###
-rm(list = ls())
+#### Limpieza del Entorno y Carga de Bibliotecas{-}
 
-#################
-### Libraries ###
-#################
+```{r, eval=FALSE}
+rm(list = ls())
 library(tidyverse)
 library(data.table)
 library(openxlsx)
@@ -31,25 +28,31 @@ library(lme4)
 library(survey)
 library(srvyr)
 source("../source/benchmarking_indicador.R")
-################################################################################
-# Lectura de datos 
-################################################################################
+```
 
+#### Lectura de Datos{-}
+
+Se cargan los datos necesarios y las predicciones de los modelos previamente ajustados.
+
+```{r, eval=FALSE}
 predicciones <- readRDS( "../output/2020/modelos/predicciones.rds")
 muestra_ampliada <- readRDS("../output/2020/encuesta_ampliada.rds")
-encuesta_enigh <-readRDS("../input/2020/enigh/encuesta_sta.rds") %>%
+encuesta_enigh <- readRDS("../input/2020/enigh/encuesta_sta.rds") %>%
   mutate(ingreso = ictpc)
 
-LB <-
-  read.delim(
+LB <- read.delim(
     "../input/2020/Lineas_Bienestar.csv",
     header = TRUE,
     sep = ";",
     dec = ","
   ) %>% mutate(area = as.character(area))
+```
 
+#### Cálculo del IPM en la Encuesta{-}
 
+Aquí se calcula el IPM y las nuevas variables de pobreza moderada y extrema en la encuesta `encuesta_enigh`.
 
+```{r, eval=FALSE}
 ################################################################################
 # IPM en la enigh
 ################################################################################
@@ -71,10 +74,16 @@ encuesta_enigh <-
     pobre_moderada = ifelse(c(ingreso > li & ingreso < lp) &
                               tol_ic > 2, 1, 0),
     pobre_extrema = ifelse(ipm == "I" & pobre_moderada == 0, 1, 0)
-    
   )
+```
+
+#### Preparación de la Muestra Intercensal{-}
+
+Se ajusta la muestra ampliada y se añaden las predicciones y variables necesarias.
+
+```{r, eval=FALSE}
 ################################################################################
-# preparando  encuesta intercensal
+# preparando encuesta intercensal
 ################################################################################
 
 muestra_ampliada <- muestra_ampliada %>% inner_join(LB) 
@@ -90,17 +99,14 @@ muestra_ampliada   %<>% mutate(
   pred_ic_ali_nc = predicciones$pred_ic_ali_nc
 ) 
 
-# dir.create("../output/2020/iteraciones/mpio_calib")
-# map(
-#   paste0(
-#     "../output/2020/iteraciones/mpio_calib/",
-#     unique(encuesta_enigh$ent)
-#   ),
-#   ~ dir.create(path = .x)
-# )
-
 rm(predicciones)
+```
 
+#### Iteración por Entidades Federativas{-}
+
+Para cada entidad federal (`ii_ent`), se realiza una iteración que ajusta la muestra post-calibración y calcula las estimaciones.
+
+```{r, eval=FALSE}
 ii_ent <- "02"
 iter = 1
 
@@ -109,135 +115,122 @@ for(ii_ent in c("03", "06", "23", "04", "01", "22", "27", "25", "18",
                 "24", "11", "31", "13", "16", "12", "14", "15", "07", "21", 
                 "30",  "20" ,"02"
 )){
-  
-cat("####################################################################\n")
-inicio <- Sys.time()
-print(inicio)
+  cat("####################################################################\n")
+  inicio <- Sys.time()
+  print(inicio)
 
-muestra_post = muestra_ampliada %>% filter(ent == ii_ent)
+  # Filtrar muestra post
+  muestra_post = muestra_ampliada %>% filter(ent == ii_ent)
 
-total_mpio  <- muestra_post %>% group_by(cve_mun) %>% 
-  summarise(den_mpio = sum(factor),.groups = "drop") %>% 
-  mutate(tot_ent = sum(den_mpio))
+  # Cálculo de totales por municipio y población
+  total_mpio  <- muestra_post %>% group_by(cve_mun) %>% 
+    summarise(den_mpio = sum(factor), .groups = "drop") %>% 
+    mutate(tot_ent = sum(den_mpio))
 
+  encuesta_sta = encuesta_enigh %>% filter(ent == ii_ent)
+  encuesta_sta %<>% na.omit()
 
-encuesta_sta = encuesta_enigh %>% filter(ent == ii_ent)
+  tot_pob <- encuesta_sta %>% 
+    group_by(ipm) %>% 
+    summarise(num_ent = sum(fep), .groups = "drop") %>% 
+    transmute(ipm, prop_ipm = num_ent/sum(num_ent),
+              tx_ipm =  sum(total_mpio$den_mpio)*prop_ipm) %>% 
+    filter(ipm != "I")
 
-encuesta_sta %<>% na.omit()
+  pobreza <- encuesta_sta %>% summarise(
+    pobre_ext = weighted.mean(pobre_extrema, fep),
+    pob_mod = weighted.mean(pobre_moderada, fep),
+    pobre_moderada = sum(total_mpio$den_mpio)*pob_mod,
+    pobre_extrema = sum(total_mpio$den_mpio)*pobre_ext)
 
-tot_pob <- encuesta_sta %>% 
-  group_by(ipm) %>% 
-  summarise(num_ent = sum(fep),.groups = "drop") %>% 
-  transmute(ipm,   prop_ipm = num_ent/sum(num_ent),
-            tx_ipm =  sum(total_mpio$den_mpio)*prop_ipm) %>% 
-  filter(ipm != "I")
+  Tx_ipm <- setNames(tot_pob$tx_ipm,paste0("ipm_",tot_pob$ipm))
+  Tx_pob <- pobreza[,3:4] %>% as.vector() %>% unlist()
 
-pobreza <-  encuesta_sta %>% summarise(
-  pobre_ext = weighted.mean(pobre_extrema, fep),
-  pob_mod = weighted.mean(pobre_moderada, fep),
-  pobre_moderada = sum(total_mpio$den_mpio)*pob_mod,
-  pobre_extrema = sum(total_mpio$den_mpio)*pobre_ext)
+  tx_mun <- setNames(total_mpio$den_mpio,
+                     paste0("cve_mun_",total_mpio$cve_mun))
 
-Tx_ipm <- setNames(tot_pob$tx_ipm,paste0("ipm_",tot_pob$ipm))
-Tx_pob <- pobreza[,3:4] %>% as.vector() %>% unlist()
+  Tx_hat <- c(Tx_pob, Tx_ipm, tx_mun)
 
-tx_mun <- setNames(total_mpio$den_mpio,
-                   paste0("cve_mun_",total_mpio$cve_mun))
+  for(iter in 1:200){
+    cat("\n municipio = ", ii_ent,"\n\n")
+    cat("\n iteracion = ", iter,"\n\n")
 
-Tx_hat <- c(Tx_pob, Tx_ipm,   tx_mun)
+    # Ajuste de la muestra post
+    muestra_post %<>% 
+      mutate(
+        ic_segsoc = rbinom(n = n(), size = 1, prob = pred_segsoc),
+        ic_ali_nc = rbinom(n = n(), size = 1, prob = pred_ic_ali_nc),
+        ingreso = pred_ingreso + rnorm(n = n(), mean = 0, desv_estandar_residual),
+        tol_ic = tol_ic4 + ic_segsoc + ic_ali_nc
+      ) %>% mutate(
+        ipm   = case_when(
+          # Población en situación de pobreza.
+          ingreso < lp  &  tol_ic >= 1 ~ "I",
+          # Población vulnerable por carencias sociales.
+          ingreso >= lp & tol_ic >= 1 ~ "II",
+          # Poblacion vulnerable por ingresos.
+          ingreso <= lp & tol_ic < 1 ~ "III",
+          # Población no pobre multidimensional y no vulnerable.
+          ingreso >= lp & tol_ic < 1 ~ "IV"
+        ),
+        # Población en situación de pobreza moderada.
+        pobre_moderada = ifelse(c(ingreso > li & ingreso < lp) &
+                                  tol_ic > 2, 1, 0),
+        pobre_extrema = ifelse(ipm == "I" & pobre_moderada == 0, 1, 0))  
 
+    Xk <- muestra_post %>% select("ipm", "cve_mun") %>% 
+      fastDummies::dummy_columns(select_columns = c("ipm", "cve_mun")) %>% 
+      select(names(Tx_hat[-c(1:2)]))
 
-for( iter in 1:200){
-  cat("\n municipio = ", ii_ent,"\n\n")
-  cat("\n iteracion = ", iter,"\n\n")
- 
+    diseno_post <- bind_cols(muestra_post, Xk) %>% 
+      mutate(fep = factor) %>%
+      as_survey_design(
+        ids = upm,
+        weights = fep,
+        nest = TRUE
+      )
 
+    mod_calib <-  as.formula(paste0("~ -1+",paste0(names(Tx_hat), collapse = " + ")))
 
-############################################
-muestra_post %<>% 
-  mutate(
-    ic_segsoc = rbinom(n = n(), size = 1, prob = pred_segsoc),
-    ic_ali_nc = rbinom(n = n(), size = 1, prob = pred_ic_ali_nc),
-    ingreso = pred_ingreso + rnorm(n = n(),mean = 0,
-                                   desv_estandar_residual),
-    tol_ic = tol_ic4 + ic_segsoc + ic_ali_nc
-  ) %>% mutate(
-    ipm   = case_when(
-      # Población en situación de pobreza.
-      ingreso < lp  &  tol_ic >= 1 ~ "I",
-      # Población vulnerable por carencias sociales.
-      ingreso >= lp & tol_ic >= 1 ~ "II",
-      # Poblacion vulnerable por ingresos.
-      ingreso <= lp & tol_ic < 1 ~ "III",
-      # Población no pobre multidimensional y no vulnerable.
-      ingreso >= lp & tol_ic < 1 ~ "IV"
-    ),
-    # Población en situación de pobreza moderada.
-    pobre_moderada = ifelse(c(ingreso > li & ingreso < lp) &
-                              tol_ic > 2, 1, 0),
-    pobre_extrema = ifelse(ipm == "I" & pobre_moderada == 0, 1, 0))  
+    diseno_calib <- calibrate(diseno_post, formula = mod_calib, 
+                              population = Tx_hat, calfun = "raking")
 
+    estima_calib_ipm  <- diseno_calib %>% group_by(cve_mun, ipm) %>% 
+      summarise(est_ipm = survey_mean(vartype ="var"))
 
+    estima_calib_pob  <- diseno_calib %>% group_by(cve_mun) %>% 
+      summarise(est_pob_ext = survey_mean(pobre_extrema , vartype ="var"),
+                est_pob_mod = survey_mean(pobre_moderada  , vartype ="var" ))
 
-Xk <- muestra_post %>% select("ipm", "cve_mun") %>% 
-  fastDummies::dummy_columns(select_columns = c("ipm", "cve_mun")) %>% 
-  select(names(Tx_hat[-c(1:2)]))
+    estima_calib <- pivot_wider(
+      data = estima_calib_ipm,
+      id_cols = "cve_mun",
+      names_from = "ipm",
+      values_from = c("est_ipm", "est_ipm_var"), values_fill = 0
+    ) %>% full_join(estima_calib_pob)
 
-diseno_post <- bind_cols(muestra_post,Xk) %>% 
-  mutate(fep = factor) %>%
-  as_survey_design(
-    ids = upm,
-    weights = fep,
-    nest = TRUE,
-    # strata = estrato
-  )
+    valida_ipm <- estima_calib_ipm %>% inner_join(total_mpio, by = "cve_mun") %>% 
+      group_by(ipm) %>% 
+      summarise(prop_ampliada = sum(est_ipm*den_mpio)/unique(tot_ent)) %>% 
+      full_join(tot_pob, by = "ipm")
 
-mod_calib <-  as.formula(paste0("~ -1+",paste0(names(Tx_hat), collapse = " + ")))
+    valida_pob <- estima_calib_pob %>% select(cve_mun, est_pob_ext, est_pob_mod) %>% 
+      inner_join(total_mpio, by = "cve_mun") %>%
+      summarise(pob_ext_ampliada = sum(est_pob_ext * den_mpio) / unique(tot_ent),
+                pob_mod_ampliada = sum(est_pob_mod * den_mpio) / unique(tot_ent),
+                ipm_I = pob_ext_ampliada + pob_mod_ampliada) %>% 
+      bind_cols(pobreza[,1:2])
 
-diseno_calib <- calibrate(diseno_post, formula = mod_calib, 
-                          population = Tx_hat,calfun = "raking")
-
-estima_calib_ipm  <- diseno_calib %>% group_by(cve_mun,ipm) %>% 
-  summarise(est_ipm = survey_mean(vartype ="var"))
-
-estima_calib_pob  <- diseno_calib %>% group_by(cve_mun) %>% 
-  summarise(est_pob_ext = survey_mean(pobre_extrema , vartype ="var"),
-            est_pob_mod = survey_mean(pobre_moderada  , vartype ="var" ))
-
-estima_calib <- pivot_wider(
-  data = estima_calib_ipm,
-  id_cols = "cve_mun",
-  names_from = "ipm",
-  values_from = c("est_ipm", "est_ipm_var"),values_fill = 0
-) %>% full_join(estima_calib_pob)
-
-
-valida_ipm <- estima_calib_ipm %>% inner_join(total_mpio, by = "cve_mun") %>% 
-  group_by(ipm) %>% 
-  summarise(prop_ampliada = sum(est_ipm*den_mpio)/unique(tot_ent)) %>% 
-  full_join(tot_pob, by = "ipm")
-
-valida_pob <- estima_calib_pob %>% select(cve_mun, est_pob_ext , est_pob_mod) %>% 
-  inner_join(total_mpio, by = "cve_mun") %>%
-  summarise(pob_ext_ampliada = sum(est_pob_ext * den_mpio) / unique(tot_ent),
-            pob_mod_ampliada = sum(est_pob_mod * den_mpio) / unique(tot_ent),
-            ipm_I = pob_ext_ampliada + pob_mod_ampliada) %>% 
-  bind_cols(pobreza[,1:2])
-
-
-
-saveRDS(list(valida = list(valida_pob = valida_pob, 
-                           valida_ipm = valida_ipm),
-             estima_calib = estima_calib),
-        file = paste0( "../output/2020/iteraciones/mpio_calib/",
-                       ii_ent,"/iter",iter,".rds"))
-gc()
-}
+    saveRDS(list(valida = list(valida_pob = valida_pob, 
+                               valida_ipm = valida_ipm),
+                 estima_calib = estima_calib),
+            file = paste0( "../output/2020/iteraciones/mpio_calib/",
+                           ii_ent,"/iter",iter,".rds"))
+    gc()
+  }
   fin <- Sys.time()
   tiempo_total <- difftime(fin, inicio, units = "mins")
   print(tiempo_total)
   cat("####################################################################\n")
-  
-  }
+}
 ```
-

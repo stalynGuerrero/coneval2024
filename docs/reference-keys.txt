@@ -12,14 +12,6 @@ postbenchmarking_ic_ali_nc.r
 postbenchmarking_ic_segsoc.r
 imputacion_censal.r
 estimacion_ent_02.r
-predicción-con-los-modelos-ajustados
-creación-de-variables-dummy-y-preparación-de-datos
-validación-de-las-predicciones
-cálculo-del-índice-de-pobreza-multidimensional-ipm-con-predicciones
-estimación-y-comparación-del-ipm-con-predicciones
-ajuste-de-las-predicciones-y-calibración
-cálculo-de-la-población-y-pobreza-por-municipio
-iteraciones-de-calibración
 estimacion_municipios_ipm_pobreza.r
 estimacion_municipios_ipm_pobreza_error.r
 mapas.r

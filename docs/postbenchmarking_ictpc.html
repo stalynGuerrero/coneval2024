@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2024-07-29" />
+<meta name="date" content="2024-07-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -205,124 +205,117 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Este script en R se centra en la validación y benchmarking de un modelo multinivel para predecir ingresos, utilizando datos de encuestas y censos. Comienza limpiando el entorno de trabajo (<code>rm(list = ls())</code>) y cargando las librerías necesarias. Además, se leen las funciones auxiliares desde archivos externos (<code>Plot_validacion_bench.R</code> y <code>Benchmarking.R</code>). Posteriormente, se carga el modelo preentrenado desde un archivo RDS (<code>fit_mrp_ictpc.rds</code>).</p>
 <p>El proceso de benchmarking se realiza mediante la función <code>benchmarking</code>, utilizando covariables específicas como <code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code> y <code>hlengua</code>. El resultado se guarda en <code>list_bench</code>. A continuación, se crea un diseño de encuesta (<code>diseno_encuesta</code>) y se realizan validaciones a nivel nacional comparando los resultados del modelo ajustado (<code>yk_lmer</code>) y del modelo ajustado con benchmarking (<code>yk_bench</code>). Estas validaciones se llevan a cabo mediante la comparación de medias ponderadas.</p>
 <p>Para validar el modelo a nivel de subgrupos, se definen diversos subgrupos como <code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code>, <code>hlengua</code> y <code>nivel_edu</code>. Se crean gráficos de validación para cada subgrupo utilizando la función <code>plot_uni_validacion</code>. Estos gráficos se combinan y se guardan en un archivo JPG (<code>plot_uni.jpg</code>). Además, se guarda la lista de gráficos y el dataframe postestratificado en archivos RDS (<code>plot_uni.rds</code> y <code>poststrat_df_ictpc.rds</code> respectivamente), lo que permite una fácil recuperación y análisis posterior.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="postbenchmarking_ictpc.html#cb10-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span><span class="fu">ls</span>())</span>
-<span id="cb10-2"><a href="postbenchmarking_ictpc.html#cb10-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
-<span id="cb10-3"><a href="postbenchmarking_ictpc.html#cb10-3" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-4"><a href="postbenchmarking_ictpc.html#cb10-4" tabindex="-1"></a><span class="co"># Loading required libraries ----------------------------------------------</span></span>
-<span id="cb10-5"><a href="postbenchmarking_ictpc.html#cb10-5" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-6"><a href="postbenchmarking_ictpc.html#cb10-6" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="postbenchmarking_ictpc.html#cb10-7" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
-<span id="cb10-8"><a href="postbenchmarking_ictpc.html#cb10-8" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb10-9"><a href="postbenchmarking_ictpc.html#cb10-9" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
-<span id="cb10-10"><a href="postbenchmarking_ictpc.html#cb10-10" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
-<span id="cb10-11"><a href="postbenchmarking_ictpc.html#cb10-11" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb10-12"><a href="postbenchmarking_ictpc.html#cb10-12" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
-<span id="cb10-13"><a href="postbenchmarking_ictpc.html#cb10-13" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb10-14"><a href="postbenchmarking_ictpc.html#cb10-14" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="postbenchmarking_ictpc.html#cb10-15" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-16"><a href="postbenchmarking_ictpc.html#cb10-16" tabindex="-1"></a><span class="co"># Lectura de funciones </span></span>
-<span id="cb10-17"><a href="postbenchmarking_ictpc.html#cb10-17" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-18"><a href="postbenchmarking_ictpc.html#cb10-18" tabindex="-1"></a></span>
-<span id="cb10-19"><a href="postbenchmarking_ictpc.html#cb10-19" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/Plot_validacion_bench.R&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span>
-<span id="cb10-20"><a href="postbenchmarking_ictpc.html#cb10-20" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/Benchmarking.R&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span>
-<span id="cb10-21"><a href="postbenchmarking_ictpc.html#cb10-21" tabindex="-1"></a></span>
-<span id="cb10-22"><a href="postbenchmarking_ictpc.html#cb10-22" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-23"><a href="postbenchmarking_ictpc.html#cb10-23" tabindex="-1"></a><span class="co"># Lectura del modelo </span></span>
-<span id="cb10-24"><a href="postbenchmarking_ictpc.html#cb10-24" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-25"><a href="postbenchmarking_ictpc.html#cb10-25" tabindex="-1"></a></span>
-<span id="cb10-26"><a href="postbenchmarking_ictpc.html#cb10-26" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)</span>
-<span id="cb10-27"><a href="postbenchmarking_ictpc.html#cb10-27" tabindex="-1"></a></span>
-<span id="cb10-28"><a href="postbenchmarking_ictpc.html#cb10-28" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-29"><a href="postbenchmarking_ictpc.html#cb10-29" tabindex="-1"></a><span class="co"># proceso de benchmarking</span></span>
-<span id="cb10-30"><a href="postbenchmarking_ictpc.html#cb10-30" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-31"><a href="postbenchmarking_ictpc.html#cb10-31" tabindex="-1"></a></span>
-<span id="cb10-32"><a href="postbenchmarking_ictpc.html#cb10-32" tabindex="-1"></a>list_bench <span class="ot">&lt;-</span> <span class="fu">benchmarking</span>(<span class="at">modelo =</span> fit,</span>
-<span id="cb10-33"><a href="postbenchmarking_ictpc.html#cb10-33" tabindex="-1"></a>             <span class="at">names_cov =</span>   <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
-<span id="cb10-34"><a href="postbenchmarking_ictpc.html#cb10-34" tabindex="-1"></a>                             <span class="st">&quot;area&quot;</span>,</span>
-<span id="cb10-35"><a href="postbenchmarking_ictpc.html#cb10-35" tabindex="-1"></a>                             <span class="st">&quot;sexo&quot;</span>,</span>
-<span id="cb10-36"><a href="postbenchmarking_ictpc.html#cb10-36" tabindex="-1"></a>                             <span class="st">&quot;edad&quot;</span>,</span>
-<span id="cb10-37"><a href="postbenchmarking_ictpc.html#cb10-37" tabindex="-1"></a>                             <span class="st">&quot;discapacidad&quot;</span>,</span>
-<span id="cb10-38"><a href="postbenchmarking_ictpc.html#cb10-38" tabindex="-1"></a>                             <span class="st">&quot;hlengua&quot;</span>),                      </span>
-<span id="cb10-39"><a href="postbenchmarking_ictpc.html#cb10-39" tabindex="-1"></a>             <span class="at">metodo =</span> <span class="st">&quot;logit&quot;</span>)</span>
-<span id="cb10-40"><a href="postbenchmarking_ictpc.html#cb10-40" tabindex="-1"></a></span>
-<span id="cb10-41"><a href="postbenchmarking_ictpc.html#cb10-41" tabindex="-1"></a><span class="co"># saveRDS(list_bench,&quot;output/2020/plots/ictpc/list_bench.rds&quot;)</span></span>
-<span id="cb10-42"><a href="postbenchmarking_ictpc.html#cb10-42" tabindex="-1"></a><span class="co"># list_bench &lt;- readRDS(&quot;output/2020/plots/ictpc/list_bench.rds&quot;)</span></span>
-<span id="cb10-43"><a href="postbenchmarking_ictpc.html#cb10-43" tabindex="-1"></a></span>
-<span id="cb10-44"><a href="postbenchmarking_ictpc.html#cb10-44" tabindex="-1"></a><span class="do">##############################################################</span></span>
-<span id="cb10-45"><a href="postbenchmarking_ictpc.html#cb10-45" tabindex="-1"></a><span class="do">## Validaciones y plot uni </span></span>
-<span id="cb10-46"><a href="postbenchmarking_ictpc.html#cb10-46" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb10-47"><a href="postbenchmarking_ictpc.html#cb10-47" tabindex="-1"></a></span>
-<span id="cb10-48"><a href="postbenchmarking_ictpc.html#cb10-48" tabindex="-1"></a>poststrat_df <span class="ot">&lt;-</span> fit<span class="sc">$</span>poststrat_df <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span>  </span>
-<span id="cb10-49"><a href="postbenchmarking_ictpc.html#cb10-49" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yk_lmer =</span> yk,</span>
-<span id="cb10-50"><a href="postbenchmarking_ictpc.html#cb10-50" tabindex="-1"></a>         <span class="at">gk_bench =</span> list_bench<span class="sc">$</span>gk_bench,</span>
-<span id="cb10-51"><a href="postbenchmarking_ictpc.html#cb10-51" tabindex="-1"></a>         <span class="at">yk_bench =</span> yk <span class="sc">*</span> gk_bench )</span>
-<span id="cb10-52"><a href="postbenchmarking_ictpc.html#cb10-52" tabindex="-1"></a></span>
-<span id="cb10-53"><a href="postbenchmarking_ictpc.html#cb10-53" tabindex="-1"></a>diseno_encuesta <span class="ot">&lt;-</span> fit<span class="sc">$</span>encuesta_mrp <span class="sc">%&gt;%</span> </span>
-<span id="cb10-54"><a href="postbenchmarking_ictpc.html#cb10-54" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yk_dir =</span> yk) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-55"><a href="postbenchmarking_ictpc.html#cb10-55" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(<span class="at">weights =</span> fep)</span>
-<span id="cb10-56"><a href="postbenchmarking_ictpc.html#cb10-56" tabindex="-1"></a></span>
-<span id="cb10-57"><a href="postbenchmarking_ictpc.html#cb10-57" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">predict</span>(fit<span class="sc">$</span>fit_mrp,<span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb10-58"><a href="postbenchmarking_ictpc.html#cb10-58" tabindex="-1"></a><span class="fu">mean</span>(diseno_encuesta<span class="sc">$</span>variables<span class="sc">$</span>yk)</span>
-<span id="cb10-59"><a href="postbenchmarking_ictpc.html#cb10-59" tabindex="-1"></a></span>
-<span id="cb10-60"><a href="postbenchmarking_ictpc.html#cb10-60" tabindex="-1"></a><span class="do">## validación nacional.</span></span>
-<span id="cb10-61"><a href="postbenchmarking_ictpc.html#cb10-61" tabindex="-1"></a><span class="fu">cbind</span>(</span>
-<span id="cb10-62"><a href="postbenchmarking_ictpc.html#cb10-62" tabindex="-1"></a>  diseno_encuesta <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">Nacional_dir =</span> <span class="fu">survey_mean</span>(yk_dir)) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-63"><a href="postbenchmarking_ictpc.html#cb10-63" tabindex="-1"></a>    <span class="fu">select</span>(Nacional_dir),</span>
-<span id="cb10-64"><a href="postbenchmarking_ictpc.html#cb10-64" tabindex="-1"></a>  poststrat_df <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(</span>
-<span id="cb10-65"><a href="postbenchmarking_ictpc.html#cb10-65" tabindex="-1"></a>    <span class="at">Nacional_lmer =</span> <span class="fu">sum</span>(n <span class="sc">*</span> yk_lmer) <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
-<span id="cb10-66"><a href="postbenchmarking_ictpc.html#cb10-66" tabindex="-1"></a>    <span class="at">Nacional_bench =</span> <span class="fu">sum</span>(n <span class="sc">*</span> yk_bench) <span class="sc">/</span> <span class="fu">sum</span>(n<span class="sc">*</span>gk_bench),</span>
-<span id="cb10-67"><a href="postbenchmarking_ictpc.html#cb10-67" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> <span class="fu">print</span>()</span>
-<span id="cb10-68"><a href="postbenchmarking_ictpc.html#cb10-68" tabindex="-1"></a></span>
-<span id="cb10-69"><a href="postbenchmarking_ictpc.html#cb10-69" tabindex="-1"></a></span>
-<span id="cb10-70"><a href="postbenchmarking_ictpc.html#cb10-70" tabindex="-1"></a><span class="do">###########################################</span></span>
-<span id="cb10-71"><a href="postbenchmarking_ictpc.html#cb10-71" tabindex="-1"></a><span class="do">### Validaciones por subgrupo completo  </span><span class="al">###</span></span>
-<span id="cb10-72"><a href="postbenchmarking_ictpc.html#cb10-72" tabindex="-1"></a><span class="do">###########################################</span></span>
-<span id="cb10-73"><a href="postbenchmarking_ictpc.html#cb10-73" tabindex="-1"></a></span>
-<span id="cb10-74"><a href="postbenchmarking_ictpc.html#cb10-74" tabindex="-1"></a>subgrupo <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
-<span id="cb10-75"><a href="postbenchmarking_ictpc.html#cb10-75" tabindex="-1"></a>              <span class="st">&quot;area&quot;</span>,</span>
-<span id="cb10-76"><a href="postbenchmarking_ictpc.html#cb10-76" tabindex="-1"></a>              <span class="st">&quot;sexo&quot;</span>,</span>
-<span id="cb10-77"><a href="postbenchmarking_ictpc.html#cb10-77" tabindex="-1"></a>              <span class="st">&quot;edad&quot;</span>,</span>
-<span id="cb10-78"><a href="postbenchmarking_ictpc.html#cb10-78" tabindex="-1"></a>              <span class="st">&quot;discapacidad&quot;</span>,</span>
-<span id="cb10-79"><a href="postbenchmarking_ictpc.html#cb10-79" tabindex="-1"></a>              <span class="st">&quot;hlengua&quot;</span>,<span class="st">&quot;nivel_edu&quot;</span>)</span>
-<span id="cb10-80"><a href="postbenchmarking_ictpc.html#cb10-80" tabindex="-1"></a></span>
-<span id="cb10-81"><a href="postbenchmarking_ictpc.html#cb10-81" tabindex="-1"></a></span>
-<span id="cb10-82"><a href="postbenchmarking_ictpc.html#cb10-82" tabindex="-1"></a>plot_subgrupo <span class="ot">&lt;-</span> <span class="fu">map</span>(</span>
-<span id="cb10-83"><a href="postbenchmarking_ictpc.html#cb10-83" tabindex="-1"></a>  <span class="at">.x =</span> <span class="fu">setNames</span>(subgrupo, subgrupo),</span>
-<span id="cb10-84"><a href="postbenchmarking_ictpc.html#cb10-84" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">plot_uni_validacion</span>(</span>
-<span id="cb10-85"><a href="postbenchmarking_ictpc.html#cb10-85" tabindex="-1"></a>    <span class="at">sample_diseno =</span> diseno_encuesta,</span>
-<span id="cb10-86"><a href="postbenchmarking_ictpc.html#cb10-86" tabindex="-1"></a>    <span class="at">poststrat =</span> poststrat_df,</span>
-<span id="cb10-87"><a href="postbenchmarking_ictpc.html#cb10-87" tabindex="-1"></a>    <span class="at">by1 =</span> .x</span>
-<span id="cb10-88"><a href="postbenchmarking_ictpc.html#cb10-88" tabindex="-1"></a>  )</span>
-<span id="cb10-89"><a href="postbenchmarking_ictpc.html#cb10-89" tabindex="-1"></a>)</span>
-<span id="cb10-90"><a href="postbenchmarking_ictpc.html#cb10-90" tabindex="-1"></a></span>
-<span id="cb10-91"><a href="postbenchmarking_ictpc.html#cb10-91" tabindex="-1"></a></span>
-<span id="cb10-92"><a href="postbenchmarking_ictpc.html#cb10-92" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>tabla <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(n_sample) ) <span class="sc">%&gt;%</span></span>
-<span id="cb10-93"><a href="postbenchmarking_ictpc.html#cb10-93" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ER =</span> <span class="fu">abs</span>((directo <span class="sc">-</span> stan_lmer)<span class="sc">/</span>directo )<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-94"><a href="postbenchmarking_ictpc.html#cb10-94" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(sexo<span class="sc">:</span>directo_upp,stan_lmer, ER)</span>
-<span id="cb10-95"><a href="postbenchmarking_ictpc.html#cb10-95" tabindex="-1"></a></span>
-<span id="cb10-96"><a href="postbenchmarking_ictpc.html#cb10-96" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>ent<span class="sc">$</span>gg_plot</span>
-<span id="cb10-97"><a href="postbenchmarking_ictpc.html#cb10-97" tabindex="-1"></a></span>
-<span id="cb10-98"><a href="postbenchmarking_ictpc.html#cb10-98" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>nivel_edu<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
-<span id="cb10-99"><a href="postbenchmarking_ictpc.html#cb10-99" tabindex="-1"></a>  plot_subgrupo<span class="sc">$</span>edad<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>hlengua<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
-<span id="cb10-100"><a href="postbenchmarking_ictpc.html#cb10-100" tabindex="-1"></a>  plot_subgrupo<span class="sc">$</span>area<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>discapacidad<span class="sc">$</span>gg_plot  </span>
-<span id="cb10-101"><a href="postbenchmarking_ictpc.html#cb10-101" tabindex="-1"></a></span>
-<span id="cb10-102"><a href="postbenchmarking_ictpc.html#cb10-102" tabindex="-1"></a>plot_uni <span class="ot">&lt;-</span> plot_subgrupo<span class="sc">$</span>ent<span class="sc">$</span>gg_plot  <span class="sc">/</span></span>
-<span id="cb10-103"><a href="postbenchmarking_ictpc.html#cb10-103" tabindex="-1"></a>  (</span>
-<span id="cb10-104"><a href="postbenchmarking_ictpc.html#cb10-104" tabindex="-1"></a>    plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>nivel_edu<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
-<span id="cb10-105"><a href="postbenchmarking_ictpc.html#cb10-105" tabindex="-1"></a>      plot_subgrupo<span class="sc">$</span>edad<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>hlengua<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
-<span id="cb10-106"><a href="postbenchmarking_ictpc.html#cb10-106" tabindex="-1"></a>      plot_subgrupo<span class="sc">$</span>area<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>discapacidad<span class="sc">$</span>gg_plot</span>
-<span id="cb10-107"><a href="postbenchmarking_ictpc.html#cb10-107" tabindex="-1"></a>  )</span>
-<span id="cb10-108"><a href="postbenchmarking_ictpc.html#cb10-108" tabindex="-1"></a></span>
-<span id="cb10-109"><a href="postbenchmarking_ictpc.html#cb10-109" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">plot =</span> plot_uni,</span>
-<span id="cb10-110"><a href="postbenchmarking_ictpc.html#cb10-110" tabindex="-1"></a>       <span class="at">filename =</span> <span class="st">&quot;../output/2020/modelos/plot_uni.jpg&quot;</span>,</span>
-<span id="cb10-111"><a href="postbenchmarking_ictpc.html#cb10-111" tabindex="-1"></a>       <span class="at">scale =</span> <span class="dv">3</span>)</span>
-<span id="cb10-112"><a href="postbenchmarking_ictpc.html#cb10-112" tabindex="-1"></a></span>
-<span id="cb10-113"><a href="postbenchmarking_ictpc.html#cb10-113" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span>  plot_subgrupo,</span>
-<span id="cb10-114"><a href="postbenchmarking_ictpc.html#cb10-114" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../output/2020/modelos/plot_uni.rds&quot;</span>)</span>
-<span id="cb10-115"><a href="postbenchmarking_ictpc.html#cb10-115" tabindex="-1"></a></span>
-<span id="cb10-116"><a href="postbenchmarking_ictpc.html#cb10-116" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span>  poststrat_df,</span>
-<span id="cb10-117"><a href="postbenchmarking_ictpc.html#cb10-117" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../input/2020/muestra_ampliada/poststrat_df_ictpc.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="postbenchmarking_ictpc.html#cb58-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span><span class="fu">ls</span>())</span>
+<span id="cb58-2"><a href="postbenchmarking_ictpc.html#cb58-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
+<span id="cb58-3"><a href="postbenchmarking_ictpc.html#cb58-3" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb58-4"><a href="postbenchmarking_ictpc.html#cb58-4" tabindex="-1"></a><span class="co"># Loading required libraries ----------------------------------------------</span></span>
+<span id="cb58-5"><a href="postbenchmarking_ictpc.html#cb58-5" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb58-6"><a href="postbenchmarking_ictpc.html#cb58-6" tabindex="-1"></a></span>
+<span id="cb58-7"><a href="postbenchmarking_ictpc.html#cb58-7" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb58-8"><a href="postbenchmarking_ictpc.html#cb58-8" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb58-9"><a href="postbenchmarking_ictpc.html#cb58-9" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
+<span id="cb58-10"><a href="postbenchmarking_ictpc.html#cb58-10" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb58-11"><a href="postbenchmarking_ictpc.html#cb58-11" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb58-12"><a href="postbenchmarking_ictpc.html#cb58-12" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb58-13"><a href="postbenchmarking_ictpc.html#cb58-13" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb58-14"><a href="postbenchmarking_ictpc.html#cb58-14" tabindex="-1"></a></span>
+<span id="cb58-15"><a href="postbenchmarking_ictpc.html#cb58-15" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb58-16"><a href="postbenchmarking_ictpc.html#cb58-16" tabindex="-1"></a><span class="co"># Lectura de funciones </span></span>
+<span id="cb58-17"><a href="postbenchmarking_ictpc.html#cb58-17" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb58-18"><a href="postbenchmarking_ictpc.html#cb58-18" tabindex="-1"></a></span>
+<span id="cb58-19"><a href="postbenchmarking_ictpc.html#cb58-19" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/Plot_validacion_bench.R&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span>
+<span id="cb58-20"><a href="postbenchmarking_ictpc.html#cb58-20" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/Benchmarking.R&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span>
+<span id="cb58-21"><a href="postbenchmarking_ictpc.html#cb58-21" tabindex="-1"></a></span>
+<span id="cb58-22"><a href="postbenchmarking_ictpc.html#cb58-22" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb58-23"><a href="postbenchmarking_ictpc.html#cb58-23" tabindex="-1"></a><span class="co"># Lectura del modelo </span></span>
+<span id="cb58-24"><a href="postbenchmarking_ictpc.html#cb58-24" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb58-25"><a href="postbenchmarking_ictpc.html#cb58-25" tabindex="-1"></a></span>
+<span id="cb58-26"><a href="postbenchmarking_ictpc.html#cb58-26" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)</span></code></pre></div>
+<div id="proceso-de-benchmarking" class="section level4 unnumbered hasAnchor">
+<h4>proceso de benchmarking<a href="postbenchmarking_ictpc.html#proceso-de-benchmarking" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="postbenchmarking_ictpc.html#cb59-1" tabindex="-1"></a>list_bench <span class="ot">&lt;-</span> <span class="fu">benchmarking</span>(<span class="at">modelo =</span> fit,</span>
+<span id="cb59-2"><a href="postbenchmarking_ictpc.html#cb59-2" tabindex="-1"></a>             <span class="at">names_cov =</span>   <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
+<span id="cb59-3"><a href="postbenchmarking_ictpc.html#cb59-3" tabindex="-1"></a>                             <span class="st">&quot;area&quot;</span>,</span>
+<span id="cb59-4"><a href="postbenchmarking_ictpc.html#cb59-4" tabindex="-1"></a>                             <span class="st">&quot;sexo&quot;</span>,</span>
+<span id="cb59-5"><a href="postbenchmarking_ictpc.html#cb59-5" tabindex="-1"></a>                             <span class="st">&quot;edad&quot;</span>,</span>
+<span id="cb59-6"><a href="postbenchmarking_ictpc.html#cb59-6" tabindex="-1"></a>                             <span class="st">&quot;discapacidad&quot;</span>,</span>
+<span id="cb59-7"><a href="postbenchmarking_ictpc.html#cb59-7" tabindex="-1"></a>                             <span class="st">&quot;hlengua&quot;</span>),                      </span>
+<span id="cb59-8"><a href="postbenchmarking_ictpc.html#cb59-8" tabindex="-1"></a>             <span class="at">metodo =</span> <span class="st">&quot;logit&quot;</span>)</span>
+<span id="cb59-9"><a href="postbenchmarking_ictpc.html#cb59-9" tabindex="-1"></a></span>
+<span id="cb59-10"><a href="postbenchmarking_ictpc.html#cb59-10" tabindex="-1"></a><span class="co"># saveRDS(list_bench,&quot;output/2020/plots/ictpc/list_bench.rds&quot;)</span></span>
+<span id="cb59-11"><a href="postbenchmarking_ictpc.html#cb59-11" tabindex="-1"></a><span class="co"># list_bench &lt;- readRDS(&quot;output/2020/plots/ictpc/list_bench.rds&quot;)</span></span></code></pre></div>
+</div>
+<div id="validaciones-y-plot-uni" class="section level4 unnumbered hasAnchor">
+<h4>Validaciones y plot uni<a href="postbenchmarking_ictpc.html#validaciones-y-plot-uni" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="postbenchmarking_ictpc.html#cb60-1" tabindex="-1"></a>poststrat_df <span class="ot">&lt;-</span> fit<span class="sc">$</span>poststrat_df <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span>  </span>
+<span id="cb60-2"><a href="postbenchmarking_ictpc.html#cb60-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yk_lmer =</span> yk,</span>
+<span id="cb60-3"><a href="postbenchmarking_ictpc.html#cb60-3" tabindex="-1"></a>         <span class="at">gk_bench =</span> list_bench<span class="sc">$</span>gk_bench,</span>
+<span id="cb60-4"><a href="postbenchmarking_ictpc.html#cb60-4" tabindex="-1"></a>         <span class="at">yk_bench =</span> yk <span class="sc">*</span> gk_bench )</span>
+<span id="cb60-5"><a href="postbenchmarking_ictpc.html#cb60-5" tabindex="-1"></a></span>
+<span id="cb60-6"><a href="postbenchmarking_ictpc.html#cb60-6" tabindex="-1"></a>diseno_encuesta <span class="ot">&lt;-</span> fit<span class="sc">$</span>encuesta_mrp <span class="sc">%&gt;%</span> </span>
+<span id="cb60-7"><a href="postbenchmarking_ictpc.html#cb60-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yk_dir =</span> yk) <span class="sc">%&gt;%</span> </span>
+<span id="cb60-8"><a href="postbenchmarking_ictpc.html#cb60-8" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(<span class="at">weights =</span> fep)</span>
+<span id="cb60-9"><a href="postbenchmarking_ictpc.html#cb60-9" tabindex="-1"></a></span>
+<span id="cb60-10"><a href="postbenchmarking_ictpc.html#cb60-10" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">predict</span>(fit<span class="sc">$</span>fit_mrp,<span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb60-11"><a href="postbenchmarking_ictpc.html#cb60-11" tabindex="-1"></a><span class="fu">mean</span>(diseno_encuesta<span class="sc">$</span>variables<span class="sc">$</span>yk)</span>
+<span id="cb60-12"><a href="postbenchmarking_ictpc.html#cb60-12" tabindex="-1"></a></span>
+<span id="cb60-13"><a href="postbenchmarking_ictpc.html#cb60-13" tabindex="-1"></a><span class="do">## validación nacional.</span></span>
+<span id="cb60-14"><a href="postbenchmarking_ictpc.html#cb60-14" tabindex="-1"></a><span class="fu">cbind</span>(</span>
+<span id="cb60-15"><a href="postbenchmarking_ictpc.html#cb60-15" tabindex="-1"></a>  diseno_encuesta <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">Nacional_dir =</span> <span class="fu">survey_mean</span>(yk_dir)) <span class="sc">%&gt;%</span> </span>
+<span id="cb60-16"><a href="postbenchmarking_ictpc.html#cb60-16" tabindex="-1"></a>    <span class="fu">select</span>(Nacional_dir),</span>
+<span id="cb60-17"><a href="postbenchmarking_ictpc.html#cb60-17" tabindex="-1"></a>  poststrat_df <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(</span>
+<span id="cb60-18"><a href="postbenchmarking_ictpc.html#cb60-18" tabindex="-1"></a>    <span class="at">Nacional_lmer =</span> <span class="fu">sum</span>(n <span class="sc">*</span> yk_lmer) <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
+<span id="cb60-19"><a href="postbenchmarking_ictpc.html#cb60-19" tabindex="-1"></a>    <span class="at">Nacional_bench =</span> <span class="fu">sum</span>(n <span class="sc">*</span> yk_bench) <span class="sc">/</span> <span class="fu">sum</span>(n<span class="sc">*</span>gk_bench),</span>
+<span id="cb60-20"><a href="postbenchmarking_ictpc.html#cb60-20" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> <span class="fu">print</span>()</span></code></pre></div>
+</div>
+<div id="validaciones-por-subgrupo-completo" class="section level4 unnumbered hasAnchor">
+<h4>Validaciones por subgrupo completo<a href="postbenchmarking_ictpc.html#validaciones-por-subgrupo-completo" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="postbenchmarking_ictpc.html#cb61-1" tabindex="-1"></a>subgrupo <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
+<span id="cb61-2"><a href="postbenchmarking_ictpc.html#cb61-2" tabindex="-1"></a>              <span class="st">&quot;area&quot;</span>,</span>
+<span id="cb61-3"><a href="postbenchmarking_ictpc.html#cb61-3" tabindex="-1"></a>              <span class="st">&quot;sexo&quot;</span>,</span>
+<span id="cb61-4"><a href="postbenchmarking_ictpc.html#cb61-4" tabindex="-1"></a>              <span class="st">&quot;edad&quot;</span>,</span>
+<span id="cb61-5"><a href="postbenchmarking_ictpc.html#cb61-5" tabindex="-1"></a>              <span class="st">&quot;discapacidad&quot;</span>,</span>
+<span id="cb61-6"><a href="postbenchmarking_ictpc.html#cb61-6" tabindex="-1"></a>              <span class="st">&quot;hlengua&quot;</span>,<span class="st">&quot;nivel_edu&quot;</span>)</span>
+<span id="cb61-7"><a href="postbenchmarking_ictpc.html#cb61-7" tabindex="-1"></a></span>
+<span id="cb61-8"><a href="postbenchmarking_ictpc.html#cb61-8" tabindex="-1"></a></span>
+<span id="cb61-9"><a href="postbenchmarking_ictpc.html#cb61-9" tabindex="-1"></a>plot_subgrupo <span class="ot">&lt;-</span> <span class="fu">map</span>(</span>
+<span id="cb61-10"><a href="postbenchmarking_ictpc.html#cb61-10" tabindex="-1"></a>  <span class="at">.x =</span> <span class="fu">setNames</span>(subgrupo, subgrupo),</span>
+<span id="cb61-11"><a href="postbenchmarking_ictpc.html#cb61-11" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">plot_uni_validacion</span>(</span>
+<span id="cb61-12"><a href="postbenchmarking_ictpc.html#cb61-12" tabindex="-1"></a>    <span class="at">sample_diseno =</span> diseno_encuesta,</span>
+<span id="cb61-13"><a href="postbenchmarking_ictpc.html#cb61-13" tabindex="-1"></a>    <span class="at">poststrat =</span> poststrat_df,</span>
+<span id="cb61-14"><a href="postbenchmarking_ictpc.html#cb61-14" tabindex="-1"></a>    <span class="at">by1 =</span> .x</span>
+<span id="cb61-15"><a href="postbenchmarking_ictpc.html#cb61-15" tabindex="-1"></a>  )</span>
+<span id="cb61-16"><a href="postbenchmarking_ictpc.html#cb61-16" tabindex="-1"></a>)</span>
+<span id="cb61-17"><a href="postbenchmarking_ictpc.html#cb61-17" tabindex="-1"></a></span>
+<span id="cb61-18"><a href="postbenchmarking_ictpc.html#cb61-18" tabindex="-1"></a></span>
+<span id="cb61-19"><a href="postbenchmarking_ictpc.html#cb61-19" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>tabla <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(n_sample) ) <span class="sc">%&gt;%</span></span>
+<span id="cb61-20"><a href="postbenchmarking_ictpc.html#cb61-20" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ER =</span> <span class="fu">abs</span>((directo <span class="sc">-</span> stan_lmer)<span class="sc">/</span>directo )<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-21"><a href="postbenchmarking_ictpc.html#cb61-21" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(sexo<span class="sc">:</span>directo_upp,stan_lmer, ER)</span>
+<span id="cb61-22"><a href="postbenchmarking_ictpc.html#cb61-22" tabindex="-1"></a></span>
+<span id="cb61-23"><a href="postbenchmarking_ictpc.html#cb61-23" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>ent<span class="sc">$</span>gg_plot</span>
+<span id="cb61-24"><a href="postbenchmarking_ictpc.html#cb61-24" tabindex="-1"></a></span>
+<span id="cb61-25"><a href="postbenchmarking_ictpc.html#cb61-25" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>nivel_edu<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
+<span id="cb61-26"><a href="postbenchmarking_ictpc.html#cb61-26" tabindex="-1"></a>  plot_subgrupo<span class="sc">$</span>edad<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>hlengua<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
+<span id="cb61-27"><a href="postbenchmarking_ictpc.html#cb61-27" tabindex="-1"></a>  plot_subgrupo<span class="sc">$</span>area<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>discapacidad<span class="sc">$</span>gg_plot  </span>
+<span id="cb61-28"><a href="postbenchmarking_ictpc.html#cb61-28" tabindex="-1"></a></span>
+<span id="cb61-29"><a href="postbenchmarking_ictpc.html#cb61-29" tabindex="-1"></a>plot_uni <span class="ot">&lt;-</span> plot_subgrupo<span class="sc">$</span>ent<span class="sc">$</span>gg_plot  <span class="sc">/</span></span>
+<span id="cb61-30"><a href="postbenchmarking_ictpc.html#cb61-30" tabindex="-1"></a>  (</span>
+<span id="cb61-31"><a href="postbenchmarking_ictpc.html#cb61-31" tabindex="-1"></a>    plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>nivel_edu<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
+<span id="cb61-32"><a href="postbenchmarking_ictpc.html#cb61-32" tabindex="-1"></a>      plot_subgrupo<span class="sc">$</span>edad<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>hlengua<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
+<span id="cb61-33"><a href="postbenchmarking_ictpc.html#cb61-33" tabindex="-1"></a>      plot_subgrupo<span class="sc">$</span>area<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>discapacidad<span class="sc">$</span>gg_plot</span>
+<span id="cb61-34"><a href="postbenchmarking_ictpc.html#cb61-34" tabindex="-1"></a>  )</span>
+<span id="cb61-35"><a href="postbenchmarking_ictpc.html#cb61-35" tabindex="-1"></a></span>
+<span id="cb61-36"><a href="postbenchmarking_ictpc.html#cb61-36" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">plot =</span> plot_uni,</span>
+<span id="cb61-37"><a href="postbenchmarking_ictpc.html#cb61-37" tabindex="-1"></a>       <span class="at">filename =</span> <span class="st">&quot;../output/2020/modelos/plot_uni.jpg&quot;</span>,</span>
+<span id="cb61-38"><a href="postbenchmarking_ictpc.html#cb61-38" tabindex="-1"></a>       <span class="at">scale =</span> <span class="dv">3</span>)</span>
+<span id="cb61-39"><a href="postbenchmarking_ictpc.html#cb61-39" tabindex="-1"></a></span>
+<span id="cb61-40"><a href="postbenchmarking_ictpc.html#cb61-40" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span>  plot_subgrupo,</span>
+<span id="cb61-41"><a href="postbenchmarking_ictpc.html#cb61-41" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../output/2020/modelos/plot_uni.rds&quot;</span>)</span>
+<span id="cb61-42"><a href="postbenchmarking_ictpc.html#cb61-42" tabindex="-1"></a></span>
+<span id="cb61-43"><a href="postbenchmarking_ictpc.html#cb61-43" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span>  poststrat_df,</span>
+<span id="cb61-44"><a href="postbenchmarking_ictpc.html#cb61-44" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../input/2020/muestra_ampliada/poststrat_df_ictpc.rds&quot;</span>)</span></code></pre></div>
 
+</div>
 </div>
             </section>
 

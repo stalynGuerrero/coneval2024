@@ -9,6 +9,11 @@ En la selección de variables relevantes, se mencionan algunos pasos comentados 
 Finalmente, se realiza una transformación la variable de ingreso (`ingreso`) a formato numérico y se ajusta el modelo utilizando la función `modelo_ingreso`, que está definida en el archivo fuente cargado previamente. Los datos de entrada incluyen `encuesta_sta`, `statelevel_predictors_df`, `censo_sta` y la fórmula del modelo. Los resultados del modelo se guardan en un archivo RDS (`fit_mrp_ictpc.rds`). Se generan y guardan gráficos de densidad y histogramas de las distribuciones posteriores utilizando `ggsave`, proporcionando una visualización clara de los resultados obtenidos.
 
 
+#### Limpieza del Entorno y Carga de Bibliotecas {-}
+
+Se limpia el entorno de R y se cargan las bibliotecas necesarias para el análisis.
+
+
 ``` r
 rm(list =ls())
 
@@ -22,8 +27,14 @@ library(magrittr)
 library(caret)
 library(car)
 source("../source/modelos_freq.R")
+```
+
+#### Variables de Agregación {-}
+
+Se define un vector de variables que se utilizarán para la agregación de datos.
 
 
+``` r
 byAgrega <-
   c("ent",
     "cve_mun",
@@ -33,7 +44,14 @@ byAgrega <-
     "discapacidad",
     "hlengua",
     "nivel_edu" )
+```
 
+#### Carga de Datos {-}
+
+Se cargan los datos de la encuesta, el censo y los predictores a nivel estatal.
+
+
+``` r
 # Loading data ------------------------------------------------------------
 memory.limit(10000000)
 encuesta_sta <- readRDS("../input/2020/enigh/encuesta_sta.rds")
@@ -42,7 +60,14 @@ statelevel_predictors_df <- readRDS("../input/2020/predictores/statelevel_predic
 
 cov_names <- names(statelevel_predictors_df)
 cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
+```
 
+#### Selección de Variables {-}
+
+Se seleccionan las variables predictoras que se utilizarán en el modelo.
+
+
+``` r
 # Selección de variables
 
 # encuesta_sta2 <- encuesta_sta %>% group_by_at((byAgrega)) %>%
@@ -58,8 +83,6 @@ cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
 #     sizes = c(1:10),
 #     rfeControl = rfeControl(functions = lmFuncs, method = "LOOCV")
 #   )
-# saveRDS(resultado_rfe, "01_2020/01_ingreso_medio/Data/modelo/resultado_rfe.rds")
-# resultado_rfe <- readRDS("01_2020/01_ingreso_medio/Data/modelo/resultado_rfe.rds")
 
 variables_seleccionadas <-
   c(
@@ -97,18 +120,28 @@ cov_registros <- setdiff(
     "ql_porc_cpa_rur"
   )
 )
+```
+
+#### Fórmula del Modelo {-}
+
+Se define la fórmula del modelo incluyendo los efectos aleatorios y las variables predictoras seleccionadas.
 
 
-
+``` r
 cov_registros <- paste0(cov_registros, collapse = " + ")
 
 formula_model <- 
   paste0("ingreso ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) + ent + nivel_edu +  edad + area + sexo +", 
       " + ", cov_registros)
+```
 
+#### Ajuste del Modelo {-}
+
+Se ajusta el modelo de ingreso utilizando la función `modelo_ingreso` y se guarda el resultado.
+
+
+``` r
 encuesta_sta$ingreso <- as.numeric(encuesta_sta$ictpc)
-
-
 
 fit <- modelo_ingreso(
   encuesta_sta = encuesta_sta ,
@@ -127,4 +160,3 @@ ggsave(plot = fit$plot_densy,
        "../output/2020/plots/01_densidad_ictpc.png",scale = 3)
 fit$plot_hist_post
 ```
-

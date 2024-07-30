@@ -330,7 +330,7 @@ encuesta_enigh <-
 ```
 
 
-#### Predicción con los Modelos Ajustados
+#### Predicción con los Modelos Ajustados {-}
 
 Se generan predicciones para las variables de interés (`ingreso`, `ic_ali_nc`, `ic_segsoc`) usando los modelos ajustados (`fit_ingreso`, `fit_alimento`, `fit_segsoc`) y el conjunto de datos `muestra_ampliada`. Se permite el uso de nuevos niveles en las predicciones.
 
@@ -352,7 +352,7 @@ pred_segsoc <- predict(fit_segsoc,
                        type = "response")
 ```
 
-#### Creación de Variables Dummy y Preparación de Datos
+#### Creación de Variables Dummy y Preparación de Datos {-}
 
 Aquí, se crean variables dummy para indicadores de salud, seguridad social, y otras características. Luego, se preparan datos adicionales para `muestra_ampliada_pred`, generando variables simuladas (`ic_segsoc`, `ic_ali_nc`) y ajustando el ingreso con ruido aleatorio. Se calcula el total del índice de carencias (`tol_ic`).
 
@@ -376,7 +376,7 @@ muestra_ampliada_pred <-
 ```
 
 
-#### Validación de las Predicciones
+#### Validación de las Predicciones {-}
 
 Se validan las predicciones comparando las medias de las variables simuladas con las predicciones generadas por los modelos. Se calcula la diferencia entre estas medias para verificar la precisión de las predicciones.
 
@@ -393,7 +393,7 @@ mean(muestra_ampliada_pred$ingreso) -
 ```
 
 
-#### Cálculo del Índice de Pobreza Multidimensional (IPM) con Predicciones
+#### Cálculo del Índice de Pobreza Multidimensional (IPM) con Predicciones {-}
 
 Se clasifica la población en diferentes categorías de pobreza multidimensional (`ipm`) y se identifican las personas en pobreza moderada y extrema. Se calcula la proporción de cada categoría en `muestra_ampliada_pred`.
 
@@ -412,7 +412,7 @@ muestra_ampliada_pred <- muestra_ampliada_pred %>% mutate(
 prop.table(table(muestra_ampliada_pred$ipm))
 ```
 
-#### Estimación y Comparación del IPM con Predicciones
+#### Estimación y Comparación del IPM con Predicciones {-}
 
 Se estima el IPM para las predicciones y se compara con la estimación real basada en `encuesta_enigh`. Se calculan las proporciones de cada categoría IPM para ambas estimaciones.
 
@@ -429,7 +429,7 @@ encuesta_enigh %>% group_by(ipm) %>%
 ```
 
 
-#### Ajuste de las Predicciones y Calibración
+#### Ajuste de las Predicciones y Calibración {-}
 
 Se actualizan las variables de `muestra_ampliada_pred` con información adicional y se elimina cualquier dato faltante en `encuesta_enigh`.
 
@@ -448,7 +448,7 @@ encuesta_enigh %<>% na.omit()
 ```
 
 
-#### Cálculo de la Población y Pobreza por Municipio
+#### Cálculo de la Población y Pobreza por Municipio {-}
 
 Se calcula la densidad de población por municipio y se determina el porcentaje de población en cada categoría de IPM. Se estima la pobreza moderada y extrema en función de las encuestas y la población total.
 
@@ -474,7 +474,7 @@ pobreza <-  encuesta_enigh %>% summarise(
 
 
 
-#### Iteraciones de Calibración
+#### Iteraciones de Calibración {-}
 
 Este bloque realiza iteraciones para ajustar y calibrar los datos, actualizando las predicciones en cada iteración y comparando los resultados con la población real. Se calculan y guardan los resultados en archivos `.rds` para cada iteración.
 

@@ -6,13 +6,12 @@ Este código en R se enfoca en el procesamiento y análisis de datos geoespacial
 
 En la segunda parte, se realiza la limpieza y transformación de datos espaciales. Se cargan y transforman archivos shapefiles de México a un sistema de referencia de coordenadas adecuado y se convierten a un formato `MULTIPOLYGON`. Luego, se extraen y procesan datos de imágenes satelitales para diversas variables como luminosidad, urbanización, y distancia a servicios de salud utilizando colecciones de imágenes de Google Earth Engine. Estos datos se agrupan por región y se guardan en archivos RDS para su análisis posterior. Finalmente, se combinan todos los datos procesados en un único dataframe y se escalan para prepararlos para su uso en modelos o análisis adicionales.
 
+#### Lectura de libreías {-}
+
 
 ``` r
 rm(list = ls())
 
-#################
-### Libraries ###
-#################
 memory.limit(500000)
 
 library(tidyverse)
@@ -24,11 +23,12 @@ library(geojsonio)
 library(magrittr)
 library(furrr)
 library(readr)
+```
 
-#######################################
-### configuración inicial de Python ###
-#######################################
+#### configuración inicial de Python {-}
 
+
+``` r
 rgee_environment_dir <-reticulate::conda_list()
 rgee_environment_dir <- rgee_environment_dir[rgee_environment_dir$name == "rgee_py",2]
 reticulate::use_python(rgee_environment_dir, required = T )
@@ -39,10 +39,12 @@ rgee::ee_install_set_pyenv(py_path = rgee_environment_dir, py_env = "rgee_py")
 Sys.setenv(RETICULATE_PYTHON = rgee_environment_dir)
 Sys.setenv(EARTHENGINE_PYTHON = rgee_environment_dir)
 rgee::ee_Initialize(drive = T)
-###################################################
-### Arreglar la shape                           ###
-###################################################
+```
 
+#### Arreglar la shape {-}
+
+
+``` r
 # plan(multisession, workers = 2)
 # 
 # MEX <- list.files("shapefile/2020/", pattern = "shp$",
@@ -75,10 +77,12 @@ rgee::ee_Initialize(drive = T)
 MEX <- read_sf("../shapefile/2020/MEX_2020.shp")
 
 MEX %<>% mutate(ent = substr(CVEGEO,1,2))
+```
 
-###################
-### Luminosidad ###
-###################
+#### Descargar las imegenes satelitales  {-}
+
+
+``` r
 #https://developers.google.com/earth-engine/datasets/catalog/NOAA_VIIRS_DNB_ANNUAL_V21#bands
 
 luces = ee$ImageCollection("NOAA/VIIRS/DNB/ANNUAL_V21") %>%
@@ -187,12 +191,12 @@ MEX_GHM %<>% bind_rows()
 MEX_GHM %>% filter(is.na(X2016_gHM )) %>% select(CVEGEO) 
 
 saveRDS(MEX_GHM, "../output/2020/Satelital/MEX_GHM.rds")
+```
+
+#### Unir y guardar los resultados de las descargas realizadas {-}
 
 
-###############
-### Guardar ###
-###############
-
+``` r
 statelevel_predictors_df <-
     list.files("../output/2020/Satelital/", full.names = TRUE) %>%
   map( ~ readRDS(file = .x)) %>%

@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2024-07-29" />
+<meta name="date" content="2024-07-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -204,211 +204,204 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Para la ejecución del presente archivo, debe abrir el archivo <strong>01_Descarga_satelitales.R</strong> disponible en la ruta <em>Rcodes/2020/01_Descarga_satelitales.R</em>.</p>
 <p>Este código en R se enfoca en el procesamiento y análisis de datos geoespaciales utilizando una combinación de bibliotecas y herramientas de Google Earth Engine. La primera parte del script configura el entorno de trabajo, carga las librerías necesarias, y establece la conexión con Python mediante la biblioteca <code>reticulate</code>, esencial para trabajar con <code>rgee</code>, que es la interfaz de R para Google Earth Engine.</p>
 <p>En la segunda parte, se realiza la limpieza y transformación de datos espaciales. Se cargan y transforman archivos shapefiles de México a un sistema de referencia de coordenadas adecuado y se convierten a un formato <code>MULTIPOLYGON</code>. Luego, se extraen y procesan datos de imágenes satelitales para diversas variables como luminosidad, urbanización, y distancia a servicios de salud utilizando colecciones de imágenes de Google Earth Engine. Estos datos se agrupan por región y se guardan en archivos RDS para su análisis posterior. Finalmente, se combinan todos los datos procesados en un único dataframe y se escalan para prepararlos para su uso en modelos o análisis adicionales.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="descarga_satelitales.html#cb2-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb2-2"><a href="descarga_satelitales.html#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="descarga_satelitales.html#cb2-3" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb2-4"><a href="descarga_satelitales.html#cb2-4" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
-<span id="cb2-5"><a href="descarga_satelitales.html#cb2-5" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb2-6"><a href="descarga_satelitales.html#cb2-6" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">500000</span>)</span>
-<span id="cb2-7"><a href="descarga_satelitales.html#cb2-7" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="descarga_satelitales.html#cb2-8" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb2-9"><a href="descarga_satelitales.html#cb2-9" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
-<span id="cb2-10"><a href="descarga_satelitales.html#cb2-10" tabindex="-1"></a><span class="fu">library</span>(rgee) <span class="co"># Conexión con Google Earth Engine</span></span>
-<span id="cb2-11"><a href="descarga_satelitales.html#cb2-11" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># Paquete para manejar datos geográficos</span></span>
-<span id="cb2-12"><a href="descarga_satelitales.html#cb2-12" tabindex="-1"></a><span class="fu">library</span>(concaveman)</span>
-<span id="cb2-13"><a href="descarga_satelitales.html#cb2-13" tabindex="-1"></a><span class="fu">library</span>(geojsonio)</span>
-<span id="cb2-14"><a href="descarga_satelitales.html#cb2-14" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb2-15"><a href="descarga_satelitales.html#cb2-15" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
-<span id="cb2-16"><a href="descarga_satelitales.html#cb2-16" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb2-17"><a href="descarga_satelitales.html#cb2-17" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="descarga_satelitales.html#cb2-18" tabindex="-1"></a><span class="do">#######################################</span></span>
-<span id="cb2-19"><a href="descarga_satelitales.html#cb2-19" tabindex="-1"></a><span class="do">### configuración inicial de Python </span><span class="al">###</span></span>
-<span id="cb2-20"><a href="descarga_satelitales.html#cb2-20" tabindex="-1"></a><span class="do">#######################################</span></span>
-<span id="cb2-21"><a href="descarga_satelitales.html#cb2-21" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="descarga_satelitales.html#cb2-22" tabindex="-1"></a>rgee_environment_dir <span class="ot">&lt;-</span>reticulate<span class="sc">::</span><span class="fu">conda_list</span>()</span>
-<span id="cb2-23"><a href="descarga_satelitales.html#cb2-23" tabindex="-1"></a>rgee_environment_dir <span class="ot">&lt;-</span> rgee_environment_dir[rgee_environment_dir<span class="sc">$</span>name <span class="sc">==</span> <span class="st">&quot;rgee_py&quot;</span>,<span class="dv">2</span>]</span>
-<span id="cb2-24"><a href="descarga_satelitales.html#cb2-24" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_python</span>(rgee_environment_dir, <span class="at">required =</span> T )</span>
-<span id="cb2-25"><a href="descarga_satelitales.html#cb2-25" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">py_config</span>()</span>
-<span id="cb2-26"><a href="descarga_satelitales.html#cb2-26" tabindex="-1"></a><span class="fu">library</span>(reticulate) <span class="co"># Conexión con Python</span></span>
-<span id="cb2-27"><a href="descarga_satelitales.html#cb2-27" tabindex="-1"></a></span>
-<span id="cb2-28"><a href="descarga_satelitales.html#cb2-28" tabindex="-1"></a>rgee<span class="sc">::</span><span class="fu">ee_install_set_pyenv</span>(<span class="at">py_path =</span> rgee_environment_dir, <span class="at">py_env =</span> <span class="st">&quot;rgee_py&quot;</span>)</span>
-<span id="cb2-29"><a href="descarga_satelitales.html#cb2-29" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">RETICULATE_PYTHON =</span> rgee_environment_dir)</span>
-<span id="cb2-30"><a href="descarga_satelitales.html#cb2-30" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">EARTHENGINE_PYTHON =</span> rgee_environment_dir)</span>
-<span id="cb2-31"><a href="descarga_satelitales.html#cb2-31" tabindex="-1"></a>rgee<span class="sc">::</span><span class="fu">ee_Initialize</span>(<span class="at">drive =</span> T)</span>
-<span id="cb2-32"><a href="descarga_satelitales.html#cb2-32" tabindex="-1"></a><span class="do">###################################################</span></span>
-<span id="cb2-33"><a href="descarga_satelitales.html#cb2-33" tabindex="-1"></a><span class="do">### Arreglar la shape                           </span><span class="al">###</span></span>
-<span id="cb2-34"><a href="descarga_satelitales.html#cb2-34" tabindex="-1"></a><span class="do">###################################################</span></span>
-<span id="cb2-35"><a href="descarga_satelitales.html#cb2-35" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="descarga_satelitales.html#cb2-36" tabindex="-1"></a><span class="co"># plan(multisession, workers = 2)</span></span>
-<span id="cb2-37"><a href="descarga_satelitales.html#cb2-37" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-38"><a href="descarga_satelitales.html#cb2-38" tabindex="-1"></a><span class="co"># MEX &lt;- list.files(&quot;shapefile/2020/&quot;, pattern = &quot;shp$&quot;,</span></span>
-<span id="cb2-39"><a href="descarga_satelitales.html#cb2-39" tabindex="-1"></a><span class="co">#            full.names = TRUE) %&gt;%</span></span>
-<span id="cb2-40"><a href="descarga_satelitales.html#cb2-40" tabindex="-1"></a><span class="co">#   furrr::future_map(~read_sf(.x) %&gt;%</span></span>
-<span id="cb2-41"><a href="descarga_satelitales.html#cb2-41" tabindex="-1"></a><span class="co">#                           select(CVEGEO, NOM_ENT, NOMGEO,geometry),</span></span>
-<span id="cb2-42"><a href="descarga_satelitales.html#cb2-42" tabindex="-1"></a><span class="co">#                     .progress = TRUE)</span></span>
-<span id="cb2-43"><a href="descarga_satelitales.html#cb2-43" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-44"><a href="descarga_satelitales.html#cb2-44" tabindex="-1"></a><span class="co"># mi_crs &lt;- &quot;+proj=longlat +datum=WGS84&quot;</span></span>
-<span id="cb2-45"><a href="descarga_satelitales.html#cb2-45" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-46"><a href="descarga_satelitales.html#cb2-46" tabindex="-1"></a><span class="co"># # Transforma el polígono al nuevo CRS</span></span>
-<span id="cb2-47"><a href="descarga_satelitales.html#cb2-47" tabindex="-1"></a><span class="co"># MEX_trans &lt;- map(MEX,  ~st_transform(.x, crs = mi_crs))</span></span>
-<span id="cb2-48"><a href="descarga_satelitales.html#cb2-48" tabindex="-1"></a><span class="co"># MEX_trans &lt;- map(MEX_trans,  ~st_cast(.x, &quot;MULTIPOLYGON&quot;))</span></span>
-<span id="cb2-49"><a href="descarga_satelitales.html#cb2-49" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-50"><a href="descarga_satelitales.html#cb2-50" tabindex="-1"></a><span class="co"># MEX_trans &lt;- bind_rows(MEX_trans)</span></span>
-<span id="cb2-51"><a href="descarga_satelitales.html#cb2-51" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-52"><a href="descarga_satelitales.html#cb2-52" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-53"><a href="descarga_satelitales.html#cb2-53" tabindex="-1"></a><span class="co"># # stringi::stri_enc_detect(MEX_trans$NOMGEO)</span></span>
-<span id="cb2-54"><a href="descarga_satelitales.html#cb2-54" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-55"><a href="descarga_satelitales.html#cb2-55" tabindex="-1"></a><span class="co"># MEX_trans$NOMGEO &lt;- iconv(MEX_trans$NOMGEO,</span></span>
-<span id="cb2-56"><a href="descarga_satelitales.html#cb2-56" tabindex="-1"></a><span class="co">#                           to = &quot;UTF-8&quot;, from = &quot;ISO-8859-1&quot;)</span></span>
-<span id="cb2-57"><a href="descarga_satelitales.html#cb2-57" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-58"><a href="descarga_satelitales.html#cb2-58" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-59"><a href="descarga_satelitales.html#cb2-59" tabindex="-1"></a><span class="co"># st_write(MEX_trans,</span></span>
-<span id="cb2-60"><a href="descarga_satelitales.html#cb2-60" tabindex="-1"></a><span class="co">#          &quot;shapefile/2020/MEX_2020.shp&quot;,</span></span>
-<span id="cb2-61"><a href="descarga_satelitales.html#cb2-61" tabindex="-1"></a><span class="co">#          append = TRUE)</span></span>
-<span id="cb2-62"><a href="descarga_satelitales.html#cb2-62" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-63"><a href="descarga_satelitales.html#cb2-63" tabindex="-1"></a><span class="co"># rm(list = ls())</span></span>
-<span id="cb2-64"><a href="descarga_satelitales.html#cb2-64" tabindex="-1"></a></span>
-<span id="cb2-65"><a href="descarga_satelitales.html#cb2-65" tabindex="-1"></a>MEX <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;../shapefile/2020/MEX_2020.shp&quot;</span>)</span>
-<span id="cb2-66"><a href="descarga_satelitales.html#cb2-66" tabindex="-1"></a></span>
-<span id="cb2-67"><a href="descarga_satelitales.html#cb2-67" tabindex="-1"></a>MEX <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">ent =</span> <span class="fu">substr</span>(CVEGEO,<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb2-68"><a href="descarga_satelitales.html#cb2-68" tabindex="-1"></a></span>
-<span id="cb2-69"><a href="descarga_satelitales.html#cb2-69" tabindex="-1"></a><span class="do">###################</span></span>
-<span id="cb2-70"><a href="descarga_satelitales.html#cb2-70" tabindex="-1"></a><span class="do">### Luminosidad </span><span class="al">###</span></span>
-<span id="cb2-71"><a href="descarga_satelitales.html#cb2-71" tabindex="-1"></a><span class="do">###################</span></span>
-<span id="cb2-72"><a href="descarga_satelitales.html#cb2-72" tabindex="-1"></a><span class="co">#https://developers.google.com/earth-engine/datasets/catalog/NOAA_VIIRS_DNB_ANNUAL_V21#bands</span></span>
-<span id="cb2-73"><a href="descarga_satelitales.html#cb2-73" tabindex="-1"></a></span>
-<span id="cb2-74"><a href="descarga_satelitales.html#cb2-74" tabindex="-1"></a>luces <span class="ot">=</span> ee<span class="sc">$</span><span class="fu">ImageCollection</span>(<span class="st">&quot;NOAA/VIIRS/DNB/ANNUAL_V21&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-75"><a href="descarga_satelitales.html#cb2-75" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">filterDate</span>(<span class="st">&quot;2020-01-01&quot;</span>, <span class="st">&quot;2021-01-01&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-76"><a href="descarga_satelitales.html#cb2-76" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">map</span>(<span class="cf">function</span>(x) x<span class="sc">$</span><span class="fu">select</span>(<span class="st">&quot;average&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-77"><a href="descarga_satelitales.html#cb2-77" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">toBands</span>()</span>
-<span id="cb2-78"><a href="descarga_satelitales.html#cb2-78" tabindex="-1"></a><span class="fu">ee_print</span>(luces)</span>
-<span id="cb2-79"><a href="descarga_satelitales.html#cb2-79" tabindex="-1"></a></span>
-<span id="cb2-80"><a href="descarga_satelitales.html#cb2-80" tabindex="-1"></a>MEX_luces <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">unique</span>(MEX<span class="sc">$</span>ent),</span>
-<span id="cb2-81"><a href="descarga_satelitales.html#cb2-81" tabindex="-1"></a>                 <span class="sc">~</span><span class="fu">tryCatch</span>(<span class="fu">ee_extract</span>(</span>
-<span id="cb2-82"><a href="descarga_satelitales.html#cb2-82" tabindex="-1"></a>                   <span class="at">x =</span> luces,</span>
-<span id="cb2-83"><a href="descarga_satelitales.html#cb2-83" tabindex="-1"></a>                   <span class="at">y =</span> MEX[<span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;CVEGEO&quot;</span>)] <span class="sc">%&gt;%</span></span>
-<span id="cb2-84"><a href="descarga_satelitales.html#cb2-84" tabindex="-1"></a>                     <span class="fu">filter</span>(ent <span class="sc">==</span> .x),</span>
-<span id="cb2-85"><a href="descarga_satelitales.html#cb2-85" tabindex="-1"></a>                   ee<span class="sc">$</span>Reducer<span class="sc">$</span><span class="fu">mean</span>(),</span>
-<span id="cb2-86"><a href="descarga_satelitales.html#cb2-86" tabindex="-1"></a>                   <span class="at">sf =</span> <span class="cn">FALSE</span></span>
-<span id="cb2-87"><a href="descarga_satelitales.html#cb2-87" tabindex="-1"></a>                 ) , </span>
-<span id="cb2-88"><a href="descarga_satelitales.html#cb2-88" tabindex="-1"></a>                 <span class="at">error =</span> <span class="cf">function</span>(e)<span class="fu">data.frame</span>(<span class="at">ent =</span> .x)) </span>
-<span id="cb2-89"><a href="descarga_satelitales.html#cb2-89" tabindex="-1"></a>)</span>
-<span id="cb2-90"><a href="descarga_satelitales.html#cb2-90" tabindex="-1"></a></span>
-<span id="cb2-91"><a href="descarga_satelitales.html#cb2-91" tabindex="-1"></a></span>
-<span id="cb2-92"><a href="descarga_satelitales.html#cb2-92" tabindex="-1"></a>MEX_luces <span class="sc">%&lt;&gt;%</span> <span class="fu">bind_rows</span>()</span>
-<span id="cb2-93"><a href="descarga_satelitales.html#cb2-93" tabindex="-1"></a></span>
-<span id="cb2-94"><a href="descarga_satelitales.html#cb2-94" tabindex="-1"></a>MEX_luces <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(X20200101_average)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
-<span id="cb2-95"><a href="descarga_satelitales.html#cb2-95" tabindex="-1"></a></span>
-<span id="cb2-96"><a href="descarga_satelitales.html#cb2-96" tabindex="-1"></a></span>
-<span id="cb2-97"><a href="descarga_satelitales.html#cb2-97" tabindex="-1"></a><span class="fu">saveRDS</span>(MEX_luces, <span class="st">&quot;../output/2020/Satelital/MEX_luces.rds&quot;</span>)</span>
-<span id="cb2-98"><a href="descarga_satelitales.html#cb2-98" tabindex="-1"></a></span>
-<span id="cb2-99"><a href="descarga_satelitales.html#cb2-99" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb2-100"><a href="descarga_satelitales.html#cb2-100" tabindex="-1"></a><span class="do">### Urbanismo </span><span class="al">###</span></span>
-<span id="cb2-101"><a href="descarga_satelitales.html#cb2-101" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb2-102"><a href="descarga_satelitales.html#cb2-102" tabindex="-1"></a></span>
-<span id="cb2-103"><a href="descarga_satelitales.html#cb2-103" tabindex="-1"></a>tiposuelo <span class="ot">=</span> ee<span class="sc">$</span><span class="fu">ImageCollection</span>(<span class="st">&quot;COPERNICUS/Landcover/100m/Proba-V-C3/Global&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-104"><a href="descarga_satelitales.html#cb2-104" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">filterDate</span>(<span class="st">&quot;2019-01-01&quot;</span>, <span class="st">&quot;2019-12-31&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-105"><a href="descarga_satelitales.html#cb2-105" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">map</span>(<span class="cf">function</span>(x) x<span class="sc">$</span><span class="fu">select</span>(<span class="st">&quot;urban-coverfraction&quot;</span>, <span class="st">&quot;crops-coverfraction&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-106"><a href="descarga_satelitales.html#cb2-106" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">toBands</span>()</span>
-<span id="cb2-107"><a href="descarga_satelitales.html#cb2-107" tabindex="-1"></a><span class="fu">ee_print</span>(tiposuelo)</span>
-<span id="cb2-108"><a href="descarga_satelitales.html#cb2-108" tabindex="-1"></a></span>
-<span id="cb2-109"><a href="descarga_satelitales.html#cb2-109" tabindex="-1"></a>MEX_urbano_cultivo <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">unique</span>(MEX<span class="sc">$</span>CVEGEO),</span>
-<span id="cb2-110"><a href="descarga_satelitales.html#cb2-110" tabindex="-1"></a>                          <span class="sc">~</span><span class="fu">tryCatch</span>(<span class="fu">ee_extract</span>(</span>
-<span id="cb2-111"><a href="descarga_satelitales.html#cb2-111" tabindex="-1"></a>                            <span class="at">x =</span> tiposuelo,</span>
-<span id="cb2-112"><a href="descarga_satelitales.html#cb2-112" tabindex="-1"></a>                            <span class="at">y =</span> MEX[<span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;CVEGEO&quot;</span>)] <span class="sc">%&gt;%</span></span>
-<span id="cb2-113"><a href="descarga_satelitales.html#cb2-113" tabindex="-1"></a>                              <span class="fu">filter</span>(CVEGEO <span class="sc">==</span> .x),</span>
-<span id="cb2-114"><a href="descarga_satelitales.html#cb2-114" tabindex="-1"></a>                            ee<span class="sc">$</span>Reducer<span class="sc">$</span><span class="fu">mean</span>(),</span>
-<span id="cb2-115"><a href="descarga_satelitales.html#cb2-115" tabindex="-1"></a>                            <span class="at">sf =</span> <span class="cn">FALSE</span></span>
-<span id="cb2-116"><a href="descarga_satelitales.html#cb2-116" tabindex="-1"></a>                          ) , </span>
-<span id="cb2-117"><a href="descarga_satelitales.html#cb2-117" tabindex="-1"></a>                          <span class="at">error =</span> <span class="cf">function</span>(e)<span class="fu">data.frame</span>(<span class="at">CVEGEO =</span> .x)) </span>
-<span id="cb2-118"><a href="descarga_satelitales.html#cb2-118" tabindex="-1"></a>)</span>
-<span id="cb2-119"><a href="descarga_satelitales.html#cb2-119" tabindex="-1"></a></span>
-<span id="cb2-120"><a href="descarga_satelitales.html#cb2-120" tabindex="-1"></a></span>
-<span id="cb2-121"><a href="descarga_satelitales.html#cb2-121" tabindex="-1"></a>MEX_urbano_cultivo <span class="sc">%&lt;&gt;%</span> <span class="fu">bind_rows</span>()</span>
-<span id="cb2-122"><a href="descarga_satelitales.html#cb2-122" tabindex="-1"></a></span>
-<span id="cb2-123"><a href="descarga_satelitales.html#cb2-123" tabindex="-1"></a>MEX_urbano_cultivo <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(X2019_crops.coverfraction)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
-<span id="cb2-124"><a href="descarga_satelitales.html#cb2-124" tabindex="-1"></a>MEX_urbano_cultivo <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(X2019_urban.coverfraction)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
-<span id="cb2-125"><a href="descarga_satelitales.html#cb2-125" tabindex="-1"></a></span>
-<span id="cb2-126"><a href="descarga_satelitales.html#cb2-126" tabindex="-1"></a><span class="fu">saveRDS</span>(MEX_urbano_cultivo, <span class="st">&quot;../output/2020/Satelital/MEX_urbano_cultivo.rds&quot;</span>)</span>
-<span id="cb2-127"><a href="descarga_satelitales.html#cb2-127" tabindex="-1"></a></span>
-<span id="cb2-128"><a href="descarga_satelitales.html#cb2-128" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb2-129"><a href="descarga_satelitales.html#cb2-129" tabindex="-1"></a><span class="do">### Distancia a hospitales </span><span class="al">###</span></span>
-<span id="cb2-130"><a href="descarga_satelitales.html#cb2-130" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb2-131"><a href="descarga_satelitales.html#cb2-131" tabindex="-1"></a></span>
-<span id="cb2-132"><a href="descarga_satelitales.html#cb2-132" tabindex="-1"></a>dist_salud <span class="ot">=</span> ee<span class="sc">$</span><span class="fu">Image</span>(<span class="st">&#39;Oxford/MAP/accessibility_to_healthcare_2019&#39;</span>) </span>
-<span id="cb2-133"><a href="descarga_satelitales.html#cb2-133" tabindex="-1"></a><span class="fu">ee_print</span>(dist_salud)</span>
-<span id="cb2-134"><a href="descarga_satelitales.html#cb2-134" tabindex="-1"></a></span>
-<span id="cb2-135"><a href="descarga_satelitales.html#cb2-135" tabindex="-1"></a></span>
-<span id="cb2-136"><a href="descarga_satelitales.html#cb2-136" tabindex="-1"></a>MEX_dist_salud <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">unique</span>(MEX<span class="sc">$</span>CVEGEO),</span>
-<span id="cb2-137"><a href="descarga_satelitales.html#cb2-137" tabindex="-1"></a>                          <span class="sc">~</span><span class="fu">tryCatch</span>(<span class="fu">ee_extract</span>(</span>
-<span id="cb2-138"><a href="descarga_satelitales.html#cb2-138" tabindex="-1"></a>                            <span class="at">x =</span> dist_salud,</span>
-<span id="cb2-139"><a href="descarga_satelitales.html#cb2-139" tabindex="-1"></a>                            <span class="at">y =</span> MEX[<span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;CVEGEO&quot;</span>)] <span class="sc">%&gt;%</span></span>
-<span id="cb2-140"><a href="descarga_satelitales.html#cb2-140" tabindex="-1"></a>                              <span class="fu">filter</span>(CVEGEO <span class="sc">==</span> .x),</span>
-<span id="cb2-141"><a href="descarga_satelitales.html#cb2-141" tabindex="-1"></a>                            ee<span class="sc">$</span>Reducer<span class="sc">$</span><span class="fu">mean</span>(),</span>
-<span id="cb2-142"><a href="descarga_satelitales.html#cb2-142" tabindex="-1"></a>                            <span class="at">sf =</span> <span class="cn">FALSE</span></span>
-<span id="cb2-143"><a href="descarga_satelitales.html#cb2-143" tabindex="-1"></a>                          ) , </span>
-<span id="cb2-144"><a href="descarga_satelitales.html#cb2-144" tabindex="-1"></a>                          <span class="at">error =</span> <span class="cf">function</span>(e)<span class="fu">data.frame</span>(<span class="at">CVEGEO =</span> .x)) </span>
-<span id="cb2-145"><a href="descarga_satelitales.html#cb2-145" tabindex="-1"></a>)</span>
-<span id="cb2-146"><a href="descarga_satelitales.html#cb2-146" tabindex="-1"></a></span>
-<span id="cb2-147"><a href="descarga_satelitales.html#cb2-147" tabindex="-1"></a></span>
-<span id="cb2-148"><a href="descarga_satelitales.html#cb2-148" tabindex="-1"></a>MEX_dist_salud <span class="sc">%&lt;&gt;%</span> <span class="fu">bind_rows</span>()</span>
-<span id="cb2-149"><a href="descarga_satelitales.html#cb2-149" tabindex="-1"></a></span>
-<span id="cb2-150"><a href="descarga_satelitales.html#cb2-150" tabindex="-1"></a>MEX_dist_salud <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(accessibility )) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
-<span id="cb2-151"><a href="descarga_satelitales.html#cb2-151" tabindex="-1"></a>MEX_dist_salud <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(accessibility_walking_only)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
-<span id="cb2-152"><a href="descarga_satelitales.html#cb2-152" tabindex="-1"></a></span>
-<span id="cb2-153"><a href="descarga_satelitales.html#cb2-153" tabindex="-1"></a><span class="fu">saveRDS</span>(MEX_dist_salud, <span class="st">&quot;../output/2020/Satelital/MEX_dist_salud.rds&quot;</span>)</span>
-<span id="cb2-154"><a href="descarga_satelitales.html#cb2-154" tabindex="-1"></a></span>
-<span id="cb2-155"><a href="descarga_satelitales.html#cb2-155" tabindex="-1"></a></span>
-<span id="cb2-156"><a href="descarga_satelitales.html#cb2-156" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb2-157"><a href="descarga_satelitales.html#cb2-157" tabindex="-1"></a><span class="co"># CSP gHM: Global Human Modification</span></span>
-<span id="cb2-158"><a href="descarga_satelitales.html#cb2-158" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb2-159"><a href="descarga_satelitales.html#cb2-159" tabindex="-1"></a></span>
-<span id="cb2-160"><a href="descarga_satelitales.html#cb2-160" tabindex="-1"></a>CSP_gHM <span class="ot">=</span> ee<span class="sc">$</span><span class="fu">ImageCollection</span>(<span class="st">&#39;CSP/HM/GlobalHumanModification&#39;</span>) </span>
-<span id="cb2-161"><a href="descarga_satelitales.html#cb2-161" tabindex="-1"></a><span class="fu">ee_print</span>(CSP_gHM)</span>
-<span id="cb2-162"><a href="descarga_satelitales.html#cb2-162" tabindex="-1"></a></span>
-<span id="cb2-163"><a href="descarga_satelitales.html#cb2-163" tabindex="-1"></a>MEX_GHM <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">unique</span>(MEX<span class="sc">$</span>CVEGEO),</span>
-<span id="cb2-164"><a href="descarga_satelitales.html#cb2-164" tabindex="-1"></a>                      <span class="sc">~</span><span class="fu">tryCatch</span>(<span class="fu">ee_extract</span>(</span>
-<span id="cb2-165"><a href="descarga_satelitales.html#cb2-165" tabindex="-1"></a>                        <span class="at">x =</span> CSP_gHM,</span>
-<span id="cb2-166"><a href="descarga_satelitales.html#cb2-166" tabindex="-1"></a>                        <span class="at">y =</span> MEX[<span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;CVEGEO&quot;</span>)] <span class="sc">%&gt;%</span></span>
-<span id="cb2-167"><a href="descarga_satelitales.html#cb2-167" tabindex="-1"></a>                          <span class="fu">filter</span>(CVEGEO <span class="sc">==</span> .x),</span>
-<span id="cb2-168"><a href="descarga_satelitales.html#cb2-168" tabindex="-1"></a>                        ee<span class="sc">$</span>Reducer<span class="sc">$</span><span class="fu">mean</span>(),</span>
-<span id="cb2-169"><a href="descarga_satelitales.html#cb2-169" tabindex="-1"></a>                        <span class="at">sf =</span> <span class="cn">FALSE</span></span>
-<span id="cb2-170"><a href="descarga_satelitales.html#cb2-170" tabindex="-1"></a>                      ) , </span>
-<span id="cb2-171"><a href="descarga_satelitales.html#cb2-171" tabindex="-1"></a>                      <span class="at">error =</span> <span class="cf">function</span>(e)<span class="fu">data.frame</span>(<span class="at">CVEGEO =</span> .x)) </span>
-<span id="cb2-172"><a href="descarga_satelitales.html#cb2-172" tabindex="-1"></a>)</span>
-<span id="cb2-173"><a href="descarga_satelitales.html#cb2-173" tabindex="-1"></a></span>
-<span id="cb2-174"><a href="descarga_satelitales.html#cb2-174" tabindex="-1"></a></span>
-<span id="cb2-175"><a href="descarga_satelitales.html#cb2-175" tabindex="-1"></a>MEX_GHM <span class="sc">%&lt;&gt;%</span> <span class="fu">bind_rows</span>()</span>
-<span id="cb2-176"><a href="descarga_satelitales.html#cb2-176" tabindex="-1"></a></span>
-<span id="cb2-177"><a href="descarga_satelitales.html#cb2-177" tabindex="-1"></a>MEX_GHM <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(X2016_gHM )) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
-<span id="cb2-178"><a href="descarga_satelitales.html#cb2-178" tabindex="-1"></a></span>
-<span id="cb2-179"><a href="descarga_satelitales.html#cb2-179" tabindex="-1"></a><span class="fu">saveRDS</span>(MEX_GHM, <span class="st">&quot;../output/2020/Satelital/MEX_GHM.rds&quot;</span>)</span>
-<span id="cb2-180"><a href="descarga_satelitales.html#cb2-180" tabindex="-1"></a></span>
-<span id="cb2-181"><a href="descarga_satelitales.html#cb2-181" tabindex="-1"></a></span>
-<span id="cb2-182"><a href="descarga_satelitales.html#cb2-182" tabindex="-1"></a><span class="do">###############</span></span>
-<span id="cb2-183"><a href="descarga_satelitales.html#cb2-183" tabindex="-1"></a><span class="do">### Guardar </span><span class="al">###</span></span>
-<span id="cb2-184"><a href="descarga_satelitales.html#cb2-184" tabindex="-1"></a><span class="do">###############</span></span>
-<span id="cb2-185"><a href="descarga_satelitales.html#cb2-185" tabindex="-1"></a></span>
-<span id="cb2-186"><a href="descarga_satelitales.html#cb2-186" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span></span>
-<span id="cb2-187"><a href="descarga_satelitales.html#cb2-187" tabindex="-1"></a>    <span class="fu">list.files</span>(<span class="st">&quot;../output/2020/Satelital/&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-188"><a href="descarga_satelitales.html#cb2-188" tabindex="-1"></a>  <span class="fu">map</span>( <span class="sc">~</span> <span class="fu">readRDS</span>(<span class="at">file =</span> .x)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-189"><a href="descarga_satelitales.html#cb2-189" tabindex="-1"></a>  <span class="fu">reduce</span>(., full_join) <span class="sc">%&gt;%</span></span>
-<span id="cb2-190"><a href="descarga_satelitales.html#cb2-190" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.numeric, <span class="cf">function</span>(x)</span>
-<span id="cb2-191"><a href="descarga_satelitales.html#cb2-191" tabindex="-1"></a>    <span class="fu">as.numeric</span>(<span class="fu">scale</span>(x))) <span class="sc">%&gt;%</span></span>
-<span id="cb2-192"><a href="descarga_satelitales.html#cb2-192" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
-<span id="cb2-193"><a href="descarga_satelitales.html#cb2-193" tabindex="-1"></a>    <span class="at">cve_mun =</span> CVEGEO,</span>
-<span id="cb2-194"><a href="descarga_satelitales.html#cb2-194" tabindex="-1"></a>    <span class="st">&quot;modifica_humana&quot;</span> <span class="ot">=</span> X2016_gHM,</span>
-<span id="cb2-195"><a href="descarga_satelitales.html#cb2-195" tabindex="-1"></a>    <span class="st">&quot;acceso_hosp&quot;</span> <span class="ot">=</span> accessibility,</span>
-<span id="cb2-196"><a href="descarga_satelitales.html#cb2-196" tabindex="-1"></a>    <span class="st">&quot;acceso_hosp_caminando&quot;</span> <span class="ot">=</span> accessibility_walking_only,</span>
-<span id="cb2-197"><a href="descarga_satelitales.html#cb2-197" tabindex="-1"></a>    <span class="at">cubrimiento_urbano =</span> X2019_urban.coverfraction,</span>
-<span id="cb2-198"><a href="descarga_satelitales.html#cb2-198" tabindex="-1"></a>    <span class="at">cubrimiento_cultivo =</span> X2019_crops.coverfraction,</span>
-<span id="cb2-199"><a href="descarga_satelitales.html#cb2-199" tabindex="-1"></a>    <span class="at">luces_nocturnas =</span> X20200101_average</span>
-<span id="cb2-200"><a href="descarga_satelitales.html#cb2-200" tabindex="-1"></a>  )</span>
-<span id="cb2-201"><a href="descarga_satelitales.html#cb2-201" tabindex="-1"></a></span>
-<span id="cb2-202"><a href="descarga_satelitales.html#cb2-202" tabindex="-1"></a>statelevel_predictors_df[<span class="fu">apply</span>(statelevel_predictors_df,<span class="dv">1</span>,<span class="cf">function</span>(x)<span class="fu">any</span>(<span class="fu">is.na</span>(x))),] <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
-<span id="cb2-203"><a href="descarga_satelitales.html#cb2-203" tabindex="-1"></a></span>
-<span id="cb2-204"><a href="descarga_satelitales.html#cb2-204" tabindex="-1"></a><span class="fu">saveRDS</span>(statelevel_predictors_df, <span class="st">&quot;input/2020/predictores/statelevel_predictors_satelite.rds&quot;</span>)</span></code></pre></div>
+<div id="lectura-de-libreías" class="section level4 unnumbered hasAnchor">
+<h4>Lectura de libreías<a href="descarga_satelitales.html#lectura-de-libreías" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="descarga_satelitales.html#cb13-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb13-2"><a href="descarga_satelitales.html#cb13-2" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="descarga_satelitales.html#cb13-3" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">500000</span>)</span>
+<span id="cb13-4"><a href="descarga_satelitales.html#cb13-4" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="descarga_satelitales.html#cb13-5" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb13-6"><a href="descarga_satelitales.html#cb13-6" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb13-7"><a href="descarga_satelitales.html#cb13-7" tabindex="-1"></a><span class="fu">library</span>(rgee) <span class="co"># Conexión con Google Earth Engine</span></span>
+<span id="cb13-8"><a href="descarga_satelitales.html#cb13-8" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># Paquete para manejar datos geográficos</span></span>
+<span id="cb13-9"><a href="descarga_satelitales.html#cb13-9" tabindex="-1"></a><span class="fu">library</span>(concaveman)</span>
+<span id="cb13-10"><a href="descarga_satelitales.html#cb13-10" tabindex="-1"></a><span class="fu">library</span>(geojsonio)</span>
+<span id="cb13-11"><a href="descarga_satelitales.html#cb13-11" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb13-12"><a href="descarga_satelitales.html#cb13-12" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
+<span id="cb13-13"><a href="descarga_satelitales.html#cb13-13" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code></pre></div>
+</div>
+<div id="configuración-inicial-de-python" class="section level4 unnumbered hasAnchor">
+<h4>configuración inicial de Python<a href="descarga_satelitales.html#configuración-inicial-de-python" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="descarga_satelitales.html#cb14-1" tabindex="-1"></a>rgee_environment_dir <span class="ot">&lt;-</span>reticulate<span class="sc">::</span><span class="fu">conda_list</span>()</span>
+<span id="cb14-2"><a href="descarga_satelitales.html#cb14-2" tabindex="-1"></a>rgee_environment_dir <span class="ot">&lt;-</span> rgee_environment_dir[rgee_environment_dir<span class="sc">$</span>name <span class="sc">==</span> <span class="st">&quot;rgee_py&quot;</span>,<span class="dv">2</span>]</span>
+<span id="cb14-3"><a href="descarga_satelitales.html#cb14-3" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_python</span>(rgee_environment_dir, <span class="at">required =</span> T )</span>
+<span id="cb14-4"><a href="descarga_satelitales.html#cb14-4" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">py_config</span>()</span>
+<span id="cb14-5"><a href="descarga_satelitales.html#cb14-5" tabindex="-1"></a><span class="fu">library</span>(reticulate) <span class="co"># Conexión con Python</span></span>
+<span id="cb14-6"><a href="descarga_satelitales.html#cb14-6" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="descarga_satelitales.html#cb14-7" tabindex="-1"></a>rgee<span class="sc">::</span><span class="fu">ee_install_set_pyenv</span>(<span class="at">py_path =</span> rgee_environment_dir, <span class="at">py_env =</span> <span class="st">&quot;rgee_py&quot;</span>)</span>
+<span id="cb14-8"><a href="descarga_satelitales.html#cb14-8" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">RETICULATE_PYTHON =</span> rgee_environment_dir)</span>
+<span id="cb14-9"><a href="descarga_satelitales.html#cb14-9" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">EARTHENGINE_PYTHON =</span> rgee_environment_dir)</span>
+<span id="cb14-10"><a href="descarga_satelitales.html#cb14-10" tabindex="-1"></a>rgee<span class="sc">::</span><span class="fu">ee_Initialize</span>(<span class="at">drive =</span> T)</span></code></pre></div>
+</div>
+<div id="arreglar-la-shape" class="section level4 unnumbered hasAnchor">
+<h4>Arreglar la shape<a href="descarga_satelitales.html#arreglar-la-shape" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="descarga_satelitales.html#cb15-1" tabindex="-1"></a><span class="co"># plan(multisession, workers = 2)</span></span>
+<span id="cb15-2"><a href="descarga_satelitales.html#cb15-2" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-3"><a href="descarga_satelitales.html#cb15-3" tabindex="-1"></a><span class="co"># MEX &lt;- list.files(&quot;shapefile/2020/&quot;, pattern = &quot;shp$&quot;,</span></span>
+<span id="cb15-4"><a href="descarga_satelitales.html#cb15-4" tabindex="-1"></a><span class="co">#            full.names = TRUE) %&gt;%</span></span>
+<span id="cb15-5"><a href="descarga_satelitales.html#cb15-5" tabindex="-1"></a><span class="co">#   furrr::future_map(~read_sf(.x) %&gt;%</span></span>
+<span id="cb15-6"><a href="descarga_satelitales.html#cb15-6" tabindex="-1"></a><span class="co">#                           select(CVEGEO, NOM_ENT, NOMGEO,geometry),</span></span>
+<span id="cb15-7"><a href="descarga_satelitales.html#cb15-7" tabindex="-1"></a><span class="co">#                     .progress = TRUE)</span></span>
+<span id="cb15-8"><a href="descarga_satelitales.html#cb15-8" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-9"><a href="descarga_satelitales.html#cb15-9" tabindex="-1"></a><span class="co"># mi_crs &lt;- &quot;+proj=longlat +datum=WGS84&quot;</span></span>
+<span id="cb15-10"><a href="descarga_satelitales.html#cb15-10" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-11"><a href="descarga_satelitales.html#cb15-11" tabindex="-1"></a><span class="co"># # Transforma el polígono al nuevo CRS</span></span>
+<span id="cb15-12"><a href="descarga_satelitales.html#cb15-12" tabindex="-1"></a><span class="co"># MEX_trans &lt;- map(MEX,  ~st_transform(.x, crs = mi_crs))</span></span>
+<span id="cb15-13"><a href="descarga_satelitales.html#cb15-13" tabindex="-1"></a><span class="co"># MEX_trans &lt;- map(MEX_trans,  ~st_cast(.x, &quot;MULTIPOLYGON&quot;))</span></span>
+<span id="cb15-14"><a href="descarga_satelitales.html#cb15-14" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-15"><a href="descarga_satelitales.html#cb15-15" tabindex="-1"></a><span class="co"># MEX_trans &lt;- bind_rows(MEX_trans)</span></span>
+<span id="cb15-16"><a href="descarga_satelitales.html#cb15-16" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-17"><a href="descarga_satelitales.html#cb15-17" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-18"><a href="descarga_satelitales.html#cb15-18" tabindex="-1"></a><span class="co"># # stringi::stri_enc_detect(MEX_trans$NOMGEO)</span></span>
+<span id="cb15-19"><a href="descarga_satelitales.html#cb15-19" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-20"><a href="descarga_satelitales.html#cb15-20" tabindex="-1"></a><span class="co"># MEX_trans$NOMGEO &lt;- iconv(MEX_trans$NOMGEO,</span></span>
+<span id="cb15-21"><a href="descarga_satelitales.html#cb15-21" tabindex="-1"></a><span class="co">#                           to = &quot;UTF-8&quot;, from = &quot;ISO-8859-1&quot;)</span></span>
+<span id="cb15-22"><a href="descarga_satelitales.html#cb15-22" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-23"><a href="descarga_satelitales.html#cb15-23" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-24"><a href="descarga_satelitales.html#cb15-24" tabindex="-1"></a><span class="co"># st_write(MEX_trans,</span></span>
+<span id="cb15-25"><a href="descarga_satelitales.html#cb15-25" tabindex="-1"></a><span class="co">#          &quot;shapefile/2020/MEX_2020.shp&quot;,</span></span>
+<span id="cb15-26"><a href="descarga_satelitales.html#cb15-26" tabindex="-1"></a><span class="co">#          append = TRUE)</span></span>
+<span id="cb15-27"><a href="descarga_satelitales.html#cb15-27" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb15-28"><a href="descarga_satelitales.html#cb15-28" tabindex="-1"></a><span class="co"># rm(list = ls())</span></span>
+<span id="cb15-29"><a href="descarga_satelitales.html#cb15-29" tabindex="-1"></a></span>
+<span id="cb15-30"><a href="descarga_satelitales.html#cb15-30" tabindex="-1"></a>MEX <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;../shapefile/2020/MEX_2020.shp&quot;</span>)</span>
+<span id="cb15-31"><a href="descarga_satelitales.html#cb15-31" tabindex="-1"></a></span>
+<span id="cb15-32"><a href="descarga_satelitales.html#cb15-32" tabindex="-1"></a>MEX <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">ent =</span> <span class="fu">substr</span>(CVEGEO,<span class="dv">1</span>,<span class="dv">2</span>))</span></code></pre></div>
+</div>
+<div id="descargar-las-imegenes-satelitales" class="section level4 unnumbered hasAnchor">
+<h4>Descargar las imegenes satelitales<a href="descarga_satelitales.html#descargar-las-imegenes-satelitales" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="descarga_satelitales.html#cb16-1" tabindex="-1"></a><span class="co">#https://developers.google.com/earth-engine/datasets/catalog/NOAA_VIIRS_DNB_ANNUAL_V21#bands</span></span>
+<span id="cb16-2"><a href="descarga_satelitales.html#cb16-2" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="descarga_satelitales.html#cb16-3" tabindex="-1"></a>luces <span class="ot">=</span> ee<span class="sc">$</span><span class="fu">ImageCollection</span>(<span class="st">&quot;NOAA/VIIRS/DNB/ANNUAL_V21&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="descarga_satelitales.html#cb16-4" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">filterDate</span>(<span class="st">&quot;2020-01-01&quot;</span>, <span class="st">&quot;2021-01-01&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-5"><a href="descarga_satelitales.html#cb16-5" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">map</span>(<span class="cf">function</span>(x) x<span class="sc">$</span><span class="fu">select</span>(<span class="st">&quot;average&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-6"><a href="descarga_satelitales.html#cb16-6" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">toBands</span>()</span>
+<span id="cb16-7"><a href="descarga_satelitales.html#cb16-7" tabindex="-1"></a><span class="fu">ee_print</span>(luces)</span>
+<span id="cb16-8"><a href="descarga_satelitales.html#cb16-8" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="descarga_satelitales.html#cb16-9" tabindex="-1"></a>MEX_luces <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">unique</span>(MEX<span class="sc">$</span>ent),</span>
+<span id="cb16-10"><a href="descarga_satelitales.html#cb16-10" tabindex="-1"></a>                 <span class="sc">~</span><span class="fu">tryCatch</span>(<span class="fu">ee_extract</span>(</span>
+<span id="cb16-11"><a href="descarga_satelitales.html#cb16-11" tabindex="-1"></a>                   <span class="at">x =</span> luces,</span>
+<span id="cb16-12"><a href="descarga_satelitales.html#cb16-12" tabindex="-1"></a>                   <span class="at">y =</span> MEX[<span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;CVEGEO&quot;</span>)] <span class="sc">%&gt;%</span></span>
+<span id="cb16-13"><a href="descarga_satelitales.html#cb16-13" tabindex="-1"></a>                     <span class="fu">filter</span>(ent <span class="sc">==</span> .x),</span>
+<span id="cb16-14"><a href="descarga_satelitales.html#cb16-14" tabindex="-1"></a>                   ee<span class="sc">$</span>Reducer<span class="sc">$</span><span class="fu">mean</span>(),</span>
+<span id="cb16-15"><a href="descarga_satelitales.html#cb16-15" tabindex="-1"></a>                   <span class="at">sf =</span> <span class="cn">FALSE</span></span>
+<span id="cb16-16"><a href="descarga_satelitales.html#cb16-16" tabindex="-1"></a>                 ) , </span>
+<span id="cb16-17"><a href="descarga_satelitales.html#cb16-17" tabindex="-1"></a>                 <span class="at">error =</span> <span class="cf">function</span>(e)<span class="fu">data.frame</span>(<span class="at">ent =</span> .x)) </span>
+<span id="cb16-18"><a href="descarga_satelitales.html#cb16-18" tabindex="-1"></a>)</span>
+<span id="cb16-19"><a href="descarga_satelitales.html#cb16-19" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="descarga_satelitales.html#cb16-20" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="descarga_satelitales.html#cb16-21" tabindex="-1"></a>MEX_luces <span class="sc">%&lt;&gt;%</span> <span class="fu">bind_rows</span>()</span>
+<span id="cb16-22"><a href="descarga_satelitales.html#cb16-22" tabindex="-1"></a></span>
+<span id="cb16-23"><a href="descarga_satelitales.html#cb16-23" tabindex="-1"></a>MEX_luces <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(X20200101_average)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
+<span id="cb16-24"><a href="descarga_satelitales.html#cb16-24" tabindex="-1"></a></span>
+<span id="cb16-25"><a href="descarga_satelitales.html#cb16-25" tabindex="-1"></a></span>
+<span id="cb16-26"><a href="descarga_satelitales.html#cb16-26" tabindex="-1"></a><span class="fu">saveRDS</span>(MEX_luces, <span class="st">&quot;../output/2020/Satelital/MEX_luces.rds&quot;</span>)</span>
+<span id="cb16-27"><a href="descarga_satelitales.html#cb16-27" tabindex="-1"></a></span>
+<span id="cb16-28"><a href="descarga_satelitales.html#cb16-28" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb16-29"><a href="descarga_satelitales.html#cb16-29" tabindex="-1"></a><span class="do">### Urbanismo </span><span class="al">###</span></span>
+<span id="cb16-30"><a href="descarga_satelitales.html#cb16-30" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb16-31"><a href="descarga_satelitales.html#cb16-31" tabindex="-1"></a></span>
+<span id="cb16-32"><a href="descarga_satelitales.html#cb16-32" tabindex="-1"></a>tiposuelo <span class="ot">=</span> ee<span class="sc">$</span><span class="fu">ImageCollection</span>(<span class="st">&quot;COPERNICUS/Landcover/100m/Proba-V-C3/Global&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-33"><a href="descarga_satelitales.html#cb16-33" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">filterDate</span>(<span class="st">&quot;2019-01-01&quot;</span>, <span class="st">&quot;2019-12-31&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-34"><a href="descarga_satelitales.html#cb16-34" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">map</span>(<span class="cf">function</span>(x) x<span class="sc">$</span><span class="fu">select</span>(<span class="st">&quot;urban-coverfraction&quot;</span>, <span class="st">&quot;crops-coverfraction&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-35"><a href="descarga_satelitales.html#cb16-35" tabindex="-1"></a>  ee<span class="sc">$</span>ImageCollection<span class="sc">$</span><span class="fu">toBands</span>()</span>
+<span id="cb16-36"><a href="descarga_satelitales.html#cb16-36" tabindex="-1"></a><span class="fu">ee_print</span>(tiposuelo)</span>
+<span id="cb16-37"><a href="descarga_satelitales.html#cb16-37" tabindex="-1"></a></span>
+<span id="cb16-38"><a href="descarga_satelitales.html#cb16-38" tabindex="-1"></a>MEX_urbano_cultivo <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">unique</span>(MEX<span class="sc">$</span>CVEGEO),</span>
+<span id="cb16-39"><a href="descarga_satelitales.html#cb16-39" tabindex="-1"></a>                          <span class="sc">~</span><span class="fu">tryCatch</span>(<span class="fu">ee_extract</span>(</span>
+<span id="cb16-40"><a href="descarga_satelitales.html#cb16-40" tabindex="-1"></a>                            <span class="at">x =</span> tiposuelo,</span>
+<span id="cb16-41"><a href="descarga_satelitales.html#cb16-41" tabindex="-1"></a>                            <span class="at">y =</span> MEX[<span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;CVEGEO&quot;</span>)] <span class="sc">%&gt;%</span></span>
+<span id="cb16-42"><a href="descarga_satelitales.html#cb16-42" tabindex="-1"></a>                              <span class="fu">filter</span>(CVEGEO <span class="sc">==</span> .x),</span>
+<span id="cb16-43"><a href="descarga_satelitales.html#cb16-43" tabindex="-1"></a>                            ee<span class="sc">$</span>Reducer<span class="sc">$</span><span class="fu">mean</span>(),</span>
+<span id="cb16-44"><a href="descarga_satelitales.html#cb16-44" tabindex="-1"></a>                            <span class="at">sf =</span> <span class="cn">FALSE</span></span>
+<span id="cb16-45"><a href="descarga_satelitales.html#cb16-45" tabindex="-1"></a>                          ) , </span>
+<span id="cb16-46"><a href="descarga_satelitales.html#cb16-46" tabindex="-1"></a>                          <span class="at">error =</span> <span class="cf">function</span>(e)<span class="fu">data.frame</span>(<span class="at">CVEGEO =</span> .x)) </span>
+<span id="cb16-47"><a href="descarga_satelitales.html#cb16-47" tabindex="-1"></a>)</span>
+<span id="cb16-48"><a href="descarga_satelitales.html#cb16-48" tabindex="-1"></a></span>
+<span id="cb16-49"><a href="descarga_satelitales.html#cb16-49" tabindex="-1"></a></span>
+<span id="cb16-50"><a href="descarga_satelitales.html#cb16-50" tabindex="-1"></a>MEX_urbano_cultivo <span class="sc">%&lt;&gt;%</span> <span class="fu">bind_rows</span>()</span>
+<span id="cb16-51"><a href="descarga_satelitales.html#cb16-51" tabindex="-1"></a></span>
+<span id="cb16-52"><a href="descarga_satelitales.html#cb16-52" tabindex="-1"></a>MEX_urbano_cultivo <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(X2019_crops.coverfraction)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
+<span id="cb16-53"><a href="descarga_satelitales.html#cb16-53" tabindex="-1"></a>MEX_urbano_cultivo <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(X2019_urban.coverfraction)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
+<span id="cb16-54"><a href="descarga_satelitales.html#cb16-54" tabindex="-1"></a></span>
+<span id="cb16-55"><a href="descarga_satelitales.html#cb16-55" tabindex="-1"></a><span class="fu">saveRDS</span>(MEX_urbano_cultivo, <span class="st">&quot;../output/2020/Satelital/MEX_urbano_cultivo.rds&quot;</span>)</span>
+<span id="cb16-56"><a href="descarga_satelitales.html#cb16-56" tabindex="-1"></a></span>
+<span id="cb16-57"><a href="descarga_satelitales.html#cb16-57" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb16-58"><a href="descarga_satelitales.html#cb16-58" tabindex="-1"></a><span class="do">### Distancia a hospitales </span><span class="al">###</span></span>
+<span id="cb16-59"><a href="descarga_satelitales.html#cb16-59" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb16-60"><a href="descarga_satelitales.html#cb16-60" tabindex="-1"></a></span>
+<span id="cb16-61"><a href="descarga_satelitales.html#cb16-61" tabindex="-1"></a>dist_salud <span class="ot">=</span> ee<span class="sc">$</span><span class="fu">Image</span>(<span class="st">&#39;Oxford/MAP/accessibility_to_healthcare_2019&#39;</span>) </span>
+<span id="cb16-62"><a href="descarga_satelitales.html#cb16-62" tabindex="-1"></a><span class="fu">ee_print</span>(dist_salud)</span>
+<span id="cb16-63"><a href="descarga_satelitales.html#cb16-63" tabindex="-1"></a></span>
+<span id="cb16-64"><a href="descarga_satelitales.html#cb16-64" tabindex="-1"></a></span>
+<span id="cb16-65"><a href="descarga_satelitales.html#cb16-65" tabindex="-1"></a>MEX_dist_salud <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">unique</span>(MEX<span class="sc">$</span>CVEGEO),</span>
+<span id="cb16-66"><a href="descarga_satelitales.html#cb16-66" tabindex="-1"></a>                          <span class="sc">~</span><span class="fu">tryCatch</span>(<span class="fu">ee_extract</span>(</span>
+<span id="cb16-67"><a href="descarga_satelitales.html#cb16-67" tabindex="-1"></a>                            <span class="at">x =</span> dist_salud,</span>
+<span id="cb16-68"><a href="descarga_satelitales.html#cb16-68" tabindex="-1"></a>                            <span class="at">y =</span> MEX[<span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;CVEGEO&quot;</span>)] <span class="sc">%&gt;%</span></span>
+<span id="cb16-69"><a href="descarga_satelitales.html#cb16-69" tabindex="-1"></a>                              <span class="fu">filter</span>(CVEGEO <span class="sc">==</span> .x),</span>
+<span id="cb16-70"><a href="descarga_satelitales.html#cb16-70" tabindex="-1"></a>                            ee<span class="sc">$</span>Reducer<span class="sc">$</span><span class="fu">mean</span>(),</span>
+<span id="cb16-71"><a href="descarga_satelitales.html#cb16-71" tabindex="-1"></a>                            <span class="at">sf =</span> <span class="cn">FALSE</span></span>
+<span id="cb16-72"><a href="descarga_satelitales.html#cb16-72" tabindex="-1"></a>                          ) , </span>
+<span id="cb16-73"><a href="descarga_satelitales.html#cb16-73" tabindex="-1"></a>                          <span class="at">error =</span> <span class="cf">function</span>(e)<span class="fu">data.frame</span>(<span class="at">CVEGEO =</span> .x)) </span>
+<span id="cb16-74"><a href="descarga_satelitales.html#cb16-74" tabindex="-1"></a>)</span>
+<span id="cb16-75"><a href="descarga_satelitales.html#cb16-75" tabindex="-1"></a></span>
+<span id="cb16-76"><a href="descarga_satelitales.html#cb16-76" tabindex="-1"></a></span>
+<span id="cb16-77"><a href="descarga_satelitales.html#cb16-77" tabindex="-1"></a>MEX_dist_salud <span class="sc">%&lt;&gt;%</span> <span class="fu">bind_rows</span>()</span>
+<span id="cb16-78"><a href="descarga_satelitales.html#cb16-78" tabindex="-1"></a></span>
+<span id="cb16-79"><a href="descarga_satelitales.html#cb16-79" tabindex="-1"></a>MEX_dist_salud <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(accessibility )) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
+<span id="cb16-80"><a href="descarga_satelitales.html#cb16-80" tabindex="-1"></a>MEX_dist_salud <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(accessibility_walking_only)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
+<span id="cb16-81"><a href="descarga_satelitales.html#cb16-81" tabindex="-1"></a></span>
+<span id="cb16-82"><a href="descarga_satelitales.html#cb16-82" tabindex="-1"></a><span class="fu">saveRDS</span>(MEX_dist_salud, <span class="st">&quot;../output/2020/Satelital/MEX_dist_salud.rds&quot;</span>)</span>
+<span id="cb16-83"><a href="descarga_satelitales.html#cb16-83" tabindex="-1"></a></span>
+<span id="cb16-84"><a href="descarga_satelitales.html#cb16-84" tabindex="-1"></a></span>
+<span id="cb16-85"><a href="descarga_satelitales.html#cb16-85" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb16-86"><a href="descarga_satelitales.html#cb16-86" tabindex="-1"></a><span class="co"># CSP gHM: Global Human Modification</span></span>
+<span id="cb16-87"><a href="descarga_satelitales.html#cb16-87" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb16-88"><a href="descarga_satelitales.html#cb16-88" tabindex="-1"></a></span>
+<span id="cb16-89"><a href="descarga_satelitales.html#cb16-89" tabindex="-1"></a>CSP_gHM <span class="ot">=</span> ee<span class="sc">$</span><span class="fu">ImageCollection</span>(<span class="st">&#39;CSP/HM/GlobalHumanModification&#39;</span>) </span>
+<span id="cb16-90"><a href="descarga_satelitales.html#cb16-90" tabindex="-1"></a><span class="fu">ee_print</span>(CSP_gHM)</span>
+<span id="cb16-91"><a href="descarga_satelitales.html#cb16-91" tabindex="-1"></a></span>
+<span id="cb16-92"><a href="descarga_satelitales.html#cb16-92" tabindex="-1"></a>MEX_GHM <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">unique</span>(MEX<span class="sc">$</span>CVEGEO),</span>
+<span id="cb16-93"><a href="descarga_satelitales.html#cb16-93" tabindex="-1"></a>                      <span class="sc">~</span><span class="fu">tryCatch</span>(<span class="fu">ee_extract</span>(</span>
+<span id="cb16-94"><a href="descarga_satelitales.html#cb16-94" tabindex="-1"></a>                        <span class="at">x =</span> CSP_gHM,</span>
+<span id="cb16-95"><a href="descarga_satelitales.html#cb16-95" tabindex="-1"></a>                        <span class="at">y =</span> MEX[<span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;CVEGEO&quot;</span>)] <span class="sc">%&gt;%</span></span>
+<span id="cb16-96"><a href="descarga_satelitales.html#cb16-96" tabindex="-1"></a>                          <span class="fu">filter</span>(CVEGEO <span class="sc">==</span> .x),</span>
+<span id="cb16-97"><a href="descarga_satelitales.html#cb16-97" tabindex="-1"></a>                        ee<span class="sc">$</span>Reducer<span class="sc">$</span><span class="fu">mean</span>(),</span>
+<span id="cb16-98"><a href="descarga_satelitales.html#cb16-98" tabindex="-1"></a>                        <span class="at">sf =</span> <span class="cn">FALSE</span></span>
+<span id="cb16-99"><a href="descarga_satelitales.html#cb16-99" tabindex="-1"></a>                      ) , </span>
+<span id="cb16-100"><a href="descarga_satelitales.html#cb16-100" tabindex="-1"></a>                      <span class="at">error =</span> <span class="cf">function</span>(e)<span class="fu">data.frame</span>(<span class="at">CVEGEO =</span> .x)) </span>
+<span id="cb16-101"><a href="descarga_satelitales.html#cb16-101" tabindex="-1"></a>)</span>
+<span id="cb16-102"><a href="descarga_satelitales.html#cb16-102" tabindex="-1"></a></span>
+<span id="cb16-103"><a href="descarga_satelitales.html#cb16-103" tabindex="-1"></a></span>
+<span id="cb16-104"><a href="descarga_satelitales.html#cb16-104" tabindex="-1"></a>MEX_GHM <span class="sc">%&lt;&gt;%</span> <span class="fu">bind_rows</span>()</span>
+<span id="cb16-105"><a href="descarga_satelitales.html#cb16-105" tabindex="-1"></a></span>
+<span id="cb16-106"><a href="descarga_satelitales.html#cb16-106" tabindex="-1"></a>MEX_GHM <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(X2016_gHM )) <span class="sc">%&gt;%</span> <span class="fu">select</span>(CVEGEO) </span>
+<span id="cb16-107"><a href="descarga_satelitales.html#cb16-107" tabindex="-1"></a></span>
+<span id="cb16-108"><a href="descarga_satelitales.html#cb16-108" tabindex="-1"></a><span class="fu">saveRDS</span>(MEX_GHM, <span class="st">&quot;../output/2020/Satelital/MEX_GHM.rds&quot;</span>)</span></code></pre></div>
+</div>
+<div id="unir-y-guardar-los-resultados-de-las-descargas-realizadas" class="section level4 unnumbered hasAnchor">
+<h4>Unir y guardar los resultados de las descargas realizadas<a href="descarga_satelitales.html#unir-y-guardar-los-resultados-de-las-descargas-realizadas" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="descarga_satelitales.html#cb17-1" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span></span>
+<span id="cb17-2"><a href="descarga_satelitales.html#cb17-2" tabindex="-1"></a>    <span class="fu">list.files</span>(<span class="st">&quot;../output/2020/Satelital/&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="descarga_satelitales.html#cb17-3" tabindex="-1"></a>  <span class="fu">map</span>( <span class="sc">~</span> <span class="fu">readRDS</span>(<span class="at">file =</span> .x)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="descarga_satelitales.html#cb17-4" tabindex="-1"></a>  <span class="fu">reduce</span>(., full_join) <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="descarga_satelitales.html#cb17-5" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.numeric, <span class="cf">function</span>(x)</span>
+<span id="cb17-6"><a href="descarga_satelitales.html#cb17-6" tabindex="-1"></a>    <span class="fu">as.numeric</span>(<span class="fu">scale</span>(x))) <span class="sc">%&gt;%</span></span>
+<span id="cb17-7"><a href="descarga_satelitales.html#cb17-7" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb17-8"><a href="descarga_satelitales.html#cb17-8" tabindex="-1"></a>    <span class="at">cve_mun =</span> CVEGEO,</span>
+<span id="cb17-9"><a href="descarga_satelitales.html#cb17-9" tabindex="-1"></a>    <span class="st">&quot;modifica_humana&quot;</span> <span class="ot">=</span> X2016_gHM,</span>
+<span id="cb17-10"><a href="descarga_satelitales.html#cb17-10" tabindex="-1"></a>    <span class="st">&quot;acceso_hosp&quot;</span> <span class="ot">=</span> accessibility,</span>
+<span id="cb17-11"><a href="descarga_satelitales.html#cb17-11" tabindex="-1"></a>    <span class="st">&quot;acceso_hosp_caminando&quot;</span> <span class="ot">=</span> accessibility_walking_only,</span>
+<span id="cb17-12"><a href="descarga_satelitales.html#cb17-12" tabindex="-1"></a>    <span class="at">cubrimiento_urbano =</span> X2019_urban.coverfraction,</span>
+<span id="cb17-13"><a href="descarga_satelitales.html#cb17-13" tabindex="-1"></a>    <span class="at">cubrimiento_cultivo =</span> X2019_crops.coverfraction,</span>
+<span id="cb17-14"><a href="descarga_satelitales.html#cb17-14" tabindex="-1"></a>    <span class="at">luces_nocturnas =</span> X20200101_average</span>
+<span id="cb17-15"><a href="descarga_satelitales.html#cb17-15" tabindex="-1"></a>  )</span>
+<span id="cb17-16"><a href="descarga_satelitales.html#cb17-16" tabindex="-1"></a></span>
+<span id="cb17-17"><a href="descarga_satelitales.html#cb17-17" tabindex="-1"></a>statelevel_predictors_df[<span class="fu">apply</span>(statelevel_predictors_df,<span class="dv">1</span>,<span class="cf">function</span>(x)<span class="fu">any</span>(<span class="fu">is.na</span>(x))),] <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
+<span id="cb17-18"><a href="descarga_satelitales.html#cb17-18" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="descarga_satelitales.html#cb17-19" tabindex="-1"></a><span class="fu">saveRDS</span>(statelevel_predictors_df, <span class="st">&quot;input/2020/predictores/statelevel_predictors_satelite.rds&quot;</span>)</span></code></pre></div>
 
+</div>
 </div>
             </section>
 

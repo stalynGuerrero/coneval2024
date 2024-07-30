@@ -9,6 +9,8 @@ El proceso de benchmarking se realiza mediante la función `benchmarking`, utili
 Para validar el modelo a nivel de subgrupos, se definen diversos subgrupos como `ent`, `area`, `sexo`, `edad`, `discapacidad`, `hlengua` y `nivel_edu`. Se crean gráficos de validación para cada subgrupo utilizando la función `plot_uni_validacion`. Estos gráficos se combinan y se guardan en un archivo JPG (`plot_uni.jpg`). Además, se guarda la lista de gráficos y el dataframe postestratificado en archivos RDS (`plot_uni.rds` y `poststrat_df_ictpc.rds` respectivamente), lo que permite una fácil recuperación y análisis posterior.
 
 
+
+
 ``` r
 rm(list =ls())
 cat("\f")
@@ -36,11 +38,12 @@ source("../source/Benchmarking.R", encoding = "UTF-8")
 ###############################################################
 
 fit <- readRDS("../output/2020/modelos/fit_mrp_ictpc.rds")
+```
 
-###############################################################
-# proceso de benchmarking
-###############################################################
+#### proceso de benchmarking{-}
 
+
+``` r
 list_bench <- benchmarking(modelo = fit,
              names_cov =   c("ent",
                              "area",
@@ -52,11 +55,12 @@ list_bench <- benchmarking(modelo = fit,
 
 # saveRDS(list_bench,"output/2020/plots/ictpc/list_bench.rds")
 # list_bench <- readRDS("output/2020/plots/ictpc/list_bench.rds")
+```
 
-##############################################################
-## Validaciones y plot uni 
-###############################################################
+#### Validaciones y plot uni {-}
 
+
+``` r
 poststrat_df <- fit$poststrat_df %>% data.frame() %>%  
   mutate(yk_lmer = yk,
          gk_bench = list_bench$gk_bench,
@@ -77,12 +81,12 @@ cbind(
     Nacional_lmer = sum(n * yk_lmer) / sum(n),
     Nacional_bench = sum(n * yk_bench) / sum(n*gk_bench),
   )) %>% print()
+```
+
+#### Validaciones por subgrupo completo{-}
 
 
-###########################################
-### Validaciones por subgrupo completo  ###
-###########################################
-
+``` r
 subgrupo <- c("ent",
               "area",
               "sexo",

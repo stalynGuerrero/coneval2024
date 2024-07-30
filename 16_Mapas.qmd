@@ -10,9 +10,10 @@ El script luego define los cortes de clasificación para las estimaciones de pob
 
 Finalmente, el script también visualiza y guarda los errores de estimación asociados con cada tipo de pobreza, utilizando el mismo procedimiento para crear mapas temáticos con los errores de estimación. La visualización de estos errores ayuda a evaluar la precisión de las estimaciones y a identificar áreas con alta incertidumbre. Este proceso proporciona una manera efectiva de comunicar visualmente la distribución de la pobreza y los errores asociados a través de mapas detallados y estéticamente ajustados.
 
+#### Configuración y carga de librerías{-}
+
 ```{r, eval=FALSE}
 ### Cleaning R environment ###
-
 rm(list = ls())
 gc()
 
@@ -30,18 +31,21 @@ library(sf)
 select <- dplyr::select
 
 ###------------ Definiendo el límite de la memoria RAM a emplear ------------###
-
 memory.limit(250000000)
+```
 
+#### Carga de datos y creación de mapas de IPM{-}
+
+```{r, eval=FALSE}
 ################################################################################
 ###----------------------------- Loading datasets ---------------------------###
 ################################################################################
 ipm_mpios <- 
   readRDS("../output/Entregas/2020/result_mpios.RDS") %>% 
-mutate(est_pob_ext = ifelse(est_pob_ext <0, 0,est_pob_ext))  
+  mutate(est_pob_ext = ifelse(est_pob_ext < 0, 0, est_pob_ext))
 
 ShapeDAM <- read_sf("../shapefile/2020/MEX_2020.shp")
-ShapeDAM %<>% mutate(cve_mun = CVEGEO ,
+ShapeDAM %<>% mutate(cve_mun = CVEGEO,
                      ent = substr(cve_mun, 1, 2),
                      CVEGEO = NULL) 
 
@@ -49,18 +53,16 @@ cortes <- c(0,  15, 30, 50, 80, 100 )/100
 
 P1_mpio_norte <-
   tm_shape(ShapeDAM %>%
-             inner_join(ipm_mpios,   by = "cve_mun"))
+             inner_join(ipm_mpios, by = "cve_mun"))
 
 Mapa_I <-
   P1_mpio_norte + tm_polygons(
-                          breaks  = cortes,
-                        "est_ipm_I",
-                        # style = "quantile",
-                        title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo I",
-                        palette = "Greens",
-                        colorNA = "white"
+    breaks  = cortes,
+    "est_ipm_I",
+    title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo I",
+    palette = "Greens",
+    colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -68,7 +70,6 @@ Mapa_I <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_I,
@@ -82,12 +83,10 @@ Mapa_II <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "est_ipm_II",
-    # style = "quantile",
     title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo II",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -95,7 +94,6 @@ Mapa_II <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_II,
@@ -109,12 +107,10 @@ Mapa_III <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "est_ipm_III",
-    # style = "quantile",
     title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo III",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -122,7 +118,6 @@ Mapa_III <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_III,
@@ -136,12 +131,10 @@ Mapa_IV <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "est_ipm_IV",
-    # style = "quantile",
     title = "Estimación de la pobreza \nmultidimensional 2020 - Tipo IV",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -149,7 +142,6 @@ Mapa_IV <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_IV,
@@ -158,23 +150,23 @@ tmap_save(
   height = 3000,
   asp = 0
 )
+```
 
+#### Crea#cióne pobreza extrema y moderada, y errores de estimació{-}
+
+```{r, eval=FALSE}
 cortes <- c(0,  15, 30, 50, 80, 100 )/100
 
 summary(ipm_mpios$est_pob_ext)
-
-
 
 Mapa_ext <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "est_pob_ext",
-    # style = "quantile",
     title = "Estimación de la pobreza extrema",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -182,7 +174,6 @@ Mapa_ext <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_ext,
@@ -199,12 +190,10 @@ Mapa_mod <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "est_pob_mod",
-    # style = "quantile",
     title = "Estimación de la pobreza moderada",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -212,7 +201,6 @@ Mapa_mod <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_mod,
@@ -225,18 +213,16 @@ tmap_save(
 ################################################################################
 ## Errores 
 ################################################################################
-cortes <- c(0,  1,5,10, 25,  50,  100 )/100
+cortes <- c(0,  1, 5, 10, 25, 50, 100 )/100
 
 Mapa_I_ee <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "ee_ipm_I",
-    # style = "quantile",
     title = "Error de estimación de la pobreza \nmultidimensional 2020 - Tipo I",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -244,7 +230,6 @@ Mapa_I_ee <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_I_ee,
@@ -258,12 +243,10 @@ Mapa_II_ee <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "ee_ipm_II",
-    # style = "quantile",
     title = "Error de estimación de la pobreza \nmultidimensional 2020 - Tipo II",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -271,7 +254,6 @@ Mapa_II_ee <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_II_ee,
@@ -285,12 +267,12 @@ Mapa_III_ee <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "ee_ipm_III",
-    # style = "quantile",
     title = "Error de estimación de la pobreza \nmultidimensional 2020 - Tipo III",
     palette = "Greens",
     colorNA = "white"
-  ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
+  )
+
+ + tm_layout(legend.show = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -298,7 +280,6 @@ Mapa_III_ee <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_III_ee,
@@ -312,12 +293,10 @@ Mapa_IV_ee <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "ee_ipm_IV",
-    # style = "quantile",
     title = "Error de estimación de la pobreza \nmultidimensional 2020 - Tipo IV",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -325,7 +304,6 @@ Mapa_IV_ee <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_IV_ee,
@@ -335,17 +313,14 @@ tmap_save(
   asp = 0
 )
 
-
 Mapa_ext_ee <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "ee_pob_ext",
-    # style = "quantile",
     title = "Error de estimación de la pobreza extrema",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -353,7 +328,6 @@ Mapa_ext_ee <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_ext_ee,
@@ -363,17 +337,14 @@ tmap_save(
   asp = 0
 )
 
-
 Mapa_mod_ee <-
   P1_mpio_norte + tm_polygons(
     breaks  = cortes,
     "ee_pob_mod",
-    # style = "quantile",
     title = "Error de estimación de la pobreza moderada",
     palette = "Greens",
     colorNA = "white"
   ) + tm_layout(legend.show = TRUE,
-                #legend.outside = TRUE,
                 legend.text.size =  1.5, 
                 legend.outside.position = 'left',
                 legend.hist.width = 1,
@@ -381,7 +352,6 @@ Mapa_mod_ee <-
                 legend.stack = 'vertical',
                 legend.title.fontface = 'bold',
                 legend.text.fontface = 'bold') 
-
 
 tmap_save(
   Mapa_mod_ee,

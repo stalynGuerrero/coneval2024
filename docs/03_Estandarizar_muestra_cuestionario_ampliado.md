@@ -142,12 +142,13 @@ attributes(enigh$hli)
 
 
 ## censo
-attributes(muestra_cuestionario_ampliado$hli) 
+attributes(muestra_cuestionario_ampliado$hli)
+```
 
-################################################################################
-## Estandarizando el censo 
-################################################################################
+#### Estandarizando el censo {-}
 
+
+``` r
 censo_sta <- muestra_cuestionario_ampliado %>%
   transmute(
     ent,

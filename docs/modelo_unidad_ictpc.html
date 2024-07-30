@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2024-07-29" />
+<meta name="date" content="2024-07-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -205,123 +205,135 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Este script en R se enfoca en la creación de un modelo multinivel utilizando datos de encuestas y censos para predecir ingresos. El proceso comienza con la limpieza del entorno de trabajo mediante <code>rm(list = ls())</code> y la carga de librerías esenciales para el análisis, tales como <code>patchwork</code>, <code>nortest</code>, <code>lme4</code>, <code>tidyverse</code>, <code>magrittr</code>, <code>caret</code>, <code>car</code>, y una fuente externa de modelos (<code>source("source/modelos_freq.R")</code>). Posteriormente, se definen las variables de agregación (<code>byAgrega</code>), se incrementa el límite de memoria disponible, y se cargan las bases de datos necesarias (<code>encuesta_sta</code>, <code>censo_sta</code>, <code>statelevel_predictors_df</code>). Se seleccionan las variables covariantes excluyendo aquellas que comienzan con <code>hog_</code> o <code>cve_mun</code>.</p>
 <p>En la selección de variables relevantes, se mencionan algunos pasos comentados que realizan la selección de características utilizando el método <code>rfe</code> de <code>caret</code>. Las variables seleccionadas se listan explícitamente en <code>variables_seleccionadas</code> y se combinan con otras covariantes para formar <code>cov_names</code>. Luego, se construye la fórmula del modelo (<code>formula_model</code>), que incluye efectos aleatorios para <code>cve_mun</code>, <code>hlengua</code> y <code>discapacidad</code>, así como efectos fijos para las demás variables. Esto asegura que el modelo considere tanto la variabilidad dentro de cada grupo como las características específicas de cada variable.</p>
 <p>Finalmente, se realiza una transformación la variable de ingreso (<code>ingreso</code>) a formato numérico y se ajusta el modelo utilizando la función <code>modelo_ingreso</code>, que está definida en el archivo fuente cargado previamente. Los datos de entrada incluyen <code>encuesta_sta</code>, <code>statelevel_predictors_df</code>, <code>censo_sta</code> y la fórmula del modelo. Los resultados del modelo se guardan en un archivo RDS (<code>fit_mrp_ictpc.rds</code>). Se generan y guardan gráficos de densidad y histogramas de las distribuciones posteriores utilizando <code>ggsave</code>, proporcionando una visualización clara de los resultados obtenidos.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="modelo_unidad_ictpc.html#cb7-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span><span class="fu">ls</span>())</span>
-<span id="cb7-2"><a href="modelo_unidad_ictpc.html#cb7-2" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="modelo_unidad_ictpc.html#cb7-3" tabindex="-1"></a><span class="co"># Loading required libraries ----------------------------------------------</span></span>
-<span id="cb7-4"><a href="modelo_unidad_ictpc.html#cb7-4" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="modelo_unidad_ictpc.html#cb7-5" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb7-6"><a href="modelo_unidad_ictpc.html#cb7-6" tabindex="-1"></a><span class="fu">library</span>(nortest)</span>
-<span id="cb7-7"><a href="modelo_unidad_ictpc.html#cb7-7" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb7-8"><a href="modelo_unidad_ictpc.html#cb7-8" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb7-9"><a href="modelo_unidad_ictpc.html#cb7-9" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb7-10"><a href="modelo_unidad_ictpc.html#cb7-10" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
-<span id="cb7-11"><a href="modelo_unidad_ictpc.html#cb7-11" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb7-12"><a href="modelo_unidad_ictpc.html#cb7-12" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/modelos_freq.R&quot;</span>)</span>
-<span id="cb7-13"><a href="modelo_unidad_ictpc.html#cb7-13" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="modelo_unidad_ictpc.html#cb7-14" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="modelo_unidad_ictpc.html#cb7-15" tabindex="-1"></a>byAgrega <span class="ot">&lt;-</span></span>
-<span id="cb7-16"><a href="modelo_unidad_ictpc.html#cb7-16" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
-<span id="cb7-17"><a href="modelo_unidad_ictpc.html#cb7-17" tabindex="-1"></a>    <span class="st">&quot;cve_mun&quot;</span>,</span>
-<span id="cb7-18"><a href="modelo_unidad_ictpc.html#cb7-18" tabindex="-1"></a>    <span class="st">&quot;area&quot;</span>,</span>
-<span id="cb7-19"><a href="modelo_unidad_ictpc.html#cb7-19" tabindex="-1"></a>    <span class="st">&quot;sexo&quot;</span>,</span>
-<span id="cb7-20"><a href="modelo_unidad_ictpc.html#cb7-20" tabindex="-1"></a>    <span class="st">&quot;edad&quot;</span>,</span>
-<span id="cb7-21"><a href="modelo_unidad_ictpc.html#cb7-21" tabindex="-1"></a>    <span class="st">&quot;discapacidad&quot;</span>,</span>
-<span id="cb7-22"><a href="modelo_unidad_ictpc.html#cb7-22" tabindex="-1"></a>    <span class="st">&quot;hlengua&quot;</span>,</span>
-<span id="cb7-23"><a href="modelo_unidad_ictpc.html#cb7-23" tabindex="-1"></a>    <span class="st">&quot;nivel_edu&quot;</span> )</span>
-<span id="cb7-24"><a href="modelo_unidad_ictpc.html#cb7-24" tabindex="-1"></a></span>
-<span id="cb7-25"><a href="modelo_unidad_ictpc.html#cb7-25" tabindex="-1"></a><span class="co"># Loading data ------------------------------------------------------------</span></span>
-<span id="cb7-26"><a href="modelo_unidad_ictpc.html#cb7-26" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">10000000</span>)</span>
-<span id="cb7-27"><a href="modelo_unidad_ictpc.html#cb7-27" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>)</span>
-<span id="cb7-28"><a href="modelo_unidad_ictpc.html#cb7-28" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
-<span id="cb7-29"><a href="modelo_unidad_ictpc.html#cb7-29" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
-<span id="cb7-30"><a href="modelo_unidad_ictpc.html#cb7-30" tabindex="-1"></a></span>
-<span id="cb7-31"><a href="modelo_unidad_ictpc.html#cb7-31" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">names</span>(statelevel_predictors_df)</span>
-<span id="cb7-32"><a href="modelo_unidad_ictpc.html#cb7-32" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> cov_names[<span class="sc">!</span><span class="fu">grepl</span>(<span class="at">x =</span> cov_names,<span class="at">pattern =</span> <span class="st">&quot;^hog_|cve_mun&quot;</span>)]</span>
-<span id="cb7-33"><a href="modelo_unidad_ictpc.html#cb7-33" tabindex="-1"></a></span>
-<span id="cb7-34"><a href="modelo_unidad_ictpc.html#cb7-34" tabindex="-1"></a><span class="co"># Selección de variables</span></span>
-<span id="cb7-35"><a href="modelo_unidad_ictpc.html#cb7-35" tabindex="-1"></a></span>
-<span id="cb7-36"><a href="modelo_unidad_ictpc.html#cb7-36" tabindex="-1"></a><span class="co"># encuesta_sta2 &lt;- encuesta_sta %&gt;% group_by_at((byAgrega)) %&gt;%</span></span>
-<span id="cb7-37"><a href="modelo_unidad_ictpc.html#cb7-37" tabindex="-1"></a><span class="co">#   summarise(ingreso = mean(ictpc), .groups = &quot;drop&quot;,</span></span>
-<span id="cb7-38"><a href="modelo_unidad_ictpc.html#cb7-38" tabindex="-1"></a><span class="co">#             n = n()) %&gt;%</span></span>
-<span id="cb7-39"><a href="modelo_unidad_ictpc.html#cb7-39" tabindex="-1"></a><span class="co">#   inner_join(statelevel_predictors_df)</span></span>
-<span id="cb7-40"><a href="modelo_unidad_ictpc.html#cb7-40" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb7-41"><a href="modelo_unidad_ictpc.html#cb7-41" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb7-42"><a href="modelo_unidad_ictpc.html#cb7-42" tabindex="-1"></a><span class="co"># resultado_rfe &lt;-</span></span>
-<span id="cb7-43"><a href="modelo_unidad_ictpc.html#cb7-43" tabindex="-1"></a><span class="co">#   rfe(</span></span>
-<span id="cb7-44"><a href="modelo_unidad_ictpc.html#cb7-44" tabindex="-1"></a><span class="co">#     encuesta_sta2[, cov_names],</span></span>
-<span id="cb7-45"><a href="modelo_unidad_ictpc.html#cb7-45" tabindex="-1"></a><span class="co">#     encuesta_sta2$ingreso,</span></span>
-<span id="cb7-46"><a href="modelo_unidad_ictpc.html#cb7-46" tabindex="-1"></a><span class="co">#     sizes = c(1:10),</span></span>
-<span id="cb7-47"><a href="modelo_unidad_ictpc.html#cb7-47" tabindex="-1"></a><span class="co">#     rfeControl = rfeControl(functions = lmFuncs, method = &quot;LOOCV&quot;)</span></span>
-<span id="cb7-48"><a href="modelo_unidad_ictpc.html#cb7-48" tabindex="-1"></a><span class="co">#   )</span></span>
-<span id="cb7-49"><a href="modelo_unidad_ictpc.html#cb7-49" tabindex="-1"></a><span class="co"># saveRDS(resultado_rfe, &quot;01_2020/01_ingreso_medio/Data/modelo/resultado_rfe.rds&quot;)</span></span>
-<span id="cb7-50"><a href="modelo_unidad_ictpc.html#cb7-50" tabindex="-1"></a><span class="co"># resultado_rfe &lt;- readRDS(&quot;01_2020/01_ingreso_medio/Data/modelo/resultado_rfe.rds&quot;)</span></span>
-<span id="cb7-51"><a href="modelo_unidad_ictpc.html#cb7-51" tabindex="-1"></a></span>
-<span id="cb7-52"><a href="modelo_unidad_ictpc.html#cb7-52" tabindex="-1"></a>variables_seleccionadas <span class="ot">&lt;-</span></span>
-<span id="cb7-53"><a href="modelo_unidad_ictpc.html#cb7-53" tabindex="-1"></a>  <span class="fu">c</span>(</span>
-<span id="cb7-54"><a href="modelo_unidad_ictpc.html#cb7-54" tabindex="-1"></a>    <span class="st">&quot;prom_esc_rel_urb&quot;</span>,</span>
-<span id="cb7-55"><a href="modelo_unidad_ictpc.html#cb7-55" tabindex="-1"></a>    <span class="st">&quot;smg1&quot;</span>,</span>
-<span id="cb7-56"><a href="modelo_unidad_ictpc.html#cb7-56" tabindex="-1"></a>    <span class="st">&quot;gini15m&quot;</span> ,</span>
-<span id="cb7-57"><a href="modelo_unidad_ictpc.html#cb7-57" tabindex="-1"></a>    <span class="st">&quot;ictpc15&quot;</span> ,</span>
-<span id="cb7-58"><a href="modelo_unidad_ictpc.html#cb7-58" tabindex="-1"></a>    <span class="st">&quot;altitud1000&quot;</span>,</span>
-<span id="cb7-59"><a href="modelo_unidad_ictpc.html#cb7-59" tabindex="-1"></a>    <span class="st">&quot;prom_esc_rel_rur&quot;</span> ,</span>
-<span id="cb7-60"><a href="modelo_unidad_ictpc.html#cb7-60" tabindex="-1"></a>    <span class="st">&quot;porc_patnoagrnocal_urb&quot;</span>,</span>
-<span id="cb7-61"><a href="modelo_unidad_ictpc.html#cb7-61" tabindex="-1"></a>    <span class="st">&quot;acc_medio&quot;</span>  ,</span>
-<span id="cb7-62"><a href="modelo_unidad_ictpc.html#cb7-62" tabindex="-1"></a>    <span class="st">&quot;derhab_pea_15_20&quot;</span> ,</span>
-<span id="cb7-63"><a href="modelo_unidad_ictpc.html#cb7-63" tabindex="-1"></a>    <span class="st">&quot;porc_norep_ing_urb&quot;</span></span>
-<span id="cb7-64"><a href="modelo_unidad_ictpc.html#cb7-64" tabindex="-1"></a>  )</span>
-<span id="cb7-65"><a href="modelo_unidad_ictpc.html#cb7-65" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb7-66"><a href="modelo_unidad_ictpc.html#cb7-66" tabindex="-1"></a>  <span class="st">&quot;modifica_humana&quot;</span>,  <span class="st">&quot;acceso_hosp&quot;</span>,           </span>
-<span id="cb7-67"><a href="modelo_unidad_ictpc.html#cb7-67" tabindex="-1"></a>  <span class="st">&quot;acceso_hosp_caminando&quot;</span>,  <span class="st">&quot;cubrimiento_cultivo&quot;</span>,   </span>
-<span id="cb7-68"><a href="modelo_unidad_ictpc.html#cb7-68" tabindex="-1"></a>  <span class="st">&quot;cubrimiento_urbano&quot;</span>,     <span class="st">&quot;luces_nocturnas&quot;</span> ,</span>
-<span id="cb7-69"><a href="modelo_unidad_ictpc.html#cb7-69" tabindex="-1"></a>  variables_seleccionadas</span>
-<span id="cb7-70"><a href="modelo_unidad_ictpc.html#cb7-70" tabindex="-1"></a>)</span>
-<span id="cb7-71"><a href="modelo_unidad_ictpc.html#cb7-71" tabindex="-1"></a></span>
-<span id="cb7-72"><a href="modelo_unidad_ictpc.html#cb7-72" tabindex="-1"></a>cov_registros <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(</span>
-<span id="cb7-73"><a href="modelo_unidad_ictpc.html#cb7-73" tabindex="-1"></a>  cov_names,</span>
-<span id="cb7-74"><a href="modelo_unidad_ictpc.html#cb7-74" tabindex="-1"></a>  <span class="fu">c</span>(</span>
-<span id="cb7-75"><a href="modelo_unidad_ictpc.html#cb7-75" tabindex="-1"></a>    <span class="st">&quot;elec_mun20&quot;</span>,</span>
-<span id="cb7-76"><a href="modelo_unidad_ictpc.html#cb7-76" tabindex="-1"></a>    <span class="st">&quot;elec_mun19&quot;</span>,</span>
-<span id="cb7-77"><a href="modelo_unidad_ictpc.html#cb7-77" tabindex="-1"></a>    <span class="st">&quot;transf_gobpc_15_20&quot;</span>,</span>
-<span id="cb7-78"><a href="modelo_unidad_ictpc.html#cb7-78" tabindex="-1"></a>    <span class="st">&quot;derhab_pea_15_20&quot;</span>,</span>
-<span id="cb7-79"><a href="modelo_unidad_ictpc.html#cb7-79" tabindex="-1"></a>    <span class="st">&quot;vabpc_15_19&quot;</span> ,</span>
-<span id="cb7-80"><a href="modelo_unidad_ictpc.html#cb7-80" tabindex="-1"></a>    <span class="st">&quot;itlpis_15_20&quot;</span>  ,</span>
-<span id="cb7-81"><a href="modelo_unidad_ictpc.html#cb7-81" tabindex="-1"></a>    <span class="st">&quot;remespc_15_20&quot;</span>,</span>
-<span id="cb7-82"><a href="modelo_unidad_ictpc.html#cb7-82" tabindex="-1"></a>    <span class="st">&quot;desem_15_20&quot;</span>,</span>
-<span id="cb7-83"><a href="modelo_unidad_ictpc.html#cb7-83" tabindex="-1"></a>    <span class="st">&quot;smg1&quot;</span>,</span>
-<span id="cb7-84"><a href="modelo_unidad_ictpc.html#cb7-84" tabindex="-1"></a>    <span class="st">&quot;ql_porc_cpa_urb&quot;</span>,</span>
-<span id="cb7-85"><a href="modelo_unidad_ictpc.html#cb7-85" tabindex="-1"></a>    <span class="st">&quot;ql_porc_cpa_rur&quot;</span></span>
-<span id="cb7-86"><a href="modelo_unidad_ictpc.html#cb7-86" tabindex="-1"></a>  )</span>
-<span id="cb7-87"><a href="modelo_unidad_ictpc.html#cb7-87" tabindex="-1"></a>)</span>
-<span id="cb7-88"><a href="modelo_unidad_ictpc.html#cb7-88" tabindex="-1"></a></span>
-<span id="cb7-89"><a href="modelo_unidad_ictpc.html#cb7-89" tabindex="-1"></a></span>
-<span id="cb7-90"><a href="modelo_unidad_ictpc.html#cb7-90" tabindex="-1"></a></span>
-<span id="cb7-91"><a href="modelo_unidad_ictpc.html#cb7-91" tabindex="-1"></a>cov_registros <span class="ot">&lt;-</span> <span class="fu">paste0</span>(cov_registros, <span class="at">collapse =</span> <span class="st">&quot; + &quot;</span>)</span>
-<span id="cb7-92"><a href="modelo_unidad_ictpc.html#cb7-92" tabindex="-1"></a></span>
-<span id="cb7-93"><a href="modelo_unidad_ictpc.html#cb7-93" tabindex="-1"></a>formula_model <span class="ot">&lt;-</span> </span>
-<span id="cb7-94"><a href="modelo_unidad_ictpc.html#cb7-94" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;ingreso ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) + ent + nivel_edu +  edad + area + sexo +&quot;</span>, </span>
-<span id="cb7-95"><a href="modelo_unidad_ictpc.html#cb7-95" tabindex="-1"></a>      <span class="st">&quot; + &quot;</span>, cov_registros)</span>
-<span id="cb7-96"><a href="modelo_unidad_ictpc.html#cb7-96" tabindex="-1"></a></span>
-<span id="cb7-97"><a href="modelo_unidad_ictpc.html#cb7-97" tabindex="-1"></a>encuesta_sta<span class="sc">$</span>ingreso <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(encuesta_sta<span class="sc">$</span>ictpc)</span>
-<span id="cb7-98"><a href="modelo_unidad_ictpc.html#cb7-98" tabindex="-1"></a></span>
-<span id="cb7-99"><a href="modelo_unidad_ictpc.html#cb7-99" tabindex="-1"></a></span>
-<span id="cb7-100"><a href="modelo_unidad_ictpc.html#cb7-100" tabindex="-1"></a></span>
-<span id="cb7-101"><a href="modelo_unidad_ictpc.html#cb7-101" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">modelo_ingreso</span>(</span>
-<span id="cb7-102"><a href="modelo_unidad_ictpc.html#cb7-102" tabindex="-1"></a>  <span class="at">encuesta_sta =</span> encuesta_sta ,</span>
-<span id="cb7-103"><a href="modelo_unidad_ictpc.html#cb7-103" tabindex="-1"></a>  <span class="at">predictors =</span> statelevel_predictors_df,</span>
-<span id="cb7-104"><a href="modelo_unidad_ictpc.html#cb7-104" tabindex="-1"></a>  <span class="at">censo_sta =</span> censo_sta,</span>
-<span id="cb7-105"><a href="modelo_unidad_ictpc.html#cb7-105" tabindex="-1"></a>  <span class="at">formula_mod =</span> formula_model,</span>
-<span id="cb7-106"><a href="modelo_unidad_ictpc.html#cb7-106" tabindex="-1"></a>  <span class="at">byAgrega =</span> byAgrega</span>
-<span id="cb7-107"><a href="modelo_unidad_ictpc.html#cb7-107" tabindex="-1"></a>)</span>
-<span id="cb7-108"><a href="modelo_unidad_ictpc.html#cb7-108" tabindex="-1"></a></span>
-<span id="cb7-109"><a href="modelo_unidad_ictpc.html#cb7-109" tabindex="-1"></a><span class="co">#--- Exporting Bayesian Multilevel Model Results ---#</span></span>
-<span id="cb7-110"><a href="modelo_unidad_ictpc.html#cb7-110" tabindex="-1"></a></span>
-<span id="cb7-111"><a href="modelo_unidad_ictpc.html#cb7-111" tabindex="-1"></a><span class="fu">saveRDS</span>(fit, </span>
-<span id="cb7-112"><a href="modelo_unidad_ictpc.html#cb7-112" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)</span>
-<span id="cb7-113"><a href="modelo_unidad_ictpc.html#cb7-113" tabindex="-1"></a></span>
-<span id="cb7-114"><a href="modelo_unidad_ictpc.html#cb7-114" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">plot =</span> fit<span class="sc">$</span>plot_densy,</span>
-<span id="cb7-115"><a href="modelo_unidad_ictpc.html#cb7-115" tabindex="-1"></a>       <span class="st">&quot;../output/2020/plots/01_densidad_ictpc.png&quot;</span>,<span class="at">scale =</span> <span class="dv">3</span>)</span>
-<span id="cb7-116"><a href="modelo_unidad_ictpc.html#cb7-116" tabindex="-1"></a>fit<span class="sc">$</span>plot_hist_post</span></code></pre></div>
+<div id="limpieza-del-entorno-y-carga-de-bibliotecas-3" class="section level4 unnumbered hasAnchor">
+<h4>Limpieza del Entorno y Carga de Bibliotecas<a href="modelo_unidad_ictpc.html#limpieza-del-entorno-y-carga-de-bibliotecas-3" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se limpia el entorno de R y se cargan las bibliotecas necesarias para el análisis.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="modelo_unidad_ictpc.html#cb42-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span><span class="fu">ls</span>())</span>
+<span id="cb42-2"><a href="modelo_unidad_ictpc.html#cb42-2" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="modelo_unidad_ictpc.html#cb42-3" tabindex="-1"></a><span class="co"># Loading required libraries ----------------------------------------------</span></span>
+<span id="cb42-4"><a href="modelo_unidad_ictpc.html#cb42-4" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="modelo_unidad_ictpc.html#cb42-5" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb42-6"><a href="modelo_unidad_ictpc.html#cb42-6" tabindex="-1"></a><span class="fu">library</span>(nortest)</span>
+<span id="cb42-7"><a href="modelo_unidad_ictpc.html#cb42-7" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb42-8"><a href="modelo_unidad_ictpc.html#cb42-8" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb42-9"><a href="modelo_unidad_ictpc.html#cb42-9" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb42-10"><a href="modelo_unidad_ictpc.html#cb42-10" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb42-11"><a href="modelo_unidad_ictpc.html#cb42-11" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb42-12"><a href="modelo_unidad_ictpc.html#cb42-12" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/modelos_freq.R&quot;</span>)</span></code></pre></div>
+</div>
+<div id="variables-de-agregación" class="section level4 unnumbered hasAnchor">
+<h4>Variables de Agregación<a href="modelo_unidad_ictpc.html#variables-de-agregación" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se define un vector de variables que se utilizarán para la agregación de datos.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="modelo_unidad_ictpc.html#cb43-1" tabindex="-1"></a>byAgrega <span class="ot">&lt;-</span></span>
+<span id="cb43-2"><a href="modelo_unidad_ictpc.html#cb43-2" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
+<span id="cb43-3"><a href="modelo_unidad_ictpc.html#cb43-3" tabindex="-1"></a>    <span class="st">&quot;cve_mun&quot;</span>,</span>
+<span id="cb43-4"><a href="modelo_unidad_ictpc.html#cb43-4" tabindex="-1"></a>    <span class="st">&quot;area&quot;</span>,</span>
+<span id="cb43-5"><a href="modelo_unidad_ictpc.html#cb43-5" tabindex="-1"></a>    <span class="st">&quot;sexo&quot;</span>,</span>
+<span id="cb43-6"><a href="modelo_unidad_ictpc.html#cb43-6" tabindex="-1"></a>    <span class="st">&quot;edad&quot;</span>,</span>
+<span id="cb43-7"><a href="modelo_unidad_ictpc.html#cb43-7" tabindex="-1"></a>    <span class="st">&quot;discapacidad&quot;</span>,</span>
+<span id="cb43-8"><a href="modelo_unidad_ictpc.html#cb43-8" tabindex="-1"></a>    <span class="st">&quot;hlengua&quot;</span>,</span>
+<span id="cb43-9"><a href="modelo_unidad_ictpc.html#cb43-9" tabindex="-1"></a>    <span class="st">&quot;nivel_edu&quot;</span> )</span></code></pre></div>
+</div>
+<div id="carga-de-datos" class="section level4 unnumbered hasAnchor">
+<h4>Carga de Datos<a href="modelo_unidad_ictpc.html#carga-de-datos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se cargan los datos de la encuesta, el censo y los predictores a nivel estatal.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="modelo_unidad_ictpc.html#cb44-1" tabindex="-1"></a><span class="co"># Loading data ------------------------------------------------------------</span></span>
+<span id="cb44-2"><a href="modelo_unidad_ictpc.html#cb44-2" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">10000000</span>)</span>
+<span id="cb44-3"><a href="modelo_unidad_ictpc.html#cb44-3" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>)</span>
+<span id="cb44-4"><a href="modelo_unidad_ictpc.html#cb44-4" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
+<span id="cb44-5"><a href="modelo_unidad_ictpc.html#cb44-5" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
+<span id="cb44-6"><a href="modelo_unidad_ictpc.html#cb44-6" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="modelo_unidad_ictpc.html#cb44-7" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">names</span>(statelevel_predictors_df)</span>
+<span id="cb44-8"><a href="modelo_unidad_ictpc.html#cb44-8" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> cov_names[<span class="sc">!</span><span class="fu">grepl</span>(<span class="at">x =</span> cov_names,<span class="at">pattern =</span> <span class="st">&quot;^hog_|cve_mun&quot;</span>)]</span></code></pre></div>
+</div>
+<div id="selección-de-variables" class="section level4 unnumbered hasAnchor">
+<h4>Selección de Variables<a href="modelo_unidad_ictpc.html#selección-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se seleccionan las variables predictoras que se utilizarán en el modelo.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="modelo_unidad_ictpc.html#cb45-1" tabindex="-1"></a><span class="co"># Selección de variables</span></span>
+<span id="cb45-2"><a href="modelo_unidad_ictpc.html#cb45-2" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="modelo_unidad_ictpc.html#cb45-3" tabindex="-1"></a><span class="co"># encuesta_sta2 &lt;- encuesta_sta %&gt;% group_by_at((byAgrega)) %&gt;%</span></span>
+<span id="cb45-4"><a href="modelo_unidad_ictpc.html#cb45-4" tabindex="-1"></a><span class="co">#   summarise(ingreso = mean(ictpc), .groups = &quot;drop&quot;,</span></span>
+<span id="cb45-5"><a href="modelo_unidad_ictpc.html#cb45-5" tabindex="-1"></a><span class="co">#             n = n()) %&gt;%</span></span>
+<span id="cb45-6"><a href="modelo_unidad_ictpc.html#cb45-6" tabindex="-1"></a><span class="co">#   inner_join(statelevel_predictors_df)</span></span>
+<span id="cb45-7"><a href="modelo_unidad_ictpc.html#cb45-7" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb45-8"><a href="modelo_unidad_ictpc.html#cb45-8" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb45-9"><a href="modelo_unidad_ictpc.html#cb45-9" tabindex="-1"></a><span class="co"># resultado_rfe &lt;-</span></span>
+<span id="cb45-10"><a href="modelo_unidad_ictpc.html#cb45-10" tabindex="-1"></a><span class="co">#   rfe(</span></span>
+<span id="cb45-11"><a href="modelo_unidad_ictpc.html#cb45-11" tabindex="-1"></a><span class="co">#     encuesta_sta2[, cov_names],</span></span>
+<span id="cb45-12"><a href="modelo_unidad_ictpc.html#cb45-12" tabindex="-1"></a><span class="co">#     encuesta_sta2$ingreso,</span></span>
+<span id="cb45-13"><a href="modelo_unidad_ictpc.html#cb45-13" tabindex="-1"></a><span class="co">#     sizes = c(1:10),</span></span>
+<span id="cb45-14"><a href="modelo_unidad_ictpc.html#cb45-14" tabindex="-1"></a><span class="co">#     rfeControl = rfeControl(functions = lmFuncs, method = &quot;LOOCV&quot;)</span></span>
+<span id="cb45-15"><a href="modelo_unidad_ictpc.html#cb45-15" tabindex="-1"></a><span class="co">#   )</span></span>
+<span id="cb45-16"><a href="modelo_unidad_ictpc.html#cb45-16" tabindex="-1"></a></span>
+<span id="cb45-17"><a href="modelo_unidad_ictpc.html#cb45-17" tabindex="-1"></a>variables_seleccionadas <span class="ot">&lt;-</span></span>
+<span id="cb45-18"><a href="modelo_unidad_ictpc.html#cb45-18" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb45-19"><a href="modelo_unidad_ictpc.html#cb45-19" tabindex="-1"></a>    <span class="st">&quot;prom_esc_rel_urb&quot;</span>,</span>
+<span id="cb45-20"><a href="modelo_unidad_ictpc.html#cb45-20" tabindex="-1"></a>    <span class="st">&quot;smg1&quot;</span>,</span>
+<span id="cb45-21"><a href="modelo_unidad_ictpc.html#cb45-21" tabindex="-1"></a>    <span class="st">&quot;gini15m&quot;</span> ,</span>
+<span id="cb45-22"><a href="modelo_unidad_ictpc.html#cb45-22" tabindex="-1"></a>    <span class="st">&quot;ictpc15&quot;</span> ,</span>
+<span id="cb45-23"><a href="modelo_unidad_ictpc.html#cb45-23" tabindex="-1"></a>    <span class="st">&quot;altitud1000&quot;</span>,</span>
+<span id="cb45-24"><a href="modelo_unidad_ictpc.html#cb45-24" tabindex="-1"></a>    <span class="st">&quot;prom_esc_rel_rur&quot;</span> ,</span>
+<span id="cb45-25"><a href="modelo_unidad_ictpc.html#cb45-25" tabindex="-1"></a>    <span class="st">&quot;porc_patnoagrnocal_urb&quot;</span>,</span>
+<span id="cb45-26"><a href="modelo_unidad_ictpc.html#cb45-26" tabindex="-1"></a>    <span class="st">&quot;acc_medio&quot;</span>  ,</span>
+<span id="cb45-27"><a href="modelo_unidad_ictpc.html#cb45-27" tabindex="-1"></a>    <span class="st">&quot;derhab_pea_15_20&quot;</span> ,</span>
+<span id="cb45-28"><a href="modelo_unidad_ictpc.html#cb45-28" tabindex="-1"></a>    <span class="st">&quot;porc_norep_ing_urb&quot;</span></span>
+<span id="cb45-29"><a href="modelo_unidad_ictpc.html#cb45-29" tabindex="-1"></a>  )</span>
+<span id="cb45-30"><a href="modelo_unidad_ictpc.html#cb45-30" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb45-31"><a href="modelo_unidad_ictpc.html#cb45-31" tabindex="-1"></a>  <span class="st">&quot;modifica_humana&quot;</span>,  <span class="st">&quot;acceso_hosp&quot;</span>,           </span>
+<span id="cb45-32"><a href="modelo_unidad_ictpc.html#cb45-32" tabindex="-1"></a>  <span class="st">&quot;acceso_hosp_caminando&quot;</span>,  <span class="st">&quot;cubrimiento_cultivo&quot;</span>,   </span>
+<span id="cb45-33"><a href="modelo_unidad_ictpc.html#cb45-33" tabindex="-1"></a>  <span class="st">&quot;cubrimiento_urbano&quot;</span>,     <span class="st">&quot;luces_nocturnas&quot;</span> ,</span>
+<span id="cb45-34"><a href="modelo_unidad_ictpc.html#cb45-34" tabindex="-1"></a>  variables_seleccionadas</span>
+<span id="cb45-35"><a href="modelo_unidad_ictpc.html#cb45-35" tabindex="-1"></a>)</span>
+<span id="cb45-36"><a href="modelo_unidad_ictpc.html#cb45-36" tabindex="-1"></a></span>
+<span id="cb45-37"><a href="modelo_unidad_ictpc.html#cb45-37" tabindex="-1"></a>cov_registros <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(</span>
+<span id="cb45-38"><a href="modelo_unidad_ictpc.html#cb45-38" tabindex="-1"></a>  cov_names,</span>
+<span id="cb45-39"><a href="modelo_unidad_ictpc.html#cb45-39" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb45-40"><a href="modelo_unidad_ictpc.html#cb45-40" tabindex="-1"></a>    <span class="st">&quot;elec_mun20&quot;</span>,</span>
+<span id="cb45-41"><a href="modelo_unidad_ictpc.html#cb45-41" tabindex="-1"></a>    <span class="st">&quot;elec_mun19&quot;</span>,</span>
+<span id="cb45-42"><a href="modelo_unidad_ictpc.html#cb45-42" tabindex="-1"></a>    <span class="st">&quot;transf_gobpc_15_20&quot;</span>,</span>
+<span id="cb45-43"><a href="modelo_unidad_ictpc.html#cb45-43" tabindex="-1"></a>    <span class="st">&quot;derhab_pea_15_20&quot;</span>,</span>
+<span id="cb45-44"><a href="modelo_unidad_ictpc.html#cb45-44" tabindex="-1"></a>    <span class="st">&quot;vabpc_15_19&quot;</span> ,</span>
+<span id="cb45-45"><a href="modelo_unidad_ictpc.html#cb45-45" tabindex="-1"></a>    <span class="st">&quot;itlpis_15_20&quot;</span>  ,</span>
+<span id="cb45-46"><a href="modelo_unidad_ictpc.html#cb45-46" tabindex="-1"></a>    <span class="st">&quot;remespc_15_20&quot;</span>,</span>
+<span id="cb45-47"><a href="modelo_unidad_ictpc.html#cb45-47" tabindex="-1"></a>    <span class="st">&quot;desem_15_20&quot;</span>,</span>
+<span id="cb45-48"><a href="modelo_unidad_ictpc.html#cb45-48" tabindex="-1"></a>    <span class="st">&quot;smg1&quot;</span>,</span>
+<span id="cb45-49"><a href="modelo_unidad_ictpc.html#cb45-49" tabindex="-1"></a>    <span class="st">&quot;ql_porc_cpa_urb&quot;</span>,</span>
+<span id="cb45-50"><a href="modelo_unidad_ictpc.html#cb45-50" tabindex="-1"></a>    <span class="st">&quot;ql_porc_cpa_rur&quot;</span></span>
+<span id="cb45-51"><a href="modelo_unidad_ictpc.html#cb45-51" tabindex="-1"></a>  )</span>
+<span id="cb45-52"><a href="modelo_unidad_ictpc.html#cb45-52" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="fórmula-del-modelo" class="section level4 unnumbered hasAnchor">
+<h4>Fórmula del Modelo<a href="modelo_unidad_ictpc.html#fórmula-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se define la fórmula del modelo incluyendo los efectos aleatorios y las variables predictoras seleccionadas.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="modelo_unidad_ictpc.html#cb46-1" tabindex="-1"></a>cov_registros <span class="ot">&lt;-</span> <span class="fu">paste0</span>(cov_registros, <span class="at">collapse =</span> <span class="st">&quot; + &quot;</span>)</span>
+<span id="cb46-2"><a href="modelo_unidad_ictpc.html#cb46-2" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="modelo_unidad_ictpc.html#cb46-3" tabindex="-1"></a>formula_model <span class="ot">&lt;-</span> </span>
+<span id="cb46-4"><a href="modelo_unidad_ictpc.html#cb46-4" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">&quot;ingreso ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) + ent + nivel_edu +  edad + area + sexo +&quot;</span>, </span>
+<span id="cb46-5"><a href="modelo_unidad_ictpc.html#cb46-5" tabindex="-1"></a>      <span class="st">&quot; + &quot;</span>, cov_registros)</span></code></pre></div>
+</div>
+<div id="ajuste-del-modelo" class="section level4 unnumbered hasAnchor">
+<h4>Ajuste del Modelo<a href="modelo_unidad_ictpc.html#ajuste-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se ajusta el modelo de ingreso utilizando la función <code>modelo_ingreso</code> y se guarda el resultado.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="modelo_unidad_ictpc.html#cb47-1" tabindex="-1"></a>encuesta_sta<span class="sc">$</span>ingreso <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(encuesta_sta<span class="sc">$</span>ictpc)</span>
+<span id="cb47-2"><a href="modelo_unidad_ictpc.html#cb47-2" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="modelo_unidad_ictpc.html#cb47-3" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">modelo_ingreso</span>(</span>
+<span id="cb47-4"><a href="modelo_unidad_ictpc.html#cb47-4" tabindex="-1"></a>  <span class="at">encuesta_sta =</span> encuesta_sta ,</span>
+<span id="cb47-5"><a href="modelo_unidad_ictpc.html#cb47-5" tabindex="-1"></a>  <span class="at">predictors =</span> statelevel_predictors_df,</span>
+<span id="cb47-6"><a href="modelo_unidad_ictpc.html#cb47-6" tabindex="-1"></a>  <span class="at">censo_sta =</span> censo_sta,</span>
+<span id="cb47-7"><a href="modelo_unidad_ictpc.html#cb47-7" tabindex="-1"></a>  <span class="at">formula_mod =</span> formula_model,</span>
+<span id="cb47-8"><a href="modelo_unidad_ictpc.html#cb47-8" tabindex="-1"></a>  <span class="at">byAgrega =</span> byAgrega</span>
+<span id="cb47-9"><a href="modelo_unidad_ictpc.html#cb47-9" tabindex="-1"></a>)</span>
+<span id="cb47-10"><a href="modelo_unidad_ictpc.html#cb47-10" tabindex="-1"></a></span>
+<span id="cb47-11"><a href="modelo_unidad_ictpc.html#cb47-11" tabindex="-1"></a><span class="co">#--- Exporting Bayesian Multilevel Model Results ---#</span></span>
+<span id="cb47-12"><a href="modelo_unidad_ictpc.html#cb47-12" tabindex="-1"></a></span>
+<span id="cb47-13"><a href="modelo_unidad_ictpc.html#cb47-13" tabindex="-1"></a><span class="fu">saveRDS</span>(fit, </span>
+<span id="cb47-14"><a href="modelo_unidad_ictpc.html#cb47-14" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)</span>
+<span id="cb47-15"><a href="modelo_unidad_ictpc.html#cb47-15" tabindex="-1"></a></span>
+<span id="cb47-16"><a href="modelo_unidad_ictpc.html#cb47-16" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">plot =</span> fit<span class="sc">$</span>plot_densy,</span>
+<span id="cb47-17"><a href="modelo_unidad_ictpc.html#cb47-17" tabindex="-1"></a>       <span class="st">&quot;../output/2020/plots/01_densidad_ictpc.png&quot;</span>,<span class="at">scale =</span> <span class="dv">3</span>)</span>
+<span id="cb47-18"><a href="modelo_unidad_ictpc.html#cb47-18" tabindex="-1"></a>fit<span class="sc">$</span>plot_hist_post</span></code></pre></div>
 
+</div>
 </div>
             </section>
 

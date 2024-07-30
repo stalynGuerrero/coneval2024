@@ -7,13 +7,11 @@ Este script en R se centra en el análisis y la predicción de datos utilizando 
 El script también incluye un paso para ajustar y validar los datos de la encuesta ampliada mediante simulaciones de variables predictoras y el cálculo de medidas de desviación estándar residual. Posteriormente, se lleva a cabo un proceso iterativo para generar nuevas predicciones y comparar estas predicciones con las originales. Finalmente, el script prepara los datos para un análisis posterior al actualizar las variables con valores simulados basados en las predicciones y desviaciones calculadas. Este proceso permite validar y ajustar los modelos utilizados, asegurando la precisión de las predicciones en la encuesta ampliada.
 
 
-``` r
-### Cleaning R environment ###
-rm(list = ls())
+#### Limpieza del Entorno y Carga de Bibliotecas{-}
 
-#################
-### Libraries ###
-#################
+
+``` r
+rm(list = ls())
 library(tidyverse)
 library(data.table)
 library(openxlsx)
@@ -26,34 +24,37 @@ library(survey)
 library(srvyr)
 cat("\f")
 source("../source/benchmarking_indicador.R")
-###############################################################
-# Lectura del modelo 
-###############################################################
+```
 
-fit_ingreso <-
-  readRDS("../output/2020/modelos/fit_mrp_ictpc.rds")$fit_mrp
+#### Carga de Modelos y Datos{-}
 
-fit_alimento <-
-  readRDS("../output/2020/modelos/fit_mrp_ic_ali_nc.rds")$fit_mrp
-fit_salud <-
-  readRDS("../output/2020/modelos/fit_mrp_ic_segsoc.rds")$fit_mrp
+Se leen los modelos ajustados previamente para ingresos, alimentación, y salud.
 
-encuesta_enigh <-readRDS("../input/2020/enigh/encuesta_sta.rds") %>%
+
+``` r
+fit_ingreso <- readRDS("../output/2020/modelos/fit_mrp_ictpc.rds")$fit_mrp
+fit_alimento <- readRDS("../output/2020/modelos/fit_mrp_ic_ali_nc.rds")$fit_mrp
+fit_salud <- readRDS("../output/2020/modelos/fit_mrp_ic_segsoc.rds")$fit_mrp
+```
+
+Se cargan los datos de la encuesta, la línea de bienestar, y los predictores a nivel estatal. También se lee una muestra ampliada del censo.
+
+
+``` r
+encuesta_enigh <- readRDS("../input/2020/enigh/encuesta_sta.rds") %>%
   mutate(ingreso = ictpc)
-
 
 # lineas de bienestar 
 
-LB <-
-  read.delim(
-    "input/2020/Lineas_Bienestar.csv",
-    header = TRUE,
-    sep = ";",
-    dec = ","
-  ) %>% mutate(area = as.character(area))
+LB <- read.delim(
+  "input/2020/Lineas_Bienestar.csv",
+  header = TRUE,
+  sep = ";",
+  dec = ","
+) %>% mutate(area = as.character(area))
 
-statelevel_predictors <- 
-  readRDS("../input/2020/predictores/statelevel_predictors_df.rds")
+statelevel_predictors <- readRDS("../input/2020/predictores/statelevel_predictors_df.rds")
+
 ###############################################################
 # Lectura del muestras intercensal o  muestra_ampliada del censo
 ###############################################################
@@ -62,53 +63,15 @@ muestra_ampliada <- readRDS("../output/2020/encuesta_ampliada.rds")
 col_names_muestra <- names(muestra_ampliada)
 
 muestra_ampliada <-  inner_join(muestra_ampliada, statelevel_predictors)
-muestra_ampliada <- muestra_ampliada %>% inner_join(LB) 
+muestra_ampliada <- muestra_ampliada %>% inner_join(LB)
+```
 
-###############################################################
-encuesta_sta <- inner_join(encuesta_enigh, 
-                           statelevel_predictors )
-pred_ingreso <- predict(fit_ingreso, 
-                        newdata = encuesta_sta)
-rm(encuesta_sta)
+#### Predicción y Evaluación{-}
 
-paso <-encuesta_enigh %>% mutate(pred_ingreso = pred_ingreso) %>% 
-  survey::svydesign(id =~upm , strata = ~estrato , data = .,weights = ~fep) %>% 
-  as_survey_design()
-
-sd_1 <- paso %>% group_by(cve_mun) %>% 
-  summarise(media_obs = survey_mean(ingreso), 
-            media_pred = survey_mean(pred_ingreso)) %>% 
-  summarise(media_sd = sqrt(mean(c(media_obs - media_pred)^2)))
-
-desv_estandar_residual <- min(c(as.numeric(sd_1), sigma(fit_ingreso)))
-
-rm(list = c("pred_ingreso","sd_1", "paso", "statelevel_predictors"))
-
-################################################################################
-# IPM en la enigh
-################################################################################
-
-encuesta_enigh <-
-  encuesta_enigh %>% inner_join(LB)  %>% 
-   mutate(
-   tol_ic = ic_segsoc + ic_ali_nc + ic_asalud + ic_cv +  ic_sbv + ic_rezedu,
-   ipm   = case_when(
-     # Población en situación de pobreza.
-     ingreso < lp  &  tol_ic >= 1 ~ "I",
-     # Población vulnerable por carencias sociales.
-     ingreso >= lp & tol_ic >= 1 ~ "II",
-     # Poblacion vulnerable por ingresos.
-     ingreso <= lp & tol_ic < 1 ~ "III",
-     # Población no pobre multidimensional y no vulnerable.
-     ingreso >= lp & tol_ic < 1 ~ "IV"
-     )
-   )
+ Se realizan predicciones utilizando los modelos ajustados sobre la muestra ampliada.
 
 
-################################################################################
-# predict de los modelos en la encuesta 
-################################################################################
-
+``` r
 pred_ingreso <- predict(fit_ingreso, 
                         newdata = muestra_ampliada,
                         allow.new.levels = TRUE, 
@@ -123,39 +86,82 @@ pred_segsoc <- predict(fit_salud,
                         newdata = muestra_ampliada,
                        allow.new.levels = TRUE, 
                        type = "response")
+```
 
+Se calcula la desviación estándar residual para ajustar el modelo de ingreso.
+
+
+``` r
+paso <- encuesta_enigh %>% mutate(pred_ingreso = pred_ingreso) %>%
+  survey::svydesign(
+    id =  ~ upm ,
+    strata = ~ estrato ,
+    data = .,
+    weights = ~ fep
+  ) %>%
+  as_survey_design()
+
+sd_1 <- paso %>% group_by(cve_mun) %>%
+  summarise(media_obs = survey_mean(ingreso),
+            media_pred = survey_mean(pred_ingreso)) %>%
+  summarise(media_sd = sqrt(mean(c(
+    media_obs - media_pred
+  ) ^ 2)))
+
+desv_estandar_residual <-
+  min(c(as.numeric(sd_1), sigma(fit_ingreso)))
+```
+
+ Se calcula el Índice de Pobreza Multidimensional (IPM) utilizando las predicciones de los modelos y los datos originales.
+
+
+``` r
+encuesta_enigh <- encuesta_enigh %>% inner_join(LB) %>% 
+   mutate(
+   tol_ic = ic_segsoc + ic_ali_nc + ic_asalud + ic_cv +  ic_sbv + ic_rezedu,
+   ipm   = case_when(
+     # Población en situación de pobreza.
+     ingreso < lp & tol_ic >= 1 ~ "I",
+     # Población vulnerable por carencias sociales.
+     ingreso >= lp & tol_ic >= 1 ~ "II",
+     # Poblacion vulnerable por ingresos.
+     ingreso <= lp & tol_ic < 1 ~ "III",
+     # Población no pobre multidimensional y no vulnerable.
+     ingreso >= lp & tol_ic < 1 ~ "IV"
+     )
+   )
+```
+
+ Se realiza una predicción final sobre la muestra ampliada y se guarda el resultado.
+
+
+``` r
 saveRDS(list(pred_ingreso = pred_ingreso, 
           pred_ic_ali_nc = pred_ic_ali_nc, 
           pred_segsoc = pred_segsoc, 
           desv_estandar_residual = desv_estandar_residual),
      file =  "../output/2020/modelos/predicciones.rds")
+```
 
-muestra_ampliada   %<>% mutate(
-    ic_asalud = ifelse(ic_asalud == 1, 1,0),
-    ic_cv = ifelse(ic_cv == 1, 1,0),
-    ic_sbv = ifelse(ic_sbv == 1, 1,0),
-    ic_rezedu = ifelse(ic_rezedu == 1, 1,0)) 
+ Se ajustan los valores en la muestra ampliada utilizando las predicciones y se valida la precisión de las predicciones.
 
 
-################################################################################
-# Inica el proceso iterativo 
-################################################################################
-
+``` r
 muestra_ampliada_pred <-
   muestra_ampliada %>% 
-  select(all_of(col_names_muestra),li,lp) %>%
+  select(all_of(col_names_muestra), li, lp) %>%
   mutate(
     ic_segsoc = rbinom(n = n(), size = 1, prob = pred_segsoc),
     ic_ali_nc = rbinom(n = n(), size = 1, prob = pred_ic_ali_nc),
-    ingreso = pred_ingreso + rnorm(n = n(),mean = 0, desv_estandar_residual),
+    ingreso = pred_ingreso + rnorm(n = n(), mean = 0, desv_estandar_residual),
     tol_ic = ic_segsoc + ic_ali_nc + ic_asalud + ic_cv +
       ic_sbv + ic_rezedu
-    
   )
 # Validación de los predict 
 mean(muestra_ampliada_pred$ic_ali_nc) - mean(pred_ic_ali_nc)
-
 mean(muestra_ampliada_pred$ic_segsoc) - mean(pred_segsoc)
-
 mean(muestra_ampliada_pred$ingreso) - mean(pred_ingreso)
 ```
+
+
+

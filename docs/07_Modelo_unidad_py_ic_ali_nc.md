@@ -9,6 +9,11 @@ El script incluye un paso comentado para la selección de características utili
 Finalmente, los resultados del modelo se guardan en un archivo RDS (`fit_mrp_ic_ali_nc.rds`). Este paso asegura que los resultados del análisis estén disponibles para futuras referencias y análisis adicionales. Guardar los resultados en un archivo RDS facilita su recuperación y análisis posterior, permitiendo a los investigadores y analistas continuar trabajando con los resultados sin necesidad de recalcular el modelo cada vez. Además, se generan gráficos de densidad y histogramas de las distribuciones posteriores utilizando ggsave, lo que proporciona una visualización clara y comprensible de los resultados del modelo.
 
 
+#### Limpieza del Entorno y Carga de Bibliotecas{-}
+
+Se limpia el entorno de R y se cargan las bibliotecas necesarias para el análisis, incluyendo la biblioteca `reticulate` para interactuar con Python.
+
+
 ``` r
 rm(list =ls())
 
@@ -28,8 +33,15 @@ pd <- import("pandas")
 sklearn_fs <- import("sklearn.feature_selection")
 sklearn_ensemble <- import("sklearn.ensemble")
 
+source("../source/modelos_freq.R")
+```
 
-source("source/modelos_freq.R")
+#### Carga de Datos {-}
+
+Se cargan los datos de la encuesta, el censo y los predictores a nivel estatal.
+
+
+``` r
 # Loading data ------------------------------------------------------------
 
 memory.limit(10000000)
@@ -39,7 +51,14 @@ statelevel_predictors_df <- readRDS("../input/2020/predictores/statelevel_predic
 
 cov_names <- names(statelevel_predictors_df)
 cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
+```
 
+#### Selección de Variables {-}
+
+Se definen las variables de agregación y se seleccionan las variables predictoras más relevantes.
+
+
+``` r
 ## Selección de variables
 
 byAgrega <-
@@ -92,7 +111,14 @@ cov_names <- c(
   "cubrimiento_urbano",     "luces_nocturnas" ,
   variables_seleccionadas
 )
+```
 
+#### Definición de la Fórmula del Modelo {-}
+
+Se define la fórmula del modelo incluyendo los efectos aleatorios y las variables predictoras seleccionadas.
+
+
+``` r
 cov_registros <-
   setdiff(
     cov_names,
@@ -115,7 +141,6 @@ cov_registros <-
     )
   )
 
-
 cov_registros <- paste0(cov_registros, collapse = " + ")
 
 formula_model <-
@@ -125,10 +150,14 @@ formula_model <-
     " + ",
     cov_registros
   )
+```
+
+#### Ajuste del Modelo {-}
+
+Se ajusta el modelo utilizando la función `modelo_dummy` y se guarda el resultado.
 
 
-
-
+``` r
 fit <- modelo_dummy(
   encuesta_sta = encuesta_sta %>%  
     mutate(yk = ifelse(ic_ali_nc == 1 , 1, 0))  ,
@@ -137,7 +166,6 @@ fit <- modelo_dummy(
   formula_mod = formula_model,
   byAgrega = byAgrega
 )
-
 
 #--- Exporting Bayesian Multilevel Model Results ---#
 

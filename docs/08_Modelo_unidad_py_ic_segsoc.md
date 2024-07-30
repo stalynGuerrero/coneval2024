@@ -9,6 +9,12 @@ La selección de variables relevantes para el modelo se realiza a través de un 
 El ajuste del modelo se realiza mediante la función modelo_dummy, transformando la variable de interés (`ic_segsoc`) en formato binario y utilizando los datos de encuesta y censo junto con la fórmula del modelo y las variables de agregación. Los resultados del modelo se guardan en un archivo RDS (`fit_mrp_ic_segsoc.rds`) y se documentan para futuros análisis. Esto incluye la exportación de los resultados del modelo multinivel y la creación de visualizaciones pertinentes para evaluar el desempeño del modelo y la distribución de las predicciones.
 
 
+
+#### Limpieza del Entorno y Carga de Bibliotecas {-}
+
+Se limpia el entorno de R y se cargan las bibliotecas necesarias para el análisis, incluyendo `reticulate` para interactuar con Python.
+
+
 ``` r
 rm(list =ls())
 
@@ -27,9 +33,16 @@ library(reticulate)
 pd <- import("pandas")
 sklearn_fs <- import("sklearn.feature_selection")
 sklearn_ensemble <- import("sklearn.ensemble")
+```
 
+#### Carga de Datos{-}
+
+Se cargan los datos de la encuesta, el censo y los predictores a nivel estatal.
+
+
+``` r
 memory.limit(10000000)
-source("source/modelos_freq.R")
+source("../source/modelos_freq.R")
 # Loading data ------------------------------------------------------------
 
 memory.limit(10000000)
@@ -38,8 +51,15 @@ censo_sta <- readRDS("../input/2020/muestra_ampliada/muestra_cuestionario_amplia
 statelevel_predictors_df <- readRDS("../input/2020/predictores/statelevel_predictors_df.rds")
 
 cov_names <- names(statelevel_predictors_df)
-cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
+cov_names <- cov_names[!grepl(x = cov_names, pattern = "^hog_|cve_mun")]
+```
 
+#### Selección de Variables{-}
+
+Se definen las variables de agregación y se seleccionan las variables predictoras más relevantes.
+
+
+``` r
 ## Selección de variables
 
 byAgrega <-
@@ -51,7 +71,6 @@ byAgrega <-
     "discapacidad",
     "hlengua",
     "nivel_edu" )
-
 
 # encuesta_sta2 <- encuesta_sta %>%   mutate(
 #   yk = as.factor(ifelse(ic_asegsoc == 1 ,1,0))) %>%
@@ -77,6 +96,7 @@ byAgrega <-
 # 
 # # Obtener las variables seleccionadas
 # variables_seleccionadas <- X[selector$support_] %>% names()
+
 variables_seleccionadas <-
   c(
     "porc_rur",
@@ -90,13 +110,14 @@ variables_seleccionadas <-
     "pob_urb",
     "pob_tot"
   )
+
 cov_names <- c(
   "modifica_humana",
   "acceso_hosp",
   "acceso_hosp_caminando",
   "cubrimiento_cultivo",
   "cubrimiento_urbano",
-  "luces_nocturnas" ,
+  "luces_nocturnas",
   variables_seleccionadas
 )
 
@@ -108,46 +129,54 @@ cov_registros <-
       "elec_mun19",
       "transf_gobpc_15_20",
       "derhab_pea_15_20",
-      "vabpc_15_19" ,
-      "itlpis_15_20"  ,
+      "vabpc_15_19",
+      "itlpis_15_20",
       "remespc_15_20",
       "desem_15_20",
-      "porc_urb" ,  
-      "edad65mas_urb", 
-      "pob_tot" ,
-      "acc_muyalto" ,
+      "porc_urb",
+      "edad65mas_urb",
+      "pob_tot",
+      "acc_muyalto",
       "smg1",
       "ql_porc_cpa_rur",
       "ql_porc_cpa_urb"
     )
   )
 
-
 cov_registros <- paste0(cov_registros, collapse = " + ")
+```
 
+#### Definición de la Fórmula del Modelo {-}
+
+Se define la fórmula del modelo incluyendo los efectos aleatorios y las variables predictoras seleccionadas.
+
+
+``` r
 formula_model <-
   paste0(
-    "cbind(si, no) ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) +  nivel_edu + edad  + ent + area + sexo "
-    ,
+    "cbind(si, no) ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) +  nivel_edu + edad  + ent + area + sexo ",
     " + ",
     cov_registros
   )
+```
+
+#### Ajuste del Modelo {-}
+
+Se ajusta el modelo utilizando la función `modelo_dummy` y se guarda el resultado.
 
 
-
-
+``` r
 fit <- modelo_dummy(
-  encuesta_sta = encuesta_sta %>%  mutate(yk = ifelse(ic_segsoc == 1 ,1,0))  ,
+  encuesta_sta = encuesta_sta %>%  mutate(yk = ifelse(ic_segsoc == 1 ,1,0)),
   predictors = statelevel_predictors_df,
   censo_sta = censo_sta,
   formula_mod = formula_model,
   byAgrega = byAgrega
 )
 
-
 #--- Exporting Bayesian Multilevel Model Results ---#
 
-saveRDS(fit, 
-        file = "output/2020/modelos/fit_mrp_ic_segsoc.rds")
+saveRDS(fit, file = "output/2020/modelos/fit_mrp_ic_segsoc.rds")
 ```
+
 

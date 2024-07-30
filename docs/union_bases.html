@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2024-07-29" />
+<meta name="date" content="2024-07-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -204,118 +204,114 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Para la ejecución del presente archivo, debe abrir el archivo <strong>00_union_bases.R</strong> disponible en la ruta <em>Rcodes/2020/00_union_bases.R</em>.</p>
 <p>El código comienza limpiando el entorno de R y cargando varias bibliotecas esenciales para la manipulación y análisis de datos. Posteriormente, define un conjunto de variables a validar y obtiene listas de archivos de datos en formato <code>.dta</code> correspondientes a diferentes conjuntos de datos del censo 2020. A continuación, el código itera sobre estos archivos para leer, combinar y almacenar los datos de cada estado en archivos <code>.rds</code> individuales. Estos datos se combinan en un único dataframe que se guarda para su uso posterior.</p>
 <p>En la sección final, el código se centra en los datos de la ENIGH 2020. Lee los archivos de hogares y pobreza, y los combina utilizando un <code>inner_join</code>. Se seleccionan y renombran variables clave para asegurar la consistencia en el análisis. Finalmente, el dataframe combinado se guarda en un archivo <code>.rds</code> para facilitar el acceso y análisis futuros.</p>
+<div id="limpieza-del-entorno-y-carga-de-bibliotecas" class="section level4 unnumbered hasAnchor">
+<h4>Limpieza del Entorno y Carga de Bibliotecas<a href="union_bases.html#limpieza-del-entorno-y-carga-de-bibliotecas" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se limpia el entorno de R eliminando todos los objetos y se ejecuta el recolector de basura para liberar memoria.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="union_bases.html#cb1-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb1-2"><a href="union_bases.html#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="union_bases.html#cb1-3" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb1-4"><a href="union_bases.html#cb1-4" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
-<span id="cb1-5"><a href="union_bases.html#cb1-5" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb1-6"><a href="union_bases.html#cb1-6" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-7"><a href="union_bases.html#cb1-7" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb1-8"><a href="union_bases.html#cb1-8" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
-<span id="cb1-9"><a href="union_bases.html#cb1-9" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb1-10"><a href="union_bases.html#cb1-10" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
-<span id="cb1-11"><a href="union_bases.html#cb1-11" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb1-12"><a href="union_bases.html#cb1-12" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
-<span id="cb1-13"><a href="union_bases.html#cb1-13" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
-<span id="cb1-14"><a href="union_bases.html#cb1-14" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
-<span id="cb1-15"><a href="union_bases.html#cb1-15" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
-<span id="cb1-16"><a href="union_bases.html#cb1-16" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="union_bases.html#cb1-17" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb1-18"><a href="union_bases.html#cb1-18" tabindex="-1"></a>validar_var <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb1-19"><a href="union_bases.html#cb1-19" tabindex="-1"></a>  <span class="st">&quot;ic_rezedu&quot;</span>,</span>
-<span id="cb1-20"><a href="union_bases.html#cb1-20" tabindex="-1"></a>  <span class="st">&quot;ic_asalud&quot;</span>,</span>
-<span id="cb1-21"><a href="union_bases.html#cb1-21" tabindex="-1"></a>  <span class="st">&quot;ic_segsoc&quot;</span>,</span>
-<span id="cb1-22"><a href="union_bases.html#cb1-22" tabindex="-1"></a>  <span class="st">&quot;ic_cv&quot;</span>,</span>
-<span id="cb1-23"><a href="union_bases.html#cb1-23" tabindex="-1"></a>  <span class="st">&quot;ic_sbv&quot;</span>,</span>
-<span id="cb1-24"><a href="union_bases.html#cb1-24" tabindex="-1"></a>  <span class="st">&quot;ic_ali_nc&quot;</span>,</span>
-<span id="cb1-25"><a href="union_bases.html#cb1-25" tabindex="-1"></a>  <span class="st">&quot;ictpc&quot;</span></span>
-<span id="cb1-26"><a href="union_bases.html#cb1-26" tabindex="-1"></a>)</span>
-<span id="cb1-27"><a href="union_bases.html#cb1-27" tabindex="-1"></a><span class="co"># Obtener la lista de archivos .dta</span></span>
-<span id="cb1-28"><a href="union_bases.html#cb1-28" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="union_bases.html#cb1-29" tabindex="-1"></a>file_muestra_censo_2020_estado <span class="ot">&lt;-</span></span>
-<span id="cb1-30"><a href="union_bases.html#cb1-30" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb1-31"><a href="union_bases.html#cb1-31" tabindex="-1"></a>    <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/SegSoc/&quot;</span>,</span>
-<span id="cb1-32"><a href="union_bases.html#cb1-32" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-33"><a href="union_bases.html#cb1-33" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
-<span id="cb1-34"><a href="union_bases.html#cb1-34" tabindex="-1"></a>  )</span>
-<span id="cb1-35"><a href="union_bases.html#cb1-35" tabindex="-1"></a>file_muestra_censo_2020_estado_complemento <span class="ot">&lt;-</span></span>
-<span id="cb1-36"><a href="union_bases.html#cb1-36" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb1-37"><a href="union_bases.html#cb1-37" tabindex="-1"></a>    <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/&quot;</span>,</span>
-<span id="cb1-38"><a href="union_bases.html#cb1-38" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-39"><a href="union_bases.html#cb1-39" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
-<span id="cb1-40"><a href="union_bases.html#cb1-40" tabindex="-1"></a>  )</span>
-<span id="cb1-41"><a href="union_bases.html#cb1-41" tabindex="-1"></a></span>
-<span id="cb1-42"><a href="union_bases.html#cb1-42" tabindex="-1"></a>muestra_cuestionario_ampliado_censo_2020_estado <span class="ot">&lt;-</span></span>
-<span id="cb1-43"><a href="union_bases.html#cb1-43" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb1-44"><a href="union_bases.html#cb1-44" tabindex="-1"></a>    <span class="st">&quot;../input/2020/muestra_ampliada/IndicadoresCenso/&quot;</span>,</span>
-<span id="cb1-45"><a href="union_bases.html#cb1-45" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-46"><a href="union_bases.html#cb1-46" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
-<span id="cb1-47"><a href="union_bases.html#cb1-47" tabindex="-1"></a>  )</span>
-<span id="cb1-48"><a href="union_bases.html#cb1-48" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="union_bases.html#cb1-49" tabindex="-1"></a></span>
-<span id="cb1-50"><a href="union_bases.html#cb1-50" tabindex="-1"></a><span class="co"># Crear un dataframe vacío para almacenar los datos</span></span>
-<span id="cb1-51"><a href="union_bases.html#cb1-51" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb1-52"><a href="union_bases.html#cb1-52" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="union_bases.html#cb1-53" tabindex="-1"></a><span class="co"># Iterar sobre cada archivo y leerlo</span></span>
-<span id="cb1-54"><a href="union_bases.html#cb1-54" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">32</span>) {</span>
-<span id="cb1-55"><a href="union_bases.html#cb1-55" tabindex="-1"></a>  muestra_censo_2020_estado_ii <span class="ot">&lt;-</span></span>
-<span id="cb1-56"><a href="union_bases.html#cb1-56" tabindex="-1"></a>    <span class="fu">read_dta</span>(file_muestra_censo_2020_estado[ii])</span>
-<span id="cb1-57"><a href="union_bases.html#cb1-57" tabindex="-1"></a>  muestra_censo_2020_estado_complemento_ii <span class="ot">&lt;-</span></span>
-<span id="cb1-58"><a href="union_bases.html#cb1-58" tabindex="-1"></a>    <span class="fu">read_dta</span>(file_muestra_censo_2020_estado_complemento[ii]) <span class="sc">%&gt;%</span></span>
-<span id="cb1-59"><a href="union_bases.html#cb1-59" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">id_per =</span> id_persona)</span>
-<span id="cb1-60"><a href="union_bases.html#cb1-60" tabindex="-1"></a>  muestra_cuestionario_ampliado_censo_2020_estado_ii <span class="ot">&lt;-</span></span>
-<span id="cb1-61"><a href="union_bases.html#cb1-61" tabindex="-1"></a>    <span class="fu">read_dta</span>(muestra_cuestionario_ampliado_censo_2020_estado[ii])</span>
-<span id="cb1-62"><a href="union_bases.html#cb1-62" tabindex="-1"></a>  </span>
-<span id="cb1-63"><a href="union_bases.html#cb1-63" tabindex="-1"></a>  muestra_censo <span class="ot">&lt;-</span></span>
-<span id="cb1-64"><a href="union_bases.html#cb1-64" tabindex="-1"></a>    <span class="fu">inner_join</span>(muestra_censo_2020_estado_ii,</span>
-<span id="cb1-65"><a href="union_bases.html#cb1-65" tabindex="-1"></a>               muestra_censo_2020_estado_complemento_ii) <span class="sc">%&gt;%</span></span>
-<span id="cb1-66"><a href="union_bases.html#cb1-66" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>tamloc) <span class="sc">%&gt;%</span></span>
-<span id="cb1-67"><a href="union_bases.html#cb1-67" tabindex="-1"></a>    <span class="fu">inner_join</span>(muestra_cuestionario_ampliado_censo_2020_estado_ii)</span>
-<span id="cb1-68"><a href="union_bases.html#cb1-68" tabindex="-1"></a>  </span>
-<span id="cb1-69"><a href="union_bases.html#cb1-69" tabindex="-1"></a>  <span class="fu">saveRDS</span>(muestra_censo,</span>
-<span id="cb1-70"><a href="union_bases.html#cb1-70" tabindex="-1"></a>          <span class="fu">paste0</span>(<span class="st">&quot;../output/2020/muestra_censo/depto_&quot;</span>, ii, <span class="st">&quot;.rds&quot;</span>))</span>
-<span id="cb1-71"><a href="union_bases.html#cb1-71" tabindex="-1"></a>  </span>
-<span id="cb1-72"><a href="union_bases.html#cb1-72" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df, muestra_censo)</span>
-<span id="cb1-73"><a href="union_bases.html#cb1-73" tabindex="-1"></a>  <span class="fu">cat</span>(file_muestra_censo_2020_estado[ii], <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb1-74"><a href="union_bases.html#cb1-74" tabindex="-1"></a>}</span>
-<span id="cb1-75"><a href="union_bases.html#cb1-75" tabindex="-1"></a></span>
-<span id="cb1-76"><a href="union_bases.html#cb1-76" tabindex="-1"></a><span class="co"># Guardar el dataframe en un archivo .rds</span></span>
-<span id="cb1-77"><a href="union_bases.html#cb1-77" tabindex="-1"></a><span class="fu">saveRDS</span>(df, <span class="at">file =</span> <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
-<span id="cb1-78"><a href="union_bases.html#cb1-78" tabindex="-1"></a></span>
-<span id="cb1-79"><a href="union_bases.html#cb1-79" tabindex="-1"></a><span class="fu">intersect</span>(<span class="fu">names</span>(df), validar_var)</span>
-<span id="cb1-80"><a href="union_bases.html#cb1-80" tabindex="-1"></a><span class="fu">dim</span>(df)</span>
-<span id="cb1-81"><a href="union_bases.html#cb1-81" tabindex="-1"></a><span class="co"># &quot;ic_cv&quot;     &quot;ic_sbv&quot;    &quot;ic_rezedu&quot; &quot;ic_asalud&quot;</span></span>
-<span id="cb1-82"><a href="union_bases.html#cb1-82" tabindex="-1"></a></span>
-<span id="cb1-83"><a href="union_bases.html#cb1-83" tabindex="-1"></a></span>
-<span id="cb1-84"><a href="union_bases.html#cb1-84" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb1-85"><a href="union_bases.html#cb1-85" tabindex="-1"></a><span class="co"># enigh</span></span>
-<span id="cb1-86"><a href="union_bases.html#cb1-86" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb1-87"><a href="union_bases.html#cb1-87" tabindex="-1"></a></span>
-<span id="cb1-88"><a href="union_bases.html#cb1-88" tabindex="-1"></a><span class="co"># enigh_personas &lt;- read_dta(&quot;input/2020/enigh/base_personas_MEC20.dta&quot;)</span></span>
-<span id="cb1-89"><a href="union_bases.html#cb1-89" tabindex="-1"></a>enigh_hogares <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/base_hogares20.dta&quot;</span>)</span>
-<span id="cb1-90"><a href="union_bases.html#cb1-90" tabindex="-1"></a>enigh_pobreza <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/pobreza_20.dta&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-91"><a href="union_bases.html#cb1-91" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ent)</span>
-<span id="cb1-92"><a href="union_bases.html#cb1-92" tabindex="-1"></a></span>
-<span id="cb1-93"><a href="union_bases.html#cb1-93" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_pobreza<span class="sc">$</span>folioviv)</span>
-<span id="cb1-94"><a href="union_bases.html#cb1-94" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_hogares<span class="sc">$</span>folioviv)</span>
-<span id="cb1-95"><a href="union_bases.html#cb1-95" tabindex="-1"></a></span>
-<span id="cb1-96"><a href="union_bases.html#cb1-96" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(</span>
-<span id="cb1-97"><a href="union_bases.html#cb1-97" tabindex="-1"></a>  enigh_pobreza,</span>
-<span id="cb1-98"><a href="union_bases.html#cb1-98" tabindex="-1"></a>  enigh_hogares,</span>
-<span id="cb1-99"><a href="union_bases.html#cb1-99" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">join_by</span>(</span>
-<span id="cb1-100"><a href="union_bases.html#cb1-100" tabindex="-1"></a>    folioviv, foliohog, est_dis, upm,</span>
-<span id="cb1-101"><a href="union_bases.html#cb1-101" tabindex="-1"></a>    factor, rururb, ubica_geo</span>
-<span id="cb1-102"><a href="union_bases.html#cb1-102" tabindex="-1"></a>  ), </span>
-<span id="cb1-103"><a href="union_bases.html#cb1-103" tabindex="-1"></a>  <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">&quot;_pers&quot;</span>, <span class="st">&quot;_hog&quot;</span>),</span>
-<span id="cb1-104"><a href="union_bases.html#cb1-104" tabindex="-1"></a>)</span>
-<span id="cb1-105"><a href="union_bases.html#cb1-105" tabindex="-1"></a></span>
-<span id="cb1-106"><a href="union_bases.html#cb1-106" tabindex="-1"></a>enigh<span class="sc">$</span>ic_ali_nc</span>
-<span id="cb1-107"><a href="union_bases.html#cb1-107" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc_pers</span>
-<span id="cb1-108"><a href="union_bases.html#cb1-108" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc <span class="ot">&lt;-</span> enigh<span class="sc">$</span>ictpc_pers</span>
-<span id="cb1-109"><a href="union_bases.html#cb1-109" tabindex="-1"></a>enigh<span class="sc">$</span>ic_segsoc</span>
-<span id="cb1-110"><a href="union_bases.html#cb1-110" tabindex="-1"></a></span>
-<span id="cb1-111"><a href="union_bases.html#cb1-111" tabindex="-1"></a><span class="fu">saveRDS</span>(enigh, <span class="at">file =</span> <span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span></code></pre></div>
+<span id="cb1-2"><a href="union_bases.html#cb1-2" tabindex="-1"></a><span class="fu">gc</span>()</span></code></pre></div>
+<p>Se cargan varias bibliotecas esenciales para la manipulación y análisis de datos, incluyendo <code>tidyverse</code>, <code>data.table</code>, <code>haven</code> y otras.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="union_bases.html#cb2-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="union_bases.html#cb2-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb2-3"><a href="union_bases.html#cb2-3" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb2-4"><a href="union_bases.html#cb2-4" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb2-5"><a href="union_bases.html#cb2-5" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
+<span id="cb2-6"><a href="union_bases.html#cb2-6" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb2-7"><a href="union_bases.html#cb2-7" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb2-8"><a href="union_bases.html#cb2-8" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
+<span id="cb2-9"><a href="union_bases.html#cb2-9" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
+<span id="cb2-10"><a href="union_bases.html#cb2-10" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span></code></pre></div>
+</div>
+<div id="configuración-de-la-memoria" class="section level4 unnumbered hasAnchor">
+<h4>Configuración de la Memoria<a href="union_bases.html#configuración-de-la-memoria" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se define un límite para la memoria RAM a utilizar, en este caso 250 GB.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="union_bases.html#cb3-1" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">250000000</span>)</span></code></pre></div>
+</div>
+<div id="definición-de-variables-y-obtención-de-archivos" class="section level4 unnumbered hasAnchor">
+<h4>Definición de Variables y Obtención de Archivos<a href="union_bases.html#definición-de-variables-y-obtención-de-archivos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="union_bases.html#cb4-1" tabindex="-1"></a>validar_var <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb4-2"><a href="union_bases.html#cb4-2" tabindex="-1"></a>  <span class="st">&quot;ic_rezedu&quot;</span>,</span>
+<span id="cb4-3"><a href="union_bases.html#cb4-3" tabindex="-1"></a>  <span class="st">&quot;ic_asalud&quot;</span>,</span>
+<span id="cb4-4"><a href="union_bases.html#cb4-4" tabindex="-1"></a>  <span class="st">&quot;ic_segsoc&quot;</span>,</span>
+<span id="cb4-5"><a href="union_bases.html#cb4-5" tabindex="-1"></a>  <span class="st">&quot;ic_cv&quot;</span>,</span>
+<span id="cb4-6"><a href="union_bases.html#cb4-6" tabindex="-1"></a>  <span class="st">&quot;ic_sbv&quot;</span>,</span>
+<span id="cb4-7"><a href="union_bases.html#cb4-7" tabindex="-1"></a>  <span class="st">&quot;ic_ali_nc&quot;</span>,</span>
+<span id="cb4-8"><a href="union_bases.html#cb4-8" tabindex="-1"></a>  <span class="st">&quot;ictpc&quot;</span></span>
+<span id="cb4-9"><a href="union_bases.html#cb4-9" tabindex="-1"></a>)</span></code></pre></div>
+<p>Se define un conjunto de variables que serán validadas.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="union_bases.html#cb5-1" tabindex="-1"></a>file_muestra_censo_2020_estado <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb5-2"><a href="union_bases.html#cb5-2" tabindex="-1"></a>  <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/SegSoc/&quot;</span>,</span>
+<span id="cb5-3"><a href="union_bases.html#cb5-3" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-4"><a href="union_bases.html#cb5-4" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
+<span id="cb5-5"><a href="union_bases.html#cb5-5" tabindex="-1"></a>)</span>
+<span id="cb5-6"><a href="union_bases.html#cb5-6" tabindex="-1"></a>file_muestra_censo_2020_estado_complemento <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb5-7"><a href="union_bases.html#cb5-7" tabindex="-1"></a>  <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/&quot;</span>,</span>
+<span id="cb5-8"><a href="union_bases.html#cb5-8" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-9"><a href="union_bases.html#cb5-9" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
+<span id="cb5-10"><a href="union_bases.html#cb5-10" tabindex="-1"></a>)</span>
+<span id="cb5-11"><a href="union_bases.html#cb5-11" tabindex="-1"></a>muestra_cuestionario_ampliado_censo_2020_estado <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb5-12"><a href="union_bases.html#cb5-12" tabindex="-1"></a>  <span class="st">&quot;../input/2020/muestra_ampliada/IndicadoresCenso/&quot;</span>,</span>
+<span id="cb5-13"><a href="union_bases.html#cb5-13" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-14"><a href="union_bases.html#cb5-14" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
+<span id="cb5-15"><a href="union_bases.html#cb5-15" tabindex="-1"></a>)</span></code></pre></div>
+<p>Se obtienen listas de archivos <code>.dta</code> correspondientes a diferentes conjuntos de datos del censo 2020.</p>
+</div>
+<div id="lectura-y-combinación-de-datos-del-censo" class="section level4 unnumbered hasAnchor">
+<h4>Lectura y Combinación de Datos del Censo<a href="union_bases.html#lectura-y-combinación-de-datos-del-censo" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="union_bases.html#cb6-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb6-2"><a href="union_bases.html#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="union_bases.html#cb6-3" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">32</span>) {</span>
+<span id="cb6-4"><a href="union_bases.html#cb6-4" tabindex="-1"></a>  muestra_censo_2020_estado_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(file_muestra_censo_2020_estado[ii])</span>
+<span id="cb6-5"><a href="union_bases.html#cb6-5" tabindex="-1"></a>  muestra_censo_2020_estado_complemento_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(file_muestra_censo_2020_estado_complemento[ii]) <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="union_bases.html#cb6-6" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">id_per =</span> id_persona)</span>
+<span id="cb6-7"><a href="union_bases.html#cb6-7" tabindex="-1"></a>  muestra_cuestionario_ampliado_censo_2020_estado_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(muestra_cuestionario_ampliado_censo_2020_estado[ii])</span>
+<span id="cb6-8"><a href="union_bases.html#cb6-8" tabindex="-1"></a>  </span>
+<span id="cb6-9"><a href="union_bases.html#cb6-9" tabindex="-1"></a>  muestra_censo <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(muestra_censo_2020_estado_ii, muestra_censo_2020_estado_complemento_ii) <span class="sc">%&gt;%</span></span>
+<span id="cb6-10"><a href="union_bases.html#cb6-10" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>tamloc) <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="union_bases.html#cb6-11" tabindex="-1"></a>    <span class="fu">inner_join</span>(muestra_cuestionario_ampliado_censo_2020_estado_ii)</span>
+<span id="cb6-12"><a href="union_bases.html#cb6-12" tabindex="-1"></a>  </span>
+<span id="cb6-13"><a href="union_bases.html#cb6-13" tabindex="-1"></a>  <span class="fu">saveRDS</span>(muestra_censo, <span class="fu">paste0</span>(<span class="st">&quot;../output/2020/muestra_censo/depto_&quot;</span>, ii, <span class="st">&quot;.rds&quot;</span>))</span>
+<span id="cb6-14"><a href="union_bases.html#cb6-14" tabindex="-1"></a>  </span>
+<span id="cb6-15"><a href="union_bases.html#cb6-15" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df, muestra_censo)</span>
+<span id="cb6-16"><a href="union_bases.html#cb6-16" tabindex="-1"></a>  <span class="fu">cat</span>(file_muestra_censo_2020_estado[ii], <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb6-17"><a href="union_bases.html#cb6-17" tabindex="-1"></a>}</span></code></pre></div>
+<p>Se iteran los archivos de datos del censo, se combinan y se almacenan en archivos <code>.rds</code> individuales y en un dataframe único.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="union_bases.html#cb7-1" tabindex="-1"></a><span class="fu">saveRDS</span>(df, <span class="at">file =</span> <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span>)</span></code></pre></div>
+<p>Se guarda el dataframe combinado en un archivo <code>.rds</code>.</p>
+</div>
+<div id="lectura-y-combinación-de-datos-de-la-enigh" class="section level4 unnumbered hasAnchor">
+<h4>Lectura y Combinación de Datos de la ENIGH<a href="union_bases.html#lectura-y-combinación-de-datos-de-la-enigh" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="union_bases.html#cb8-1" tabindex="-1"></a>enigh_hogares <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/base_hogares20.dta&quot;</span>)</span>
+<span id="cb8-2"><a href="union_bases.html#cb8-2" tabindex="-1"></a>enigh_pobreza <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/pobreza_20.dta&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="union_bases.html#cb8-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ent)</span></code></pre></div>
+<p>Se leen los datos de hogares y pobreza de la ENIGH 2020.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="union_bases.html#cb9-1" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_pobreza<span class="sc">$</span>folioviv)</span>
+<span id="cb9-2"><a href="union_bases.html#cb9-2" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_hogares<span class="sc">$</span>folioviv)</span></code></pre></div>
+<p>Se verifica la unicidad de los identificadores de viviendas.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="union_bases.html#cb10-1" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(</span>
+<span id="cb10-2"><a href="union_bases.html#cb10-2" tabindex="-1"></a>  enigh_pobreza,</span>
+<span id="cb10-3"><a href="union_bases.html#cb10-3" tabindex="-1"></a>  enigh_hogares,</span>
+<span id="cb10-4"><a href="union_bases.html#cb10-4" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">join_by</span>(</span>
+<span id="cb10-5"><a href="union_bases.html#cb10-5" tabindex="-1"></a>    folioviv, foliohog, est_dis, upm,</span>
+<span id="cb10-6"><a href="union_bases.html#cb10-6" tabindex="-1"></a>    factor, rururb, ubica_geo</span>
+<span id="cb10-7"><a href="union_bases.html#cb10-7" tabindex="-1"></a>  ), </span>
+<span id="cb10-8"><a href="union_bases.html#cb10-8" tabindex="-1"></a>  <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">&quot;_pers&quot;</span>, <span class="st">&quot;_hog&quot;</span>)</span>
+<span id="cb10-9"><a href="union_bases.html#cb10-9" tabindex="-1"></a>)</span></code></pre></div>
+<p>Se combinan los datos de pobreza y hogares utilizando un <code>inner_join</code>.</p>
+</div>
+<div id="selección-y-renombramiento-de-variables" class="section level4 unnumbered hasAnchor">
+<h4>Selección y Renombramiento de Variables<a href="union_bases.html#selección-y-renombramiento-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="union_bases.html#cb11-1" tabindex="-1"></a>enigh<span class="sc">$</span>ic_ali_nc</span>
+<span id="cb11-2"><a href="union_bases.html#cb11-2" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc_pers</span>
+<span id="cb11-3"><a href="union_bases.html#cb11-3" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc <span class="ot">&lt;-</span> enigh<span class="sc">$</span>ictpc_pers</span>
+<span id="cb11-4"><a href="union_bases.html#cb11-4" tabindex="-1"></a>enigh<span class="sc">$</span>ic_segsoc</span></code></pre></div>
+<p>Se seleccionan y renombran variables clave para asegurar la consistencia en el análisis.</p>
+</div>
+<div id="guardado-del-dataframe-combinado" class="section level4 unnumbered hasAnchor">
+<h4>Guardado del DataFrame Combinado<a href="union_bases.html#guardado-del-dataframe-combinado" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="union_bases.html#cb12-1" tabindex="-1"></a><span class="fu">saveRDS</span>(enigh, <span class="at">file =</span> <span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span></code></pre></div>
+<p>Se guarda el dataframe combinado en un archivo <code>.rds</code> para facilitar el acceso y análisis futuros.</p>
 
+</div>
 </div>
             </section>
 
