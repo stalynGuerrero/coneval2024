@@ -150,14 +150,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
-<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a>
-<ul>
-<li class="chapter" data-level="0.0.1" data-path="union_predictores.html"><a href="union_predictores.html#configuración-inicial-y-carga-de-librerías"><i class="fa fa-check"></i><b>0.0.1</b> Configuración Inicial y Carga de Librerías</a></li>
-</ul></li>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a>
-<ul>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados"><i class="fa fa-check"></i>Resumen y Guardado de Datos Agrupados</a></li>
-</ul></li>
+<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a></li>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
 <li class="chapter" data-level="" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i>04_Armonizar_encuesta.R</a></li>
 <li class="chapter" data-level="" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i>05_Validacion_encuestas.R</a></li>
 <li class="chapter" data-level="" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i>06_Modelo_unidad_ictpc.R</a></li>
@@ -200,8 +194,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Para la ejecución del presente archivo, debe abrir el archivo <strong>02_Union_predictores.R</strong> disponible en la ruta <em>Rcodes/2020/02_Union_predictores.R</em>.</p>
 <p>Este script en R está orientado a la integración y limpieza de bases de datos a nivel municipal para el año 2020, combinando datos satelitales y de contexto. Primero, el entorno de trabajo se limpia y se cargan las bibliotecas necesarias para la manipulación y análisis de datos, incluyendo tidyverse, data.table, y openxlsx.</p>
 <p>En la primera parte, se carga una base de datos satelital en formato RDS, se renombra una columna para alinear los nombres y se eliminan columnas no necesarias. Luego, se obtienen los códigos municipales únicos de esta base de datos. A continuación, se carga una base de datos adicional en formato Stata (.dta), se convierten algunas variables a factores y se escalan las variables numéricas. Se realiza un análisis para identificar códigos municipales presentes en la base de datos satelital pero no en la de contexto, y se comprueba si hay columnas sin valores faltantes en la base de datos de contexto. Finalmente, se realiza un inner_join para combinar ambas bases de datos utilizando solo las columnas sin valores faltantes y se guarda el resultado en un archivo RDS para futuros análisis.</p>
-<div id="configuración-inicial-y-carga-de-librerías" class="section level3 hasAnchor" number="0.0.1">
-<h3><span class="header-section-number">0.0.1</span> Configuración Inicial y Carga de Librerías<a href="union_predictores.html#configuración-inicial-y-carga-de-librerías" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="configuración-inicial-y-carga-de-librerías" class="section level4 unnumbered hasAnchor">
+<h4>Configuración Inicial y Carga de Librerías<a href="union_predictores.html#configuración-inicial-y-carga-de-librerías" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Este bloque de código está dedicado a la limpieza del entorno de trabajo y a la carga de las librerías necesarias para el análisis de datos en R.</p>
 <p>Primero, <code>rm(list = ls())</code> se utiliza para eliminar todos los objetos en el entorno de trabajo de R, asegurando que no haya datos o variables residuales que puedan interferir con el análisis actual.</p>
 <p>A continuación, se cargan varias librerías esenciales:</p>
@@ -231,6 +225,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb23-13"><a href="union_predictores.html#cb23-13" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
 <span id="cb23-14"><a href="union_predictores.html#cb23-14" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
 <span id="cb23-15"><a href="union_predictores.html#cb23-15" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span></code></pre></div>
+</div>
 <div id="lectura-de-bases-de-contexto-2020" class="section level4 unnumbered hasAnchor">
 <h4>Lectura de bases de contexto 2020<a href="union_predictores.html#lectura-de-bases-de-contexto-2020" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Este bloque de código se encarga de cargar y procesar datos adicionales relacionados con el contexto municipal para el año 2020, que serán utilizados para enriquecer el análisis de datos.</p>
@@ -311,7 +306,6 @@ Finalmente, la base de datos combinada <code>statelevel_predictors</code> se gua
 <span id="cb26-32"><a href="union_predictores.html#cb26-32" tabindex="-1"></a><span class="do">## Guardar </span></span>
 <span id="cb26-33"><a href="union_predictores.html#cb26-33" tabindex="-1"></a><span class="fu">saveRDS</span>(statelevel_predictors,<span class="at">file =</span> <span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span></code></pre></div>
 
-</div>
 </div>
 </div>
             </section>

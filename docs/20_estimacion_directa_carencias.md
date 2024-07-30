@@ -1,6 +1,6 @@
 # 20_estimacion_directa_carencias.R {-}
 
-
+Para la ejecución del presente archivo, debe abrir el archivo **20_estimacion_directa_carencias.R** disponible en la ruta *Rcodes/2020/20_estimacion_directa_carencias.R*.
 
 ##### Descripción General del Código {-}
 

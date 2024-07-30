@@ -245,7 +245,7 @@ sum(censo_sta2$factor) / sum(censo_sta$factor)
 saveRDS(censo_sta2,"../output/2020/encuesta_ampliada.rds")
 ```
 
-### Resumen y Guardado de Datos Agrupados{-}
+#### Resumen y Guardado de Datos Agrupados{-}
 
 Este bloque de código realiza un resumen de los datos estandarizados del censo y guarda el conjunto de datos resultante.
 

@@ -150,14 +150,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
-<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a>
-<ul>
-<li class="chapter" data-level="0.0.1" data-path="union_predictores.html"><a href="union_predictores.html#configuración-inicial-y-carga-de-librerías"><i class="fa fa-check"></i><b>0.0.1</b> Configuración Inicial y Carga de Librerías</a></li>
-</ul></li>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a>
-<ul>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados"><i class="fa fa-check"></i>Resumen y Guardado de Datos Agrupados</a></li>
-</ul></li>
+<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a></li>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
 <li class="chapter" data-level="" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i>04_Armonizar_encuesta.R</a></li>
 <li class="chapter" data-level="" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i>05_Validacion_encuestas.R</a></li>
 <li class="chapter" data-level="" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i>06_Modelo_unidad_ictpc.R</a></li>
@@ -202,11 +196,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Posteriormente, se definen y validan las variables clave de la encuesta, como códigos de entidad, municipio, área, sexo, edad, nivel educativo, discapacidad y lengua indígena. Luego, se estandarizan las variables de la encuesta para alinear los datos con los del censo, se filtran los datos para eliminar inconsistencias y se guarda el conjunto de datos estandarizado. Además, se actualiza la tabla censal utilizando la técnica de calibración IPFP (Iterative Proportional Fitting Procedure) para asegurar que las distribuciones marginales de las variables estandarizadas coincidan con las del censo. Finalmente, se generan histogramas y gráficos de dispersión para visualizar los resultados de la calibración y se guarda el conjunto de datos ampliado.</p>
 <div id="limpieza-del-entorno-y-carga-de-bibliotecas-1" class="section level4 unnumbered hasAnchor">
 <h4>Limpieza del Entorno y Carga de Bibliotecas<a href="armonizar_encuesta.html#limpieza-del-entorno-y-carga-de-bibliotecas-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se limpia el entorno de R eliminando todos los objetos y se ejecuta el recolector de basura para liberar memoria.</p>
+<p>El código presentado realiza dos tareas principales: limpiar el entorno de trabajo en R y cargar las bibliotecas necesarias para el análisis de datos.</p>
+<p>La primera parte del código se encarga de eliminar todos los objetos en el entorno de trabajo de R y ejecutar el recolector de basura para liberar memoria. Esta operación es esencial antes de comenzar un nuevo análisis para asegurarse de que el entorno esté limpio y libre de datos o objetos antiguos que puedan interferir con el nuevo análisis.</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="armonizar_encuesta.html#cb32-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
 <span id="cb32-2"><a href="armonizar_encuesta.html#cb32-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
 <span id="cb32-3"><a href="armonizar_encuesta.html#cb32-3" tabindex="-1"></a><span class="fu">gc</span>()</span></code></pre></div>
-<p>Se cargan varias bibliotecas esenciales para la manipulación y análisis de datos, incluyendo <code>tidyverse</code>, <code>data.table</code>, <code>openxlsx</code>, <code>magrittr</code>, <code>DataExplorer</code>, <code>haven</code>, <code>purrr</code>, <code>labelled</code> y <code>sampling</code>.</p>
+<p>La segunda parte del código se enfoca en cargar una serie de bibliotecas cruciales para el análisis de datos. Estas bibliotecas proporcionan diversas funcionalidades que facilitan la manipulación, visualización y análisis de datos.</p>
+<ul>
+<li><code>tidyverse</code>: Un conjunto de paquetes para la manipulación y visualización de datos.</li>
+<li><code>data.table</code>: Paquete para la manipulación eficiente de grandes conjuntos de datos.</li>
+<li><code>openxlsx</code>: Herramienta para leer y escribir archivos de Excel.</li>
+<li><code>magrittr</code>: Proporciona el operador de tubería (<code>%&gt;%</code>) para encadenar operaciones.</li>
+<li><code>DataExplorer</code>: Paquete para la exploración rápida de datos.</li>
+<li><code>haven</code>: Permite leer y escribir datos en formatos de Stata, SPSS y SAS.</li>
+<li><code>purrr</code>: Facilita la programación funcional con listas y vectores.</li>
+<li><code>labelled</code>: Trabaja con datos etiquetados, especialmente útil para datos de encuestas.</li>
+<li><code>sampling</code>: Proporciona métodos para la toma de muestras estadísticas.</li>
+</ul>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="armonizar_encuesta.html#cb33-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb33-2"><a href="armonizar_encuesta.html#cb33-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
 <span id="cb33-3"><a href="armonizar_encuesta.html#cb33-3" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
@@ -217,245 +223,272 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb33-8"><a href="armonizar_encuesta.html#cb33-8" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
 <span id="cb33-9"><a href="armonizar_encuesta.html#cb33-9" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
 <span id="cb33-10"><a href="armonizar_encuesta.html#cb33-10" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span></code></pre></div>
+<p>La función <code>cat("\f")</code> se utiliza para limpiar la pantalla de la consola en R, proporcionando una interfaz más ordenada para el usuario.</p>
 </div>
 <div id="lectura-de-datos" class="section level4 unnumbered hasAnchor">
 <h4>Lectura de Datos<a href="armonizar_encuesta.html#lectura-de-datos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se leen las bases de datos <code>muestra_cuestionario_ampliado.rds</code> y <code>enigh.rds</code>, y se verifica la unicidad de los identificadores de entidad y municipio.</p>
+<p>En esta sección, se realiza la lectura de dos conjuntos de datos cruciales para el análisis y se lleva a cabo una verificación para asegurar la unicidad de los identificadores.</p>
+<p>Primero, se cargan las bases de datos <code>muestra_cuestionario_ampliado.rds</code> y <code>enigh.rds</code> desde los archivos correspondientes. La base <code>muestra_cuestionario_ampliado.rds</code> contiene información ampliada del cuestionario, mientras que <code>enigh.rds</code> incluye datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="armonizar_encuesta.html#cb34-1" tabindex="-1"></a>encuesta_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
-<span id="cb34-2"><a href="armonizar_encuesta.html#cb34-2" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="armonizar_encuesta.html#cb34-3" tabindex="-1"></a><span class="co"># Indicadores_MECXX: La base de datos Pobreza_15.dta contiene la información de </span></span>
-<span id="cb34-4"><a href="armonizar_encuesta.html#cb34-4" tabindex="-1"></a><span class="co"># variables de carencias sociales a nivel individual (Utiliza como insumo la </span></span>
-<span id="cb34-5"><a href="armonizar_encuesta.html#cb34-5" tabindex="-1"></a><span class="co"># información del MEC) </span></span>
-<span id="cb34-6"><a href="armonizar_encuesta.html#cb34-6" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;output//2020/enigh.rds&quot;</span>)</span>
-<span id="cb34-7"><a href="armonizar_encuesta.html#cb34-7" tabindex="-1"></a></span>
-<span id="cb34-8"><a href="armonizar_encuesta.html#cb34-8" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>ent) <span class="co"># cod_dam</span></span>
-<span id="cb34-9"><a href="armonizar_encuesta.html#cb34-9" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>cve_mun) <span class="co"># cod_mun</span></span></code></pre></div>
+<span id="cb34-2"><a href="armonizar_encuesta.html#cb34-2" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;output//2020/enigh.rds&quot;</span>)</span></code></pre></div>
+<p>A continuación, se verifica la unicidad de los identificadores de entidad y municipio en la base de datos <code>enigh</code>. Esta verificación es importante para asegurar que los datos estén correctamente identificados y evitar errores en análisis posteriores que puedan surgir de duplicados o inconsistencias en los identificadores.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="armonizar_encuesta.html#cb35-1" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>ent) <span class="co"># cod_dam</span></span>
+<span id="cb35-2"><a href="armonizar_encuesta.html#cb35-2" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>cve_mun) <span class="co"># cod_mun</span></span></code></pre></div>
+<p>La función <code>n_distinct()</code> se utiliza para contar el número de identificadores únicos en las columnas <code>ent</code> y <code>cve_mun</code>. Este paso garantiza que cada entidad y municipio tenga un identificador único en los datos, lo cual es crucial para la integridad y precisión del análisis.</p>
 </div>
 <div id="definición-de-variables-para-la-encuesta" class="section level4 unnumbered hasAnchor">
 <h4>Definición de Variables para la Encuesta<a href="armonizar_encuesta.html#definición-de-variables-para-la-encuesta" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se definen y transforman las variables de área urbana o rural.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="armonizar_encuesta.html#cb35-1" tabindex="-1"></a><span class="co"># codigo municipio</span></span>
-<span id="cb35-2"><a href="armonizar_encuesta.html#cb35-2" tabindex="-1"></a></span>
-<span id="cb35-3"><a href="armonizar_encuesta.html#cb35-3" tabindex="-1"></a><span class="co"># area urabo o rural </span></span>
-<span id="cb35-4"><a href="armonizar_encuesta.html#cb35-4" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(rururb) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor))</span>
-<span id="cb35-5"><a href="armonizar_encuesta.html#cb35-5" tabindex="-1"></a></span>
-<span id="cb35-6"><a href="armonizar_encuesta.html#cb35-6" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb35-7"><a href="armonizar_encuesta.html#cb35-7" tabindex="-1"></a>  <span class="at">area =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(rururb, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb35-8"><a href="armonizar_encuesta.html#cb35-8" tabindex="-1"></a>  <span class="at">area =</span> <span class="fu">as.character</span>(area)</span>
-<span id="cb35-9"><a href="armonizar_encuesta.html#cb35-9" tabindex="-1"></a>)</span>
-<span id="cb35-10"><a href="armonizar_encuesta.html#cb35-10" tabindex="-1"></a></span>
-<span id="cb35-11"><a href="armonizar_encuesta.html#cb35-11" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span>   <span class="fu">distinct</span>(rururb,area)</span></code></pre></div>
+<p>Se definen y transforman las variables relacionadas con el área urbana o rural en la base de datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH). Primero, se revisa la distribución de la variable <code>rururb</code> para identificar el número de registros en cada categoría de área urbana o rural. Posteriormente, se convierte <code>rururb</code> en una variable de factor con niveles definidos por la variable “values” usando la función <code>as_factor()</code> del paquete <code>haven</code>, y luego se transforma a formato de carácter para simplificar su uso en análisis posteriores. Finalmente, se verifica que la conversión se haya realizado correctamente, asegurando que los valores de <code>rururb</code> y <code>area</code> sean consistentes.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="armonizar_encuesta.html#cb36-1" tabindex="-1"></a><span class="co"># codigo municipio</span></span>
+<span id="cb36-2"><a href="armonizar_encuesta.html#cb36-2" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="armonizar_encuesta.html#cb36-3" tabindex="-1"></a><span class="co"># area urabo o rural </span></span>
+<span id="cb36-4"><a href="armonizar_encuesta.html#cb36-4" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(rururb) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor))</span>
+<span id="cb36-5"><a href="armonizar_encuesta.html#cb36-5" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="armonizar_encuesta.html#cb36-6" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb36-7"><a href="armonizar_encuesta.html#cb36-7" tabindex="-1"></a>  <span class="at">area =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(rururb, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb36-8"><a href="armonizar_encuesta.html#cb36-8" tabindex="-1"></a>  <span class="at">area =</span> <span class="fu">as.character</span>(area)</span>
+<span id="cb36-9"><a href="armonizar_encuesta.html#cb36-9" tabindex="-1"></a>)</span>
+<span id="cb36-10"><a href="armonizar_encuesta.html#cb36-10" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="armonizar_encuesta.html#cb36-11" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span>   <span class="fu">distinct</span>(rururb,area)</span></code></pre></div>
 </div>
 <div id="transformación-de-variables-demográficas-y-socioeconómicas" class="section level4 unnumbered hasAnchor">
 <h4>Transformación de Variables Demográficas y Socioeconómicas<a href="armonizar_encuesta.html#transformación-de-variables-demográficas-y-socioeconómicas" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se transforman las variables de sexo, edad, nivel educativo, discapacidad y lengua indígena para su uso en el análisis.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="armonizar_encuesta.html#cb36-1" tabindex="-1"></a><span class="co"># Sexo </span></span>
-<span id="cb36-2"><a href="armonizar_encuesta.html#cb36-2" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(sexo) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor))</span>
-<span id="cb36-3"><a href="armonizar_encuesta.html#cb36-3" tabindex="-1"></a><span class="co"># 2 Mujer</span></span>
-<span id="cb36-4"><a href="armonizar_encuesta.html#cb36-4" tabindex="-1"></a><span class="co"># 1 Hombre</span></span>
-<span id="cb36-5"><a href="armonizar_encuesta.html#cb36-5" tabindex="-1"></a></span>
-<span id="cb36-6"><a href="armonizar_encuesta.html#cb36-6" tabindex="-1"></a><span class="co"># Edad </span></span>
-<span id="cb36-7"><a href="armonizar_encuesta.html#cb36-7" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(edad) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor))</span>
-<span id="cb36-8"><a href="armonizar_encuesta.html#cb36-8" tabindex="-1"></a>encuesta_ampliada <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(edad)</span>
-<span id="cb36-9"><a href="armonizar_encuesta.html#cb36-9" tabindex="-1"></a><span class="co"># 1 Menor de 14 años</span></span>
-<span id="cb36-10"><a href="armonizar_encuesta.html#cb36-10" tabindex="-1"></a><span class="co"># 2 15 a 29 años</span></span>
-<span id="cb36-11"><a href="armonizar_encuesta.html#cb36-11" tabindex="-1"></a><span class="co"># 3 30 a 44 años</span></span>
-<span id="cb36-12"><a href="armonizar_encuesta.html#cb36-12" tabindex="-1"></a><span class="co"># 4 45 a 64 años</span></span>
-<span id="cb36-13"><a href="armonizar_encuesta.html#cb36-13" tabindex="-1"></a><span class="co"># 5 65 años o más</span></span>
-<span id="cb36-14"><a href="armonizar_encuesta.html#cb36-14" tabindex="-1"></a></span>
-<span id="cb36-15"><a href="armonizar_encuesta.html#cb36-15" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">g_edad =</span> <span class="fu">case_when</span>(edad <span class="sc">&lt;=</span> <span class="dv">14</span> <span class="sc">~</span> <span class="st">&quot;1&quot;</span>, <span class="co"># 0 a 14</span></span>
-<span id="cb36-16"><a href="armonizar_encuesta.html#cb36-16" tabindex="-1"></a>                                     edad <span class="sc">&lt;=</span> <span class="dv">29</span> <span class="sc">~</span> <span class="st">&quot;2&quot;</span>, <span class="co"># 15 a 29</span></span>
-<span id="cb36-17"><a href="armonizar_encuesta.html#cb36-17" tabindex="-1"></a>                                     edad <span class="sc">&lt;=</span> <span class="dv">44</span> <span class="sc">~</span> <span class="st">&quot;3&quot;</span>, <span class="co"># 30 a 44</span></span>
-<span id="cb36-18"><a href="armonizar_encuesta.html#cb36-18" tabindex="-1"></a>                                     edad <span class="sc">&lt;=</span> <span class="dv">64</span> <span class="sc">~</span> <span class="st">&quot;4&quot;</span>, <span class="co"># 45 a 64</span></span>
-<span id="cb36-19"><a href="armonizar_encuesta.html#cb36-19" tabindex="-1"></a>                                     edad <span class="sc">&gt;</span>  <span class="dv">64</span> <span class="sc">~</span> <span class="st">&quot;5&quot;</span>, <span class="co"># 65 o mas</span></span>
-<span id="cb36-20"><a href="armonizar_encuesta.html#cb36-20" tabindex="-1"></a>                                     <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span>)) </span>
-<span id="cb36-21"><a href="armonizar_encuesta.html#cb36-21" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(g_edad) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor))</span>
-<span id="cb36-22"><a href="armonizar_encuesta.html#cb36-22" tabindex="-1"></a></span>
-<span id="cb36-23"><a href="armonizar_encuesta.html#cb36-23" tabindex="-1"></a><span class="co"># nivel educativo</span></span>
-<span id="cb36-24"><a href="armonizar_encuesta.html#cb36-24" tabindex="-1"></a></span>
-<span id="cb36-25"><a href="armonizar_encuesta.html#cb36-25" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(niv_ed) <span class="sc">%&gt;%</span></span>
-<span id="cb36-26"><a href="armonizar_encuesta.html#cb36-26" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb36-27"><a href="armonizar_encuesta.html#cb36-27" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n))</span>
-<span id="cb36-28"><a href="armonizar_encuesta.html#cb36-28" tabindex="-1"></a></span>
-<span id="cb36-29"><a href="armonizar_encuesta.html#cb36-29" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> </span>
-<span id="cb36-30"><a href="armonizar_encuesta.html#cb36-30" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nivel_edu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(niv_ed, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb36-31"><a href="armonizar_encuesta.html#cb36-31" tabindex="-1"></a>  <span class="fu">group_by</span>(nivel_edu, g_edad) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor)) <span class="sc">%&gt;%</span></span>
-<span id="cb36-32"><a href="armonizar_encuesta.html#cb36-32" tabindex="-1"></a>  <span class="fu">data.frame</span>()</span>
-<span id="cb36-33"><a href="armonizar_encuesta.html#cb36-33" tabindex="-1"></a></span>
-<span id="cb36-34"><a href="armonizar_encuesta.html#cb36-34" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb36-35"><a href="armonizar_encuesta.html#cb36-35" tabindex="-1"></a>  <span class="at">nivel_edu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(niv_ed, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb36-36"><a href="armonizar_encuesta.html#cb36-36" tabindex="-1"></a>  <span class="at">nivel_edu =</span> <span class="fu">as.character</span>(nivel_edu)</span>
-<span id="cb36-37"><a href="armonizar_encuesta.html#cb36-37" tabindex="-1"></a>)</span>
-<span id="cb36-38"><a href="armonizar_encuesta.html#cb36-38" tabindex="-1"></a></span>
-<span id="cb36-39"><a href="armonizar_encuesta.html#cb36-39" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span>   <span class="fu">distinct</span>(niv_ed,nivel_edu)</span>
-<span id="cb36-40"><a href="armonizar_encuesta.html#cb36-40" tabindex="-1"></a></span>
-<span id="cb36-41"><a href="armonizar_encuesta.html#cb36-41" tabindex="-1"></a><span class="co"># Discapacidad</span></span>
-<span id="cb36-42"><a href="armonizar_encuesta.html#cb36-42" tabindex="-1"></a></span>
-<span id="cb36-43"><a href="armonizar_encuesta.html#cb36-43" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(discap) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor)) </span>
-<span id="cb36-44"><a href="armonizar_encuesta.html#cb36-44" tabindex="-1"></a></span>
-<span id="cb36-45"><a href="armonizar_encuesta.html#cb36-45" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb36-46"><a href="armonizar_encuesta.html#cb36-46" tabindex="-1"></a>  <span class="at">discapacidad =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(discap, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb36-47"><a href="armonizar_encuesta.html#cb36-47" tabindex="-1"></a>  <span class="at">discapacidad =</span> <span class="fu">as.character</span>(discapacidad)</span>
-<span id="cb36-48"><a href="armonizar_encuesta.html#cb36-48" tabindex="-1"></a>)</span>
-<span id="cb36-49"><a href="armonizar_encuesta.html#cb36-49" tabindex="-1"></a></span>
-<span id="cb36-50"><a href="armonizar_encuesta.html#cb36-50" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span>   <span class="fu">distinct</span>(discap,discapacidad)</span>
-<span id="cb36-51"><a href="armonizar_encuesta.html#cb36-51" tabindex="-1"></a></span>
-<span id="cb36-52"><a href="armonizar_encuesta.html#cb36-52" tabindex="-1"></a><span class="co"># Habla dialecto o lengua indígena</span></span>
-<span id="cb36-53"><a href="armonizar_encuesta.html#cb36-53" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>hli)</span>
-<span id="cb36-54"><a href="armonizar_encuesta.html#cb36-54" tabindex="-1"></a></span>
-<span id="cb36-55"><a href="armonizar_encuesta.html#cb36-55" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(hli) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor)) </span>
-<span id="cb36-56"><a href="armonizar_encuesta.html#cb36-56" tabindex="-1"></a></span>
-<span id="cb36-57"><a href="armonizar_encuesta.html#cb36-57" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb36-58"><a href="armonizar_encuesta.html#cb36-58" tabindex="-1"></a>  <span class="at">hlengua =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(hli, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb36-59"><a href="armonizar_encuesta.html#cb36-59" tabindex="-1"></a>  <span class="at">hlengua =</span> <span class="fu">as.character</span>(hlengua)</span>
-<span id="cb36-60"><a href="armonizar_encuesta.html#cb36-60" tabindex="-1"></a>)</span>
-<span id="cb36-61"><a href="armonizar_encuesta.html#cb36-61" tabindex="-1"></a></span>
-<span id="cb36-62"><a href="armonizar_encuesta.html#cb36-62" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span>   <span class="fu">distinct</span>(hlengua,hli)</span></code></pre></div>
+<p>Se realizan transformaciones en las variables demográficas y socioeconómicas de la base de datos <code>enigh</code> para prepararlas para el análisis. Primero, se revisa la distribución de la variable de <code>sexo</code>, que tiene dos categorías: “2” para mujeres y “1” para hombres. Luego, se examina la variable de <code>edad</code>, transformando las edades en grupos de edad específicos: “1” para menores de 14 años, “2” para 15 a 29 años, “3” para 30 a 44 años, “4” para 45 a 64 años, y “5” para 65 años o más. La transformación se realiza utilizando la función <code>case_when()</code>.</p>
+<p>En cuanto al <code>nivel educativo</code>, se revisa la distribución actual y se transforma en un factor con niveles específicos definidos por la variable “values”, asegurando que los valores sean consistentes y descriptivos. Posteriormente, se realiza la misma transformación para la variable <code>discapacidad</code>, convirtiéndola en un factor con niveles apropiados y luego a formato de carácter para su uso en el análisis.</p>
+<p>Finalmente, para la variable <code>hli</code>, que indica si se habla algún dialecto o lengua indígena, se transforma en un factor con niveles definidos, asegurando la consistencia en la representación de esta variable. Las transformaciones aseguran que todas las variables sean adecuadas para el análisis, con valores claros y uniformes.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="armonizar_encuesta.html#cb37-1" tabindex="-1"></a><span class="co"># Sexo </span></span>
+<span id="cb37-2"><a href="armonizar_encuesta.html#cb37-2" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(sexo) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor))</span>
+<span id="cb37-3"><a href="armonizar_encuesta.html#cb37-3" tabindex="-1"></a><span class="co"># 2 Mujer</span></span>
+<span id="cb37-4"><a href="armonizar_encuesta.html#cb37-4" tabindex="-1"></a><span class="co"># 1 Hombre</span></span>
+<span id="cb37-5"><a href="armonizar_encuesta.html#cb37-5" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="armonizar_encuesta.html#cb37-6" tabindex="-1"></a><span class="co"># Edad </span></span>
+<span id="cb37-7"><a href="armonizar_encuesta.html#cb37-7" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(edad) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor))</span>
+<span id="cb37-8"><a href="armonizar_encuesta.html#cb37-8" tabindex="-1"></a>encuesta_ampliada <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(edad)</span>
+<span id="cb37-9"><a href="armonizar_encuesta.html#cb37-9" tabindex="-1"></a><span class="co"># 1 Menor de 14 años</span></span>
+<span id="cb37-10"><a href="armonizar_encuesta.html#cb37-10" tabindex="-1"></a><span class="co"># 2 15 a 29 años</span></span>
+<span id="cb37-11"><a href="armonizar_encuesta.html#cb37-11" tabindex="-1"></a><span class="co"># 3 30 a 44 años</span></span>
+<span id="cb37-12"><a href="armonizar_encuesta.html#cb37-12" tabindex="-1"></a><span class="co"># 4 45 a 64 años</span></span>
+<span id="cb37-13"><a href="armonizar_encuesta.html#cb37-13" tabindex="-1"></a><span class="co"># 5 65 años o más</span></span>
+<span id="cb37-14"><a href="armonizar_encuesta.html#cb37-14" tabindex="-1"></a></span>
+<span id="cb37-15"><a href="armonizar_encuesta.html#cb37-15" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">g_edad =</span> <span class="fu">case_when</span>(edad <span class="sc">&lt;=</span> <span class="dv">14</span> <span class="sc">~</span> <span class="st">&quot;1&quot;</span>, <span class="co"># 0 a 14</span></span>
+<span id="cb37-16"><a href="armonizar_encuesta.html#cb37-16" tabindex="-1"></a>                                     edad <span class="sc">&lt;=</span> <span class="dv">29</span> <span class="sc">~</span> <span class="st">&quot;2&quot;</span>, <span class="co"># 15 a 29</span></span>
+<span id="cb37-17"><a href="armonizar_encuesta.html#cb37-17" tabindex="-1"></a>                                     edad <span class="sc">&lt;=</span> <span class="dv">44</span> <span class="sc">~</span> <span class="st">&quot;3&quot;</span>, <span class="co"># 30 a 44</span></span>
+<span id="cb37-18"><a href="armonizar_encuesta.html#cb37-18" tabindex="-1"></a>                                     edad <span class="sc">&lt;=</span> <span class="dv">64</span> <span class="sc">~</span> <span class="st">&quot;4&quot;</span>, <span class="co"># 45 a 64</span></span>
+<span id="cb37-19"><a href="armonizar_encuesta.html#cb37-19" tabindex="-1"></a>                                     edad <span class="sc">&gt;</span>  <span class="dv">64</span> <span class="sc">~</span> <span class="st">&quot;5&quot;</span>, <span class="co"># 65 o mas</span></span>
+<span id="cb37-20"><a href="armonizar_encuesta.html#cb37-20" tabindex="-1"></a>                                     <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span>)) </span>
+<span id="cb37-21"><a href="armonizar_encuesta.html#cb37-21" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(g_edad) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor))</span>
+<span id="cb37-22"><a href="armonizar_encuesta.html#cb37-22" tabindex="-1"></a></span>
+<span id="cb37-23"><a href="armonizar_encuesta.html#cb37-23" tabindex="-1"></a><span class="co"># nivel educativo</span></span>
+<span id="cb37-24"><a href="armonizar_encuesta.html#cb37-24" tabindex="-1"></a></span>
+<span id="cb37-25"><a href="armonizar_encuesta.html#cb37-25" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(niv_ed) <span class="sc">%&gt;%</span></span>
+<span id="cb37-26"><a href="armonizar_encuesta.html#cb37-26" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-27"><a href="armonizar_encuesta.html#cb37-27" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n))</span>
+<span id="cb37-28"><a href="armonizar_encuesta.html#cb37-28" tabindex="-1"></a></span>
+<span id="cb37-29"><a href="armonizar_encuesta.html#cb37-29" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> </span>
+<span id="cb37-30"><a href="armonizar_encuesta.html#cb37-30" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nivel_edu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(niv_ed, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb37-31"><a href="armonizar_encuesta.html#cb37-31" tabindex="-1"></a>  <span class="fu">group_by</span>(nivel_edu, g_edad) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor)) <span class="sc">%&gt;%</span></span>
+<span id="cb37-32"><a href="armonizar_encuesta.html#cb37-32" tabindex="-1"></a>  <span class="fu">data.frame</span>()</span>
+<span id="cb37-33"><a href="armonizar_encuesta.html#cb37-33" tabindex="-1"></a></span>
+<span id="cb37-34"><a href="armonizar_encuesta.html#cb37-34" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb37-35"><a href="armonizar_encuesta.html#cb37-35" tabindex="-1"></a>  <span class="at">nivel_edu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(niv_ed, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb37-36"><a href="armonizar_encuesta.html#cb37-36" tabindex="-1"></a>  <span class="at">nivel_edu =</span> <span class="fu">as.character</span>(nivel_edu)</span>
+<span id="cb37-37"><a href="armonizar_encuesta.html#cb37-37" tabindex="-1"></a>)</span>
+<span id="cb37-38"><a href="armonizar_encuesta.html#cb37-38" tabindex="-1"></a></span>
+<span id="cb37-39"><a href="armonizar_encuesta.html#cb37-39" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span>   <span class="fu">distinct</span>(niv_ed,nivel_edu)</span>
+<span id="cb37-40"><a href="armonizar_encuesta.html#cb37-40" tabindex="-1"></a></span>
+<span id="cb37-41"><a href="armonizar_encuesta.html#cb37-41" tabindex="-1"></a><span class="co"># Discapacidad</span></span>
+<span id="cb37-42"><a href="armonizar_encuesta.html#cb37-42" tabindex="-1"></a></span>
+<span id="cb37-43"><a href="armonizar_encuesta.html#cb37-43" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(discap) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor)) </span>
+<span id="cb37-44"><a href="armonizar_encuesta.html#cb37-44" tabindex="-1"></a></span>
+<span id="cb37-45"><a href="armonizar_encuesta.html#cb37-45" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb37-46"><a href="armonizar_encuesta.html#cb37-46" tabindex="-1"></a>  <span class="at">discapacidad =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(discap, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb37-47"><a href="armonizar_encuesta.html#cb37-47" tabindex="-1"></a>  <span class="at">discapacidad =</span> <span class="fu">as.character</span>(discapacidad)</span>
+<span id="cb37-48"><a href="armonizar_encuesta.html#cb37-48" tabindex="-1"></a>)</span>
+<span id="cb37-49"><a href="armonizar_encuesta.html#cb37-49" tabindex="-1"></a></span>
+<span id="cb37-50"><a href="armonizar_encuesta.html#cb37-50" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span>   <span class="fu">distinct</span>(discap,discapacidad)</span>
+<span id="cb37-51"><a href="armonizar_encuesta.html#cb37-51" tabindex="-1"></a></span>
+<span id="cb37-52"><a href="armonizar_encuesta.html#cb37-52" tabindex="-1"></a><span class="co"># Habla dialecto o lengua indígena</span></span>
+<span id="cb37-53"><a href="armonizar_encuesta.html#cb37-53" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>hli)</span>
+<span id="cb37-54"><a href="armonizar_encuesta.html#cb37-54" tabindex="-1"></a></span>
+<span id="cb37-55"><a href="armonizar_encuesta.html#cb37-55" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(hli) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor)) </span>
+<span id="cb37-56"><a href="armonizar_encuesta.html#cb37-56" tabindex="-1"></a></span>
+<span id="cb37-57"><a href="armonizar_encuesta.html#cb37-57" tabindex="-1"></a>enigh <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb37-58"><a href="armonizar_encuesta.html#cb37-58" tabindex="-1"></a>  <span class="at">hlengua =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(hli, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb37-59"><a href="armonizar_encuesta.html#cb37-59" tabindex="-1"></a>  <span class="at">hlengua =</span> <span class="fu">as.character</span>(hlengua)</span>
+<span id="cb37-60"><a href="armonizar_encuesta.html#cb37-60" tabindex="-1"></a>)</span>
+<span id="cb37-61"><a href="armonizar_encuesta.html#cb37-61" tabindex="-1"></a></span>
+<span id="cb37-62"><a href="armonizar_encuesta.html#cb37-62" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span>   <span class="fu">distinct</span>(hlengua,hli)</span></code></pre></div>
 </div>
 <div id="análisis-de-variables-de-carencia" class="section level4 unnumbered hasAnchor">
 <h4>Análisis de Variables de Carencia<a href="armonizar_encuesta.html#análisis-de-variables-de-carencia" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se analizan los indicadores de carencia y se visualiza la distribución logarítmica del ingreso per cápita.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="armonizar_encuesta.html#cb37-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">log</span>(enigh<span class="sc">$</span>ictpc))</span>
-<span id="cb37-2"><a href="armonizar_encuesta.html#cb37-2" tabindex="-1"></a></span>
-<span id="cb37-3"><a href="armonizar_encuesta.html#cb37-3" tabindex="-1"></a><span class="co"># Indicador de carencia por acceso a servicios de salud</span></span>
-<span id="cb37-4"><a href="armonizar_encuesta.html#cb37-4" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>ic_segsoc)</span>
-<span id="cb37-5"><a href="armonizar_encuesta.html#cb37-5" tabindex="-1"></a></span>
-<span id="cb37-6"><a href="armonizar_encuesta.html#cb37-6" tabindex="-1"></a><span class="co"># Indicador de carencia por acceso a la alimentación nutritiva y de calidad</span></span>
-<span id="cb37-7"><a href="armonizar_encuesta.html#cb37-7" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>ic_ali_nc)</span>
-<span id="cb37-8"><a href="armonizar_encuesta.html#cb37-8" tabindex="-1"></a></span>
-<span id="cb37-9"><a href="armonizar_encuesta.html#cb37-9" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ic_segsoc) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor)) </span></code></pre></div>
+<p>Para el análisis de variables de carencia, se realiza lo siguiente:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Distribución Logarítmica del Ingreso Per Cápita</strong>: Se visualiza la distribución del ingreso per cápita (<code>ictpc</code>) mediante un histograma en escala logarítmica. Esta transformación es útil para observar la distribución de datos con alta variabilidad y para identificar patrones o anomalías en la distribución del ingreso.</p></li>
+<li><p><strong>Indicadores de Carencia</strong>:</p>
+<ul>
+<li><strong>Acceso a Servicios de Salud</strong>: Se revisa el atributo de la variable <code>ic_segsoc</code>, que representa el indicador de carencia por acceso a servicios de salud.</li>
+<li><strong>Acceso a Alimentación Nutritiva y de Calidad</strong>: Se revisa el atributo de la variable <code>ic_ali_nc</code>, que mide la carencia en el acceso a alimentación nutritiva y de calidad.</li>
+</ul></li>
+<li><p><strong>Distribución de Carencia por Acceso a Servicios de Salud</strong>: Se agrupan los datos por la variable <code>ic_segsoc</code> (carencia por acceso a servicios de salud) y se calcula la suma del factor en cada grupo para analizar la distribución de esta carencia.</p></li>
+</ol>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="armonizar_encuesta.html#cb38-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">log</span>(enigh<span class="sc">$</span>ictpc))</span>
+<span id="cb38-2"><a href="armonizar_encuesta.html#cb38-2" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="armonizar_encuesta.html#cb38-3" tabindex="-1"></a><span class="co"># Indicador de carencia por acceso a servicios de salud</span></span>
+<span id="cb38-4"><a href="armonizar_encuesta.html#cb38-4" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>ic_segsoc)</span>
+<span id="cb38-5"><a href="armonizar_encuesta.html#cb38-5" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="armonizar_encuesta.html#cb38-6" tabindex="-1"></a><span class="co"># Indicador de carencia por acceso a la alimentación nutritiva y de calidad</span></span>
+<span id="cb38-7"><a href="armonizar_encuesta.html#cb38-7" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>ic_ali_nc)</span>
+<span id="cb38-8"><a href="armonizar_encuesta.html#cb38-8" tabindex="-1"></a></span>
+<span id="cb38-9"><a href="armonizar_encuesta.html#cb38-9" tabindex="-1"></a>enigh <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ic_segsoc) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor)) </span></code></pre></div>
 </div>
 <div id="preparación-y-guardado-del-conjunto-de-datos" class="section level4 unnumbered hasAnchor">
 <h4>Preparación y Guardado del Conjunto de Datos<a href="armonizar_encuesta.html#preparación-y-guardado-del-conjunto-de-datos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se prepara el conjunto de datos final <code>encuesta_sta</code> con las variables de estudio y de diseño, y se guarda en un archivo <code>.rds</code>.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="armonizar_encuesta.html#cb38-1" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb38-2"><a href="armonizar_encuesta.html#cb38-2" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> enigh <span class="sc">%&gt;%</span></span>
-<span id="cb38-3"><a href="armonizar_encuesta.html#cb38-3" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb38-4"><a href="armonizar_encuesta.html#cb38-4" tabindex="-1"></a>    <span class="at">ent =</span> <span class="fu">str_pad</span>(</span>
-<span id="cb38-5"><a href="armonizar_encuesta.html#cb38-5" tabindex="-1"></a>      <span class="at">string =</span> ent,</span>
-<span id="cb38-6"><a href="armonizar_encuesta.html#cb38-6" tabindex="-1"></a>      <span class="at">width =</span> <span class="dv">2</span>,</span>
-<span id="cb38-7"><a href="armonizar_encuesta.html#cb38-7" tabindex="-1"></a>      <span class="at">pad =</span> <span class="st">&quot;0&quot;</span></span>
-<span id="cb38-8"><a href="armonizar_encuesta.html#cb38-8" tabindex="-1"></a>    ),</span>
-<span id="cb38-9"><a href="armonizar_encuesta.html#cb38-9" tabindex="-1"></a>    cve_mun,</span>
-<span id="cb38-10"><a href="armonizar_encuesta.html#cb38-10" tabindex="-1"></a>    area,</span>
-<span id="cb38-11"><a href="armonizar_encuesta.html#cb38-11" tabindex="-1"></a>    sexo,</span>
-<span id="cb38-12"><a href="armonizar_encuesta.html#cb38-12" tabindex="-1"></a>    <span class="at">edad =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(g_edad), <span class="st">&quot;99&quot;</span>, g_edad),</span>
-<span id="cb38-13"><a href="armonizar_encuesta.html#cb38-13" tabindex="-1"></a>    <span class="at">nivel_edu =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(nivel_edu), <span class="st">&quot;99&quot;</span>, nivel_edu),</span>
-<span id="cb38-14"><a href="armonizar_encuesta.html#cb38-14" tabindex="-1"></a>    <span class="at">discapacidad =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(discapacidad), <span class="st">&quot;0&quot;</span>, discapacidad),</span>
-<span id="cb38-15"><a href="armonizar_encuesta.html#cb38-15" tabindex="-1"></a>    <span class="at">hlengua =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(hlengua), <span class="st">&quot;0&quot;</span>, hlengua),</span>
-<span id="cb38-16"><a href="armonizar_encuesta.html#cb38-16" tabindex="-1"></a>    </span>
-<span id="cb38-17"><a href="armonizar_encuesta.html#cb38-17" tabindex="-1"></a>    <span class="do">## Variable de estudio</span></span>
-<span id="cb38-18"><a href="armonizar_encuesta.html#cb38-18" tabindex="-1"></a>    <span class="at">ictpc =</span> <span class="fu">as.numeric</span>(ictpc),</span>
-<span id="cb38-19"><a href="armonizar_encuesta.html#cb38-19" tabindex="-1"></a>    <span class="at">ic_segsoc =</span> <span class="fu">as.numeric</span>(ic_segsoc),</span>
-<span id="cb38-20"><a href="armonizar_encuesta.html#cb38-20" tabindex="-1"></a>    <span class="at">ic_ali_nc =</span> <span class="fu">as.numeric</span>(ic_ali_nc),</span>
-<span id="cb38-21"><a href="armonizar_encuesta.html#cb38-21" tabindex="-1"></a>    <span class="at">ic_rezedu =</span> <span class="fu">as.numeric</span>(ic_segsoc),</span>
-<span id="cb38-22"><a href="armonizar_encuesta.html#cb38-22" tabindex="-1"></a>    <span class="at">ic_asalud =</span> <span class="fu">as.numeric</span>(ic_segsoc),</span>
-<span id="cb38-23"><a href="armonizar_encuesta.html#cb38-23" tabindex="-1"></a>    <span class="at">ic_sbv =</span> <span class="fu">as.numeric</span>(ic_sbv_hog),</span>
-<span id="cb38-24"><a href="armonizar_encuesta.html#cb38-24" tabindex="-1"></a>    <span class="at">ic_cv =</span> <span class="fu">as.numeric</span>(ic_cv_hog),</span>
-<span id="cb38-25"><a href="armonizar_encuesta.html#cb38-25" tabindex="-1"></a>    </span>
-<span id="cb38-26"><a href="armonizar_encuesta.html#cb38-26" tabindex="-1"></a>    <span class="do">## Variables diseño</span></span>
-<span id="cb38-27"><a href="armonizar_encuesta.html#cb38-27" tabindex="-1"></a>    <span class="at">estrato =</span> est_dis,</span>
-<span id="cb38-28"><a href="armonizar_encuesta.html#cb38-28" tabindex="-1"></a>    <span class="at">upm =</span> upm,</span>
-<span id="cb38-29"><a href="armonizar_encuesta.html#cb38-29" tabindex="-1"></a>    <span class="at">fep =</span> factor</span>
-<span id="cb38-30"><a href="armonizar_encuesta.html#cb38-30" tabindex="-1"></a>  )</span>
-<span id="cb38-31"><a href="armonizar_encuesta.html#cb38-31" tabindex="-1"></a></span>
-<span id="cb38-32"><a href="armonizar_encuesta.html#cb38-32" tabindex="-1"></a><span class="fu">map</span>(<span class="fu">c</span>(</span>
-<span id="cb38-33"><a href="armonizar_encuesta.html#cb38-33" tabindex="-1"></a>  <span class="st">&quot;ent&quot;</span>,</span>
-<span id="cb38-34"><a href="armonizar_encuesta.html#cb38-34" tabindex="-1"></a>  <span class="st">&quot;cve_mun&quot;</span>,</span>
-<span id="cb38-35"><a href="armonizar_encuesta.html#cb38-35" tabindex="-1"></a>  <span class="st">&quot;area&quot;</span>,</span>
-<span id="cb38-36"><a href="armonizar_encuesta.html#cb38-36" tabindex="-1"></a>  <span class="st">&quot;sexo&quot;</span>,</span>
-<span id="cb38-37"><a href="armonizar_encuesta.html#cb38-37" tabindex="-1"></a>  <span class="st">&quot;edad&quot;</span>,</span>
-<span id="cb38-38"><a href="armonizar_encuesta.html#cb38-38" tabindex="-1"></a>  <span class="st">&quot;nivel_edu&quot;</span>,</span>
-<span id="cb38-39"><a href="armonizar_encuesta.html#cb38-39" tabindex="-1"></a>  <span class="st">&quot;hlengua&quot;</span>,</span>
-<span id="cb38-40"><a href="armonizar_encuesta.html#cb38-40" tabindex="-1"></a>  <span class="st">&quot;discapacidad&quot;</span>,</span>
-<span id="cb38-41"><a href="armonizar_encuesta.html#cb38-41" tabindex="-1"></a>  <span class="st">&quot;ic_segsoc&quot;</span>,</span>
-<span id="cb38-42"><a href="armonizar_encuesta.html#cb38-42" tabindex="-1"></a>  <span class="st">&quot;ic_ali_nc&quot;</span></span>
-<span id="cb38-43"><a href="armonizar_encuesta.html#cb38-43" tabindex="-1"></a>),</span>
-<span id="cb38-44"><a href="armonizar_encuesta.html#cb38-44" tabindex="-1"></a><span class="cf">function</span>(x) {</span>
-<span id="cb38-45"><a href="armonizar_encuesta.html#cb38-45" tabindex="-1"></a>  encuesta_sta <span class="sc">%&gt;%</span> <span class="fu">group_by_at</span>(x ) <span class="sc">%&gt;%</span></span>
-<span id="cb38-46"><a href="armonizar_encuesta.html#cb38-46" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">Nd =</span> <span class="fu">sum</span>(fep)) <span class="sc">%&gt;%</span> </span>
-<span id="cb38-47"><a href="armonizar_encuesta.html#cb38-47" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">N =</span> <span class="fu">sum</span>(Nd),</span>
-<span id="cb38-48"><a href="armonizar_encuesta.html#cb38-48" tabindex="-1"></a>           <span class="at">prop =</span> Nd <span class="sc">/</span> N)</span>
-<span id="cb38-49"><a href="armonizar_encuesta.html#cb38-49" tabindex="-1"></a>})</span>
-<span id="cb38-50"><a href="armonizar_encuesta.html#cb38-50" tabindex="-1"></a></span>
-<span id="cb38-51"><a href="armonizar_encuesta.html#cb38-51" tabindex="-1"></a><span class="co"># Se guarda el conjunto de datos</span></span>
-<span id="cb38-52"><a href="armonizar_encuesta.html#cb38-52" tabindex="-1"></a><span class="fu">saveRDS</span>(encuesta_sta, <span class="at">file =</span> <span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>)</span></code></pre></div>
+<p>El código realiza un proceso exhaustivo para preparar y guardar un conjunto de datos final denominado <code>encuesta_sta</code>. Este conjunto de datos se crea a partir de la base de datos <code>enigh</code>, aplicando transformaciones y ajustes necesarios para garantizar que los datos estén en el formato adecuado para el análisis posterior.</p>
+<p>En primer lugar, el código transforma varias variables clave. La variable <code>ent</code>, que representa la entidad, se ajusta para asegurar que siempre tenga dos caracteres, añadiendo ceros a la izquierda si es necesario. Las variables relacionadas con la edad, el nivel educativo, la discapacidad y la lengua indígena se procesan para reemplazar los valores faltantes con valores predeterminados específicos, como “99” para las edades no especificadas y “0” para la discapacidad y la lengua indígena no declarada. Además, las variables relacionadas con las carencias (<code>ictpc</code>, <code>ic_segsoc</code>, <code>ic_ali_nc</code>, <code>ic_rezedu</code>, <code>ic_asalud</code>, <code>ic_sbv</code>, <code>ic_cv</code>) se convierten a tipo numérico para facilitar el análisis cuantitativo.</p>
+<p>El conjunto de datos también incluye variables de diseño, como <code>estrato</code>, <code>upm</code>, y <code>fep</code>, que son esenciales para el análisis de diseño y ponderación. Estas variables ayudan a asegurar que los resultados del análisis reflejen correctamente la estructura de la muestra y las características del estudio.</p>
+<p>Posteriormente, se realiza un análisis de frecuencias para cada una de las variables clave. Esto incluye calcular la frecuencia absoluta y la proporción relativa para variables como el código de municipio, área (urbano o rural), sexo, edad, nivel educativo, discapacidad, y lengua indígena, así como para los indicadores de carencia. Este análisis proporciona una visión general de la distribución de los datos y permite verificar la representatividad y la calidad del conjunto de datos.</p>
+<p>Finalmente, el conjunto de datos transformado y analizado se guarda en un archivo con formato <code>.rds</code>. Este archivo es ahora accesible para su uso en análisis posteriores, garantizando que los datos están bien preparados y que todas las transformaciones necesarias se han aplicado correctamente.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="armonizar_encuesta.html#cb39-1" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb39-2"><a href="armonizar_encuesta.html#cb39-2" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> enigh <span class="sc">%&gt;%</span></span>
+<span id="cb39-3"><a href="armonizar_encuesta.html#cb39-3" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb39-4"><a href="armonizar_encuesta.html#cb39-4" tabindex="-1"></a>    <span class="at">ent =</span> <span class="fu">str_pad</span>(</span>
+<span id="cb39-5"><a href="armonizar_encuesta.html#cb39-5" tabindex="-1"></a>      <span class="at">string =</span> ent,</span>
+<span id="cb39-6"><a href="armonizar_encuesta.html#cb39-6" tabindex="-1"></a>      <span class="at">width =</span> <span class="dv">2</span>,</span>
+<span id="cb39-7"><a href="armonizar_encuesta.html#cb39-7" tabindex="-1"></a>      <span class="at">pad =</span> <span class="st">&quot;0&quot;</span></span>
+<span id="cb39-8"><a href="armonizar_encuesta.html#cb39-8" tabindex="-1"></a>    ),</span>
+<span id="cb39-9"><a href="armonizar_encuesta.html#cb39-9" tabindex="-1"></a>    cve_mun,</span>
+<span id="cb39-10"><a href="armonizar_encuesta.html#cb39-10" tabindex="-1"></a>    area,</span>
+<span id="cb39-11"><a href="armonizar_encuesta.html#cb39-11" tabindex="-1"></a>    sexo,</span>
+<span id="cb39-12"><a href="armonizar_encuesta.html#cb39-12" tabindex="-1"></a>    <span class="at">edad =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(g_edad), <span class="st">&quot;99&quot;</span>, g_edad),</span>
+<span id="cb39-13"><a href="armonizar_encuesta.html#cb39-13" tabindex="-1"></a>    <span class="at">nivel_edu =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(nivel_edu), <span class="st">&quot;99&quot;</span>, nivel_edu),</span>
+<span id="cb39-14"><a href="armonizar_encuesta.html#cb39-14" tabindex="-1"></a>    <span class="at">discapacidad =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(discapacidad), <span class="st">&quot;0&quot;</span>, discapacidad),</span>
+<span id="cb39-15"><a href="armonizar_encuesta.html#cb39-15" tabindex="-1"></a>    <span class="at">hlengua =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(hlengua), <span class="st">&quot;0&quot;</span>, hlengua),</span>
+<span id="cb39-16"><a href="armonizar_encuesta.html#cb39-16" tabindex="-1"></a>    </span>
+<span id="cb39-17"><a href="armonizar_encuesta.html#cb39-17" tabindex="-1"></a>    <span class="do">## Variable de estudio</span></span>
+<span id="cb39-18"><a href="armonizar_encuesta.html#cb39-18" tabindex="-1"></a>    <span class="at">ictpc =</span> <span class="fu">as.numeric</span>(ictpc),</span>
+<span id="cb39-19"><a href="armonizar_encuesta.html#cb39-19" tabindex="-1"></a>    <span class="at">ic_segsoc =</span> <span class="fu">as.numeric</span>(ic_segsoc),</span>
+<span id="cb39-20"><a href="armonizar_encuesta.html#cb39-20" tabindex="-1"></a>    <span class="at">ic_ali_nc =</span> <span class="fu">as.numeric</span>(ic_ali_nc),</span>
+<span id="cb39-21"><a href="armonizar_encuesta.html#cb39-21" tabindex="-1"></a>    <span class="at">ic_rezedu =</span> <span class="fu">as.numeric</span>(ic_segsoc),</span>
+<span id="cb39-22"><a href="armonizar_encuesta.html#cb39-22" tabindex="-1"></a>    <span class="at">ic_asalud =</span> <span class="fu">as.numeric</span>(ic_segsoc),</span>
+<span id="cb39-23"><a href="armonizar_encuesta.html#cb39-23" tabindex="-1"></a>    <span class="at">ic_sbv =</span> <span class="fu">as.numeric</span>(ic_sbv_hog),</span>
+<span id="cb39-24"><a href="armonizar_encuesta.html#cb39-24" tabindex="-1"></a>    <span class="at">ic_cv =</span> <span class="fu">as.numeric</span>(ic_cv_hog),</span>
+<span id="cb39-25"><a href="armonizar_encuesta.html#cb39-25" tabindex="-1"></a>    </span>
+<span id="cb39-26"><a href="armonizar_encuesta.html#cb39-26" tabindex="-1"></a>    <span class="do">## Variables diseño</span></span>
+<span id="cb39-27"><a href="armonizar_encuesta.html#cb39-27" tabindex="-1"></a>    <span class="at">estrato =</span> est_dis,</span>
+<span id="cb39-28"><a href="armonizar_encuesta.html#cb39-28" tabindex="-1"></a>    <span class="at">upm =</span> upm,</span>
+<span id="cb39-29"><a href="armonizar_encuesta.html#cb39-29" tabindex="-1"></a>    <span class="at">fep =</span> factor</span>
+<span id="cb39-30"><a href="armonizar_encuesta.html#cb39-30" tabindex="-1"></a>  )</span>
+<span id="cb39-31"><a href="armonizar_encuesta.html#cb39-31" tabindex="-1"></a></span>
+<span id="cb39-32"><a href="armonizar_encuesta.html#cb39-32" tabindex="-1"></a><span class="fu">map</span>(<span class="fu">c</span>(</span>
+<span id="cb39-33"><a href="armonizar_encuesta.html#cb39-33" tabindex="-1"></a>  <span class="st">&quot;ent&quot;</span>,</span>
+<span id="cb39-34"><a href="armonizar_encuesta.html#cb39-34" tabindex="-1"></a>  <span class="st">&quot;cve_mun&quot;</span>,</span>
+<span id="cb39-35"><a href="armonizar_encuesta.html#cb39-35" tabindex="-1"></a>  <span class="st">&quot;area&quot;</span>,</span>
+<span id="cb39-36"><a href="armonizar_encuesta.html#cb39-36" tabindex="-1"></a>  <span class="st">&quot;sexo&quot;</span>,</span>
+<span id="cb39-37"><a href="armonizar_encuesta.html#cb39-37" tabindex="-1"></a>  <span class="st">&quot;edad&quot;</span>,</span>
+<span id="cb39-38"><a href="armonizar_encuesta.html#cb39-38" tabindex="-1"></a>  <span class="st">&quot;nivel_edu&quot;</span>,</span>
+<span id="cb39-39"><a href="armonizar_encuesta.html#cb39-39" tabindex="-1"></a>  <span class="st">&quot;hlengua&quot;</span>,</span>
+<span id="cb39-40"><a href="armonizar_encuesta.html#cb39-40" tabindex="-1"></a>  <span class="st">&quot;discapacidad&quot;</span>,</span>
+<span id="cb39-41"><a href="armonizar_encuesta.html#cb39-41" tabindex="-1"></a>  <span class="st">&quot;ic_segsoc&quot;</span>,</span>
+<span id="cb39-42"><a href="armonizar_encuesta.html#cb39-42" tabindex="-1"></a>  <span class="st">&quot;ic_ali_nc&quot;</span></span>
+<span id="cb39-43"><a href="armonizar_encuesta.html#cb39-43" tabindex="-1"></a>),</span>
+<span id="cb39-44"><a href="armonizar_encuesta.html#cb39-44" tabindex="-1"></a><span class="cf">function</span>(x) {</span>
+<span id="cb39-45"><a href="armonizar_encuesta.html#cb39-45" tabindex="-1"></a>  encuesta_sta <span class="sc">%&gt;%</span> <span class="fu">group_by_at</span>(x ) <span class="sc">%&gt;%</span></span>
+<span id="cb39-46"><a href="armonizar_encuesta.html#cb39-46" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">Nd =</span> <span class="fu">sum</span>(fep)) <span class="sc">%&gt;%</span> </span>
+<span id="cb39-47"><a href="armonizar_encuesta.html#cb39-47" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">N =</span> <span class="fu">sum</span>(Nd),</span>
+<span id="cb39-48"><a href="armonizar_encuesta.html#cb39-48" tabindex="-1"></a>           <span class="at">prop =</span> Nd <span class="sc">/</span> N)</span>
+<span id="cb39-49"><a href="armonizar_encuesta.html#cb39-49" tabindex="-1"></a>})</span>
+<span id="cb39-50"><a href="armonizar_encuesta.html#cb39-50" tabindex="-1"></a></span>
+<span id="cb39-51"><a href="armonizar_encuesta.html#cb39-51" tabindex="-1"></a><span class="co"># Se guarda el conjunto de datos</span></span>
+<span id="cb39-52"><a href="armonizar_encuesta.html#cb39-52" tabindex="-1"></a><span class="fu">saveRDS</span>(encuesta_sta, <span class="at">file =</span> <span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>)</span></code></pre></div>
 </div>
 <div id="actualización-de-la-tabla-censal" class="section level4 unnumbered hasAnchor">
 <h4>Actualización de la Tabla Censal<a href="armonizar_encuesta.html#actualización-de-la-tabla-censal" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se actualiza la tabla censal mediante calibración de pesos, y se guarda el conjunto de datos calibrado.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="armonizar_encuesta.html#cb39-1" tabindex="-1"></a><span class="co"># Actualización de tabla censal- IPFP -------------------------------------</span></span>
-<span id="cb39-2"><a href="armonizar_encuesta.html#cb39-2" tabindex="-1"></a>names_cov <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>, <span class="st">&quot;cve_mun&quot;</span>, <span class="st">&quot;area&quot;</span>, <span class="st">&quot;sexo&quot;</span>, <span class="st">&quot;edad&quot;</span>, <span class="st">&quot;discapacidad&quot;</span>, <span class="st">&quot;hlengua&quot;</span>)</span>
-<span id="cb39-3"><a href="armonizar_encuesta.html#cb39-3" tabindex="-1"></a>names_cov <span class="ot">&lt;-</span> names_cov[names_cov <span class="sc">%in%</span> <span class="fu">names</span>(encuesta_sta)]</span>
-<span id="cb39-4"><a href="armonizar_encuesta.html#cb39-4" tabindex="-1"></a></span>
-<span id="cb39-5"><a href="armonizar_encuesta.html#cb39-5" tabindex="-1"></a>num_cat_censo <span class="ot">&lt;-</span> <span class="fu">apply</span>(encuesta_ampliada[names_cov], <span class="at">MARGIN  =</span> <span class="dv">2</span>, <span class="cf">function</span>(x)</span>
-<span id="cb39-6"><a href="armonizar_encuesta.html#cb39-6" tabindex="-1"></a>  <span class="fu">length</span>(<span class="fu">unique</span>(x)))</span>
-<span id="cb39-7"><a href="armonizar_encuesta.html#cb39-7" tabindex="-1"></a></span>
-<span id="cb39-8"><a href="armonizar_encuesta.html#cb39-8" tabindex="-1"></a>num_cat_sample <span class="ot">&lt;-</span> <span class="fu">apply</span>(encuesta_sta[names_cov], <span class="at">MARGIN  =</span> <span class="dv">2</span>, <span class="cf">function</span>(x)</span>
-<span id="cb39-9"><a href="armonizar_encuesta.html#cb39-9" tabindex="-1"></a>  <span class="fu">length</span>(<span class="fu">unique</span>(x)))</span>
-<span id="cb39-10"><a href="armonizar_encuesta.html#cb39-10" tabindex="-1"></a></span>
-<span id="cb39-11"><a href="armonizar_encuesta.html#cb39-11" tabindex="-1"></a>names_cov <span class="ot">&lt;-</span> names_cov[num_cat_censo <span class="sc">==</span> num_cat_sample]</span>
-<span id="cb39-12"><a href="armonizar_encuesta.html#cb39-12" tabindex="-1"></a></span>
-<span id="cb39-13"><a href="armonizar_encuesta.html#cb39-13" tabindex="-1"></a><span class="co"># MatrizCalibrada creada únicamente para los niveles completos </span></span>
-<span id="cb39-14"><a href="armonizar_encuesta.html#cb39-14" tabindex="-1"></a><span class="co"># IMPORTANTE: Excluir las covariables que tengan niveles incompletos</span></span>
-<span id="cb39-15"><a href="armonizar_encuesta.html#cb39-15" tabindex="-1"></a></span>
-<span id="cb39-16"><a href="armonizar_encuesta.html#cb39-16" tabindex="-1"></a>auxSuma <span class="ot">&lt;-</span> <span class="cf">function</span>(dat, col, ni) {</span>
-<span id="cb39-17"><a href="armonizar_encuesta.html#cb39-17" tabindex="-1"></a>  dat <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">all_of</span>(col))  <span class="sc">%&gt;%</span></span>
-<span id="cb39-18"><a href="armonizar_encuesta.html#cb39-18" tabindex="-1"></a>    fastDummies<span class="sc">::</span><span class="fu">dummy_cols</span>(<span class="at">remove_selected_columns =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb39-19"><a href="armonizar_encuesta.html#cb39-19" tabindex="-1"></a>    <span class="fu">mutate_all</span>(<span class="sc">~</span>.<span class="sc">*</span>ni) <span class="sc">%&gt;%</span> <span class="fu">colSums</span>()  </span>
-<span id="cb39-20"><a href="armonizar_encuesta.html#cb39-20" tabindex="-1"></a>}</span>
-<span id="cb39-21"><a href="armonizar_encuesta.html#cb39-21" tabindex="-1"></a></span>
-<span id="cb39-22"><a href="armonizar_encuesta.html#cb39-22" tabindex="-1"></a>N.g <span class="ot">&lt;-</span> <span class="fu">map</span>(names_cov,</span>
-<span id="cb39-23"><a href="armonizar_encuesta.html#cb39-23" tabindex="-1"></a>           <span class="sc">~</span> <span class="fu">auxSuma</span>(encuesta_sta, <span class="at">col =</span> .x, <span class="at">ni =</span> encuesta_sta<span class="sc">$</span>fep)) <span class="sc">%&gt;%</span></span>
-<span id="cb39-24"><a href="armonizar_encuesta.html#cb39-24" tabindex="-1"></a>  <span class="fu">unlist</span>()</span>
-<span id="cb39-25"><a href="armonizar_encuesta.html#cb39-25" tabindex="-1"></a></span>
-<span id="cb39-26"><a href="armonizar_encuesta.html#cb39-26" tabindex="-1"></a>N_censo.g <span class="ot">&lt;-</span> <span class="fu">map</span>(names_cov,</span>
-<span id="cb39-27"><a href="armonizar_encuesta.html#cb39-27" tabindex="-1"></a>                 <span class="sc">~</span> <span class="fu">auxSuma</span>(encuesta_ampliada, <span class="at">col =</span> .x, <span class="at">ni =</span> encuesta_ampliada<span class="sc">$</span>n)) <span class="sc">%&gt;%</span></span>
-<span id="cb39-28"><a href="armonizar_encuesta.html#cb39-28" tabindex="-1"></a>  <span class="fu">unlist</span>()</span>
-<span id="cb39-29"><a href="armonizar_encuesta.html#cb39-29" tabindex="-1"></a></span>
-<span id="cb39-30"><a href="armonizar_encuesta.html#cb39-30" tabindex="-1"></a>names_xk <span class="ot">&lt;-</span> <span class="fu">intersect</span>(<span class="fu">names</span>(N.g), <span class="fu">names</span>(N_censo.g))</span>
-<span id="cb39-31"><a href="armonizar_encuesta.html#cb39-31" tabindex="-1"></a></span>
-<span id="cb39-32"><a href="armonizar_encuesta.html#cb39-32" tabindex="-1"></a>N.g <span class="ot">&lt;-</span> N.g[names_xk]</span>
-<span id="cb39-33"><a href="armonizar_encuesta.html#cb39-33" tabindex="-1"></a>N_censo.g <span class="ot">&lt;-</span> N_censo.g[names_xk]</span>
-<span id="cb39-34"><a href="armonizar_encuesta.html#cb39-34" tabindex="-1"></a></span>
-<span id="cb39-35"><a href="armonizar_encuesta.html#cb39-35" tabindex="-1"></a>Xk <span class="ot">&lt;-</span> encuesta_ampliada <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">all_of</span>(names_cov)) <span class="sc">%&gt;%</span></span>
-<span id="cb39-36"><a href="armonizar_encuesta.html#cb39-36" tabindex="-1"></a>  fastDummies<span class="sc">::</span><span class="fu">dummy_cols</span>(<span class="at">remove_selected_columns =</span> <span class="cn">TRUE</span>) %</span>
-<span id="cb39-37"><a href="armonizar_encuesta.html#cb39-37" tabindex="-1"></a></span>
-<span id="cb39-38"><a href="armonizar_encuesta.html#cb39-38" tabindex="-1"></a><span class="sc">&gt;</span>% </span>
-<span id="cb39-39"><a href="armonizar_encuesta.html#cb39-39" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(names_xk))</span>
-<span id="cb39-40"><a href="armonizar_encuesta.html#cb39-40" tabindex="-1"></a></span>
-<span id="cb39-41"><a href="armonizar_encuesta.html#cb39-41" tabindex="-1"></a>gk <span class="ot">&lt;-</span> <span class="fu">calib</span>(<span class="at">Xs =</span> Xk, </span>
-<span id="cb39-42"><a href="armonizar_encuesta.html#cb39-42" tabindex="-1"></a>            <span class="at">d =</span> encuesta_ampliada<span class="sc">$</span>n,</span>
-<span id="cb39-43"><a href="armonizar_encuesta.html#cb39-43" tabindex="-1"></a>            <span class="at">total =</span> N.g,</span>
-<span id="cb39-44"><a href="armonizar_encuesta.html#cb39-44" tabindex="-1"></a>            <span class="at">method =</span> <span class="st">&quot;linear&quot;</span>) <span class="co"># linear primera opcion  </span></span>
-<span id="cb39-45"><a href="armonizar_encuesta.html#cb39-45" tabindex="-1"></a></span>
-<span id="cb39-46"><a href="armonizar_encuesta.html#cb39-46" tabindex="-1"></a><span class="fu">checkcalibration</span>(<span class="at">Xs =</span> Xk, </span>
-<span id="cb39-47"><a href="armonizar_encuesta.html#cb39-47" tabindex="-1"></a>                 <span class="at">d =</span> encuesta_ampliada<span class="sc">$</span>n,</span>
-<span id="cb39-48"><a href="armonizar_encuesta.html#cb39-48" tabindex="-1"></a>                 <span class="at">total =</span> N.g,</span>
-<span id="cb39-49"><a href="armonizar_encuesta.html#cb39-49" tabindex="-1"></a>                 <span class="at">g =</span> gk)</span>
-<span id="cb39-50"><a href="armonizar_encuesta.html#cb39-50" tabindex="-1"></a></span>
-<span id="cb39-51"><a href="armonizar_encuesta.html#cb39-51" tabindex="-1"></a><span class="fu">hist</span>(gk)</span>
-<span id="cb39-52"><a href="armonizar_encuesta.html#cb39-52" tabindex="-1"></a><span class="fu">summary</span>(gk)</span>
-<span id="cb39-53"><a href="armonizar_encuesta.html#cb39-53" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">x =</span> gk), <span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
-<span id="cb39-54"><a href="armonizar_encuesta.html#cb39-54" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fu">diff</span>(<span class="fu">range</span>(gk)) <span class="sc">/</span> <span class="dv">20</span>,</span>
-<span id="cb39-55"><a href="armonizar_encuesta.html#cb39-55" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb39-56"><a href="armonizar_encuesta.html#cb39-56" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;&quot;</span>, <span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb39-57"><a href="armonizar_encuesta.html#cb39-57" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb39-58"><a href="armonizar_encuesta.html#cb39-58" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb39-59"><a href="armonizar_encuesta.html#cb39-59" tabindex="-1"></a>        <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb39-60"><a href="armonizar_encuesta.html#cb39-60" tabindex="-1"></a></span>
-<span id="cb39-61"><a href="armonizar_encuesta.html#cb39-61" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> encuesta_ampliada<span class="sc">$</span>n <span class="sc">*</span> gk</span>
-<span id="cb39-62"><a href="armonizar_encuesta.html#cb39-62" tabindex="-1"></a></span>
-<span id="cb39-63"><a href="armonizar_encuesta.html#cb39-63" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> encuesta_ampliada<span class="sc">$</span>n, <span class="at">y =</span> n1), <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
-<span id="cb39-64"><a href="armonizar_encuesta.html#cb39-64" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="co"># Agregar puntos</span></span>
-<span id="cb39-65"><a href="armonizar_encuesta.html#cb39-65" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb39-66"><a href="armonizar_encuesta.html#cb39-66" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Conteo censales antes&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Conteos censales después&quot;</span>) <span class="sc">+</span></span>
-<span id="cb39-67"><a href="armonizar_encuesta.html#cb39-67" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="dv">20</span>)</span>
-<span id="cb39-68"><a href="armonizar_encuesta.html#cb39-68" tabindex="-1"></a></span>
-<span id="cb39-69"><a href="armonizar_encuesta.html#cb39-69" tabindex="-1"></a>encuesta_ampliada<span class="sc">$</span>n <span class="ot">&lt;-</span> encuesta_ampliada<span class="sc">$</span>n <span class="sc">*</span> gk</span>
-<span id="cb39-70"><a href="armonizar_encuesta.html#cb39-70" tabindex="-1"></a></span>
-<span id="cb39-71"><a href="armonizar_encuesta.html#cb39-71" tabindex="-1"></a><span class="co"># Se guarda el conjunto de datos ampliado:</span></span>
-<span id="cb39-72"><a href="armonizar_encuesta.html#cb39-72" tabindex="-1"></a><span class="fu">saveRDS</span>(encuesta_ampliada, <span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span></code></pre></div>
+<p>El proceso de actualización de la tabla censal mediante la calibración de pesos es crucial para asegurar que los datos reflejen de manera precisa la estructura de la población y las características de la muestra. A continuación, se describe el proceso detallado llevado a cabo en el código:</p>
+<p>En primer lugar, se identifican y seleccionan las covariables que están presentes tanto en la base de datos <code>encuesta_sta</code> como en la base de datos <code>encuesta_ampliada</code>. Esto se realiza mediante la comparación de los nombres de las covariables en ambas bases de datos y asegurando que solo se consideren aquellas con niveles completos en ambas tablas. Esta selección es fundamental para evitar problemas derivados de niveles incompletos en las covariables, lo que podría afectar la precisión de la calibración.</p>
+<p>Luego, se utiliza una función auxiliar (<code>auxSuma</code>) para calcular las sumas ponderadas de las covariables. Esta función convierte las variables categóricas en variables dummy, multiplica cada variable dummy por su peso correspondiente, y luego calcula la suma total para cada categoría. Este cálculo se realiza tanto para la muestra (<code>encuesta_sta</code>) como para el censo (<code>encuesta_ampliada</code>), permitiendo una comparación directa entre los valores estimados en la muestra y los valores esperados en la población censal.</p>
+<p>La comparación de las sumas ponderadas permite calibrar los pesos de la muestra para que se ajusten a las características observadas en el censo. Los valores obtenidos para cada categoría en la muestra (<code>N.g</code>) se comparan con los valores correspondientes en el censo (<code>N_censo.g</code>). Esta calibración asegura que la muestra sea representativa de la población en términos de las covariables seleccionadas, mejorando la precisión y la fiabilidad de los análisis posteriores basados en esta tabla censal actualizada.</p>
+<p>Finalmente, se guarda el conjunto de datos calibrado, lo cual es esencial para que los análisis posteriores se realicen utilizando datos ajustados y representativos. Este proceso de calibración es un paso crucial en el manejo de datos de encuestas y censos, ya que permite corregir desviaciones y mejorar la precisión de las estimaciones derivadas de la muestra.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="armonizar_encuesta.html#cb40-1" tabindex="-1"></a><span class="co"># Actualización de tabla censal- IPFP -------------------------------------</span></span>
+<span id="cb40-2"><a href="armonizar_encuesta.html#cb40-2" tabindex="-1"></a>names_cov <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>, <span class="st">&quot;cve_mun&quot;</span>, <span class="st">&quot;area&quot;</span>, <span class="st">&quot;sexo&quot;</span>, <span class="st">&quot;edad&quot;</span>, <span class="st">&quot;discapacidad&quot;</span>, <span class="st">&quot;hlengua&quot;</span>)</span>
+<span id="cb40-3"><a href="armonizar_encuesta.html#cb40-3" tabindex="-1"></a>names_cov <span class="ot">&lt;-</span> names_cov[names_cov <span class="sc">%in%</span> <span class="fu">names</span>(encuesta_sta)]</span>
+<span id="cb40-4"><a href="armonizar_encuesta.html#cb40-4" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="armonizar_encuesta.html#cb40-5" tabindex="-1"></a>num_cat_censo <span class="ot">&lt;-</span> <span class="fu">apply</span>(encuesta_ampliada[names_cov], <span class="at">MARGIN  =</span> <span class="dv">2</span>, <span class="cf">function</span>(x)</span>
+<span id="cb40-6"><a href="armonizar_encuesta.html#cb40-6" tabindex="-1"></a>  <span class="fu">length</span>(<span class="fu">unique</span>(x)))</span>
+<span id="cb40-7"><a href="armonizar_encuesta.html#cb40-7" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="armonizar_encuesta.html#cb40-8" tabindex="-1"></a>num_cat_sample <span class="ot">&lt;-</span> <span class="fu">apply</span>(encuesta_sta[names_cov], <span class="at">MARGIN  =</span> <span class="dv">2</span>, <span class="cf">function</span>(x)</span>
+<span id="cb40-9"><a href="armonizar_encuesta.html#cb40-9" tabindex="-1"></a>  <span class="fu">length</span>(<span class="fu">unique</span>(x)))</span>
+<span id="cb40-10"><a href="armonizar_encuesta.html#cb40-10" tabindex="-1"></a></span>
+<span id="cb40-11"><a href="armonizar_encuesta.html#cb40-11" tabindex="-1"></a>names_cov <span class="ot">&lt;-</span> names_cov[num_cat_censo <span class="sc">==</span> num_cat_sample]</span>
+<span id="cb40-12"><a href="armonizar_encuesta.html#cb40-12" tabindex="-1"></a></span>
+<span id="cb40-13"><a href="armonizar_encuesta.html#cb40-13" tabindex="-1"></a><span class="co"># MatrizCalibrada creada únicamente para los niveles completos </span></span>
+<span id="cb40-14"><a href="armonizar_encuesta.html#cb40-14" tabindex="-1"></a><span class="co"># IMPORTANTE: Excluir las covariables que tengan niveles incompletos</span></span>
+<span id="cb40-15"><a href="armonizar_encuesta.html#cb40-15" tabindex="-1"></a></span>
+<span id="cb40-16"><a href="armonizar_encuesta.html#cb40-16" tabindex="-1"></a>auxSuma <span class="ot">&lt;-</span> <span class="cf">function</span>(dat, col, ni) {</span>
+<span id="cb40-17"><a href="armonizar_encuesta.html#cb40-17" tabindex="-1"></a>  dat <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">all_of</span>(col))  <span class="sc">%&gt;%</span></span>
+<span id="cb40-18"><a href="armonizar_encuesta.html#cb40-18" tabindex="-1"></a>    fastDummies<span class="sc">::</span><span class="fu">dummy_cols</span>(<span class="at">remove_selected_columns =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb40-19"><a href="armonizar_encuesta.html#cb40-19" tabindex="-1"></a>    <span class="fu">mutate_all</span>(<span class="sc">~</span>.<span class="sc">*</span>ni) <span class="sc">%&gt;%</span> <span class="fu">colSums</span>()  </span>
+<span id="cb40-20"><a href="armonizar_encuesta.html#cb40-20" tabindex="-1"></a>}</span>
+<span id="cb40-21"><a href="armonizar_encuesta.html#cb40-21" tabindex="-1"></a></span>
+<span id="cb40-22"><a href="armonizar_encuesta.html#cb40-22" tabindex="-1"></a>N.g <span class="ot">&lt;-</span> <span class="fu">map</span>(names_cov,</span>
+<span id="cb40-23"><a href="armonizar_encuesta.html#cb40-23" tabindex="-1"></a>           <span class="sc">~</span> <span class="fu">auxSuma</span>(encuesta_sta, <span class="at">col =</span> .x, <span class="at">ni =</span> encuesta_sta<span class="sc">$</span>fep)) <span class="sc">%&gt;%</span></span>
+<span id="cb40-24"><a href="armonizar_encuesta.html#cb40-24" tabindex="-1"></a>  <span class="fu">unlist</span>()</span>
+<span id="cb40-25"><a href="armonizar_encuesta.html#cb40-25" tabindex="-1"></a></span>
+<span id="cb40-26"><a href="armonizar_encuesta.html#cb40-26" tabindex="-1"></a>N_censo.g <span class="ot">&lt;-</span> <span class="fu">map</span>(names_cov,</span>
+<span id="cb40-27"><a href="armonizar_encuesta.html#cb40-27" tabindex="-1"></a>                 <span class="sc">~</span> <span class="fu">auxSuma</span>(encuesta_ampliada, <span class="at">col =</span> .x, <span class="at">ni =</span> encuesta_ampliada<span class="sc">$</span>n)) <span class="sc">%&gt;%</span></span>
+<span id="cb40-28"><a href="armonizar_encuesta.html#cb40-28" tabindex="-1"></a>  <span class="fu">unlist</span>()</span>
+<span id="cb40-29"><a href="armonizar_encuesta.html#cb40-29" tabindex="-1"></a></span>
+<span id="cb40-30"><a href="armonizar_encuesta.html#cb40-30" tabindex="-1"></a>names_xk <span class="ot">&lt;-</span> <span class="fu">intersect</span>(<span class="fu">names</span>(N.g), <span class="fu">names</span>(N_censo.g))</span>
+<span id="cb40-31"><a href="armonizar_encuesta.html#cb40-31" tabindex="-1"></a></span>
+<span id="cb40-32"><a href="armonizar_encuesta.html#cb40-32" tabindex="-1"></a>N.g <span class="ot">&lt;-</span> N.g[names_xk]</span>
+<span id="cb40-33"><a href="armonizar_encuesta.html#cb40-33" tabindex="-1"></a>N_censo.g <span class="ot">&lt;-</span> N_censo.g[names_xk]</span></code></pre></div>
+<p>El proceso de calibración y ajuste de pesos en la tabla censal es una etapa crítica para asegurar que los datos reflejen fielmente la estructura de la población. A continuación, se detalla el flujo de trabajo descrito en el código:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Generación de Variables Dummy:</strong> Primero, se crea un conjunto de datos con variables dummy para las covariables seleccionadas (<code>names_cov</code>). Esto se realiza usando la función <code>fastDummies::dummy_cols</code>, que transforma las variables categóricas en variables dummy, facilitando así la calibración posterior. Se seleccionan únicamente las variables de interés (<code>names_xk</code>) que coinciden entre la muestra y el censo.</p></li>
+<li><p><strong>Calibración de Pesos:</strong> Utilizando la función <code>calib</code>, se calibra la muestra (<code>Xk</code>) para que los totales ponderados coincidan con los valores esperados en la población censal (<code>N.g</code>). La calibración se realiza mediante el método lineal, que ajusta los pesos de manera que las sumas ponderadas en la muestra se alineen con los totales esperados en la población.</p></li>
+<li><p><strong>Verificación de Calibración:</strong> Se verifica la calidad de la calibración mediante la función <code>checkcalibration</code>, que compara los totales ajustados con los totales esperados. Esta verificación es crucial para asegurarse de que el proceso de calibración ha sido efectivo.</p></li>
+<li><p><strong>Análisis de Pesos Calibrados:</strong> Se realiza un análisis de la distribución de los pesos calibrados (<code>gk</code>) mediante un histograma y un resumen estadístico. Esto permite evaluar la variabilidad y la distribución de los pesos ajustados.</p></li>
+<li><p><strong>Ajuste de Conteos Censales:</strong> Los pesos calibrados se aplican a los conteos censales (<code>n1</code>) para obtener los conteos ajustados. Se compara gráficamente el conteo censal original con el ajustado mediante un gráfico de dispersión, donde la línea roja discontinua representa una relación 1:1. Esto ayuda a visualizar cómo los conteos censales han cambiado después de la calibración.</p></li>
+<li><p><strong>Actualización de Datos:</strong> Finalmente, se actualizan los conteos en la base de datos <code>encuesta_ampliada</code> con los valores ajustados y se guarda el conjunto de datos calibrado en un archivo <code>.rds</code>. Este archivo contiene la tabla censal actualizada, lista para ser utilizada en análisis posteriores.</p></li>
+</ol>
+<p>Este proceso asegura que los datos censales reflejen de manera precisa la estructura poblacional y corrige cualquier desviación en los conteos, mejorando la calidad y la representatividad de la información.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="armonizar_encuesta.html#cb41-1" tabindex="-1"></a>Xk <span class="ot">&lt;-</span> encuesta_ampliada <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">all_of</span>(names_cov)) <span class="sc">%&gt;%</span></span>
+<span id="cb41-2"><a href="armonizar_encuesta.html#cb41-2" tabindex="-1"></a>  fastDummies<span class="sc">::</span><span class="fu">dummy_cols</span>(<span class="at">remove_selected_columns =</span> <span class="cn">TRUE</span>) %</span>
+<span id="cb41-3"><a href="armonizar_encuesta.html#cb41-3" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="armonizar_encuesta.html#cb41-4" tabindex="-1"></a><span class="sc">&gt;</span>% </span>
+<span id="cb41-5"><a href="armonizar_encuesta.html#cb41-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(names_xk))</span>
+<span id="cb41-6"><a href="armonizar_encuesta.html#cb41-6" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="armonizar_encuesta.html#cb41-7" tabindex="-1"></a>gk <span class="ot">&lt;-</span> <span class="fu">calib</span>(<span class="at">Xs =</span> Xk, </span>
+<span id="cb41-8"><a href="armonizar_encuesta.html#cb41-8" tabindex="-1"></a>            <span class="at">d =</span> encuesta_ampliada<span class="sc">$</span>n,</span>
+<span id="cb41-9"><a href="armonizar_encuesta.html#cb41-9" tabindex="-1"></a>            <span class="at">total =</span> N.g,</span>
+<span id="cb41-10"><a href="armonizar_encuesta.html#cb41-10" tabindex="-1"></a>            <span class="at">method =</span> <span class="st">&quot;linear&quot;</span>) <span class="co"># linear primera opcion  </span></span>
+<span id="cb41-11"><a href="armonizar_encuesta.html#cb41-11" tabindex="-1"></a></span>
+<span id="cb41-12"><a href="armonizar_encuesta.html#cb41-12" tabindex="-1"></a><span class="fu">checkcalibration</span>(<span class="at">Xs =</span> Xk, </span>
+<span id="cb41-13"><a href="armonizar_encuesta.html#cb41-13" tabindex="-1"></a>                 <span class="at">d =</span> encuesta_ampliada<span class="sc">$</span>n,</span>
+<span id="cb41-14"><a href="armonizar_encuesta.html#cb41-14" tabindex="-1"></a>                 <span class="at">total =</span> N.g,</span>
+<span id="cb41-15"><a href="armonizar_encuesta.html#cb41-15" tabindex="-1"></a>                 <span class="at">g =</span> gk)</span>
+<span id="cb41-16"><a href="armonizar_encuesta.html#cb41-16" tabindex="-1"></a></span>
+<span id="cb41-17"><a href="armonizar_encuesta.html#cb41-17" tabindex="-1"></a><span class="fu">hist</span>(gk)</span>
+<span id="cb41-18"><a href="armonizar_encuesta.html#cb41-18" tabindex="-1"></a><span class="fu">summary</span>(gk)</span>
+<span id="cb41-19"><a href="armonizar_encuesta.html#cb41-19" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">x =</span> gk), <span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
+<span id="cb41-20"><a href="armonizar_encuesta.html#cb41-20" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fu">diff</span>(<span class="fu">range</span>(gk)) <span class="sc">/</span> <span class="dv">20</span>,</span>
+<span id="cb41-21"><a href="armonizar_encuesta.html#cb41-21" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb41-22"><a href="armonizar_encuesta.html#cb41-22" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;&quot;</span>, <span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb41-23"><a href="armonizar_encuesta.html#cb41-23" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb41-24"><a href="armonizar_encuesta.html#cb41-24" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb41-25"><a href="armonizar_encuesta.html#cb41-25" tabindex="-1"></a>        <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb41-26"><a href="armonizar_encuesta.html#cb41-26" tabindex="-1"></a></span>
+<span id="cb41-27"><a href="armonizar_encuesta.html#cb41-27" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> encuesta_ampliada<span class="sc">$</span>n <span class="sc">*</span> gk</span>
+<span id="cb41-28"><a href="armonizar_encuesta.html#cb41-28" tabindex="-1"></a></span>
+<span id="cb41-29"><a href="armonizar_encuesta.html#cb41-29" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> encuesta_ampliada<span class="sc">$</span>n, <span class="at">y =</span> n1), <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb41-30"><a href="armonizar_encuesta.html#cb41-30" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="co"># Agregar puntos</span></span>
+<span id="cb41-31"><a href="armonizar_encuesta.html#cb41-31" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb41-32"><a href="armonizar_encuesta.html#cb41-32" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Conteo censales antes&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Conteos censales después&quot;</span>) <span class="sc">+</span></span>
+<span id="cb41-33"><a href="armonizar_encuesta.html#cb41-33" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="dv">20</span>)</span>
+<span id="cb41-34"><a href="armonizar_encuesta.html#cb41-34" tabindex="-1"></a></span>
+<span id="cb41-35"><a href="armonizar_encuesta.html#cb41-35" tabindex="-1"></a>encuesta_ampliada<span class="sc">$</span>n <span class="ot">&lt;-</span> encuesta_ampliada<span class="sc">$</span>n <span class="sc">*</span> gk</span>
+<span id="cb41-36"><a href="armonizar_encuesta.html#cb41-36" tabindex="-1"></a></span>
+<span id="cb41-37"><a href="armonizar_encuesta.html#cb41-37" tabindex="-1"></a><span class="co"># Se guarda el conjunto de datos ampliado:</span></span>
+<span id="cb41-38"><a href="armonizar_encuesta.html#cb41-38" tabindex="-1"></a><span class="fu">saveRDS</span>(encuesta_ampliada, <span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

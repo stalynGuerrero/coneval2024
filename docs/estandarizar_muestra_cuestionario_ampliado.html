@@ -150,14 +150,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
-<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a>
-<ul>
-<li class="chapter" data-level="0.0.1" data-path="union_predictores.html"><a href="union_predictores.html#configuración-inicial-y-carga-de-librerías"><i class="fa fa-check"></i><b>0.0.1</b> Configuración Inicial y Carga de Librerías</a></li>
-</ul></li>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a>
-<ul>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados"><i class="fa fa-check"></i>Resumen y Guardado de Datos Agrupados</a></li>
-</ul></li>
+<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a></li>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
 <li class="chapter" data-level="" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i>04_Armonizar_encuesta.R</a></li>
 <li class="chapter" data-level="" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i>05_Validacion_encuestas.R</a></li>
 <li class="chapter" data-level="" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i>06_Modelo_unidad_ictpc.R</a></li>
@@ -403,8 +397,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb30-40"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-40" tabindex="-1"></a></span>
 <span id="cb30-41"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-41" tabindex="-1"></a><span class="fu">saveRDS</span>(censo_sta2,<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span></code></pre></div>
 </div>
-<div id="resumen-y-guardado-de-datos-agrupados" class="section level3 unnumbered hasAnchor">
-<h3>Resumen y Guardado de Datos Agrupados<a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="resumen-y-guardado-de-datos-agrupados" class="section level4 unnumbered hasAnchor">
+<h4>Resumen y Guardado de Datos Agrupados<a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Este bloque de código realiza un resumen de los datos estandarizados del censo y guarda el conjunto de datos resultante.</p>
 <p>Primero, el dataframe <code>censo_sta2</code> se agrupa utilizando <code>group_by()</code> en base a múltiples variables: <code>ent</code>, <code>cve_mun</code>, <code>area</code>, <code>hlengua</code>, <code>sexo</code>, <code>edad</code>, <code>nivel_edu</code>, <code>discapacidad</code>, <code>ic_asalud</code>, <code>ic_cv</code>, <code>ic_sbv</code>, e <code>ic_rezedu</code>. Para cada grupo definido por estas variables, se calcula la suma de la variable <code>factor</code> utilizando <code>summarise()</code>. El resultado es un dataframe que contiene el total de observaciones (<code>n</code>) para cada combinación única de los grupos especificados.</p>
 <p>Finalmente, el dataframe resumido se guarda en un archivo <code>.rds</code> en la ruta <code>"../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds"</code>. Este archivo puede ser utilizado para análisis posteriores, proporcionando una versión compacta y organizada del conjunto de datos.</p>
