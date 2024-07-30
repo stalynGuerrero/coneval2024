@@ -150,8 +150,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
-<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a></li>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
+<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a>
+<ul>
+<li class="chapter" data-level="0.0.1" data-path="union_predictores.html"><a href="union_predictores.html#configuración-inicial-y-carga-de-librerías"><i class="fa fa-check"></i><b>0.0.1</b> Configuración Inicial y Carga de Librerías</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a>
+<ul>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados"><i class="fa fa-check"></i>Resumen y Guardado de Datos Agrupados</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i>04_Armonizar_encuesta.R</a></li>
 <li class="chapter" data-level="" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i>05_Validacion_encuestas.R</a></li>
 <li class="chapter" data-level="" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i>06_Modelo_unidad_ictpc.R</a></li>
@@ -195,118 +201,118 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>El código proporciona un procedimiento para la visualización de estimaciones de carencias y errores de estimación en un formato de mapa utilizando <code>tmap</code> y datos geoespaciales. Primero, limpia el entorno de trabajo en R y establece un límite para el uso de memoria RAM. Luego, carga las librerías necesarias y los datasets relevantes, incluyendo los resultados de estimación de carencia y un shapefile de México que se ajusta para incluir las claves municipales y regionales.</p>
 <p>A continuación, define los cortes para la clasificación de los datos en porcentajes y genera mapas temáticos para cada indicador de carencia (como pobreza por ingresos, carencias sociales, etc.). Utiliza el objeto <code>ShapeDAM</code> combinado con <code>ipm_mpios</code> para crear mapas que visualizan estos indicadores con una paleta de colores verde. Cada mapa se guarda como una imagen PNG con alta resolución.</p>
 <p>Finalmente, el código realiza un proceso similar para visualizar los errores de estimación asociados a cada indicador. Los cortes para los errores se definen de manera diferente, y se generan mapas temáticos que muestran la magnitud de estos errores. Cada mapa se guarda en formato PNG con especificaciones similares.</p>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="mapas_carencias.html#cb125-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb125-2"><a href="mapas_carencias.html#cb125-2" tabindex="-1"></a><span class="fu">gc</span>()</span>
-<span id="cb125-3"><a href="mapas_carencias.html#cb125-3" tabindex="-1"></a></span>
-<span id="cb125-4"><a href="mapas_carencias.html#cb125-4" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb125-5"><a href="mapas_carencias.html#cb125-5" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
-<span id="cb125-6"><a href="mapas_carencias.html#cb125-6" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb125-7"><a href="mapas_carencias.html#cb125-7" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb125-8"><a href="mapas_carencias.html#cb125-8" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb125-9"><a href="mapas_carencias.html#cb125-9" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb125-10"><a href="mapas_carencias.html#cb125-10" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb125-11"><a href="mapas_carencias.html#cb125-11" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
-<span id="cb125-12"><a href="mapas_carencias.html#cb125-12" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
-<span id="cb125-13"><a href="mapas_carencias.html#cb125-13" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
-<span id="cb125-14"><a href="mapas_carencias.html#cb125-14" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb125-15"><a href="mapas_carencias.html#cb125-15" tabindex="-1"></a>select <span class="ot">&lt;-</span> dplyr<span class="sc">::</span>select</span>
-<span id="cb125-16"><a href="mapas_carencias.html#cb125-16" tabindex="-1"></a></span>
-<span id="cb125-17"><a href="mapas_carencias.html#cb125-17" tabindex="-1"></a><span class="do">###------------ Definiendo el límite de la memoria RAM a emplear ------------</span><span class="al">###</span></span>
-<span id="cb125-18"><a href="mapas_carencias.html#cb125-18" tabindex="-1"></a></span>
-<span id="cb125-19"><a href="mapas_carencias.html#cb125-19" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">250000000</span>)</span>
-<span id="cb125-20"><a href="mapas_carencias.html#cb125-20" tabindex="-1"></a></span>
-<span id="cb125-21"><a href="mapas_carencias.html#cb125-21" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb125-22"><a href="mapas_carencias.html#cb125-22" tabindex="-1"></a><span class="do">###----------------------------- Loading datasets ---------------------------</span><span class="al">###</span></span>
-<span id="cb125-23"><a href="mapas_carencias.html#cb125-23" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb125-24"><a href="mapas_carencias.html#cb125-24" tabindex="-1"></a>ipm_mpios <span class="ot">&lt;-</span> </span>
-<span id="cb125-25"><a href="mapas_carencias.html#cb125-25" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../output/Entregas/2020/result_mpios_carencia.RDS&quot;</span>)   </span>
-<span id="cb125-26"><a href="mapas_carencias.html#cb125-26" tabindex="-1"></a></span>
-<span id="cb125-27"><a href="mapas_carencias.html#cb125-27" tabindex="-1"></a>ShapeDAM <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;../shapefile/2020/MEX_2020.shp&quot;</span>)</span>
-<span id="cb125-28"><a href="mapas_carencias.html#cb125-28" tabindex="-1"></a>ShapeDAM <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">cve_mun =</span> CVEGEO ,</span>
-<span id="cb125-29"><a href="mapas_carencias.html#cb125-29" tabindex="-1"></a>                     <span class="at">ent =</span> <span class="fu">substr</span>(cve_mun, <span class="dv">1</span>, <span class="dv">2</span>),</span>
-<span id="cb125-30"><a href="mapas_carencias.html#cb125-30" tabindex="-1"></a>                     <span class="at">CVEGEO =</span> <span class="cn">NULL</span>) </span>
-<span id="cb125-31"><a href="mapas_carencias.html#cb125-31" tabindex="-1"></a></span>
-<span id="cb125-32"><a href="mapas_carencias.html#cb125-32" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">80</span>, <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
-<span id="cb125-33"><a href="mapas_carencias.html#cb125-33" tabindex="-1"></a></span>
-<span id="cb125-34"><a href="mapas_carencias.html#cb125-34" tabindex="-1"></a>P1_mpio_norte <span class="ot">&lt;-</span></span>
-<span id="cb125-35"><a href="mapas_carencias.html#cb125-35" tabindex="-1"></a>  <span class="fu">tm_shape</span>(ShapeDAM <span class="sc">%&gt;%</span></span>
-<span id="cb125-36"><a href="mapas_carencias.html#cb125-36" tabindex="-1"></a>             <span class="fu">left_join</span>(ipm_mpios,   <span class="at">by =</span> <span class="st">&quot;cve_mun&quot;</span>))</span>
-<span id="cb125-37"><a href="mapas_carencias.html#cb125-37" tabindex="-1"></a><span class="fu">names</span>(ipm_mpios)</span>
-<span id="cb125-38"><a href="mapas_carencias.html#cb125-38" tabindex="-1"></a></span>
-<span id="cb125-39"><a href="mapas_carencias.html#cb125-39" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;pobrea_lp&quot;</span>, <span class="st">&quot;pobrea_li&quot;</span>,<span class="st">&quot;tol_ic_1&quot;</span>,<span class="st">&quot;tol_ic_2&quot;</span>,<span class="st">&quot;ic_segsoc&quot;</span>, </span>
-<span id="cb125-40"><a href="mapas_carencias.html#cb125-40" tabindex="-1"></a>         <span class="st">&quot;ic_ali_nc&quot;</span>)</span>
-<span id="cb125-41"><a href="mapas_carencias.html#cb125-41" tabindex="-1"></a></span>
-<span id="cb125-42"><a href="mapas_carencias.html#cb125-42" tabindex="-1"></a></span>
-<span id="cb125-43"><a href="mapas_carencias.html#cb125-43" tabindex="-1"></a><span class="cf">for</span>(yks_ind <span class="cf">in</span> ind){</span>
-<span id="cb125-44"><a href="mapas_carencias.html#cb125-44" tabindex="-1"></a></span>
-<span id="cb125-45"><a href="mapas_carencias.html#cb125-45" tabindex="-1"></a>  Mapa_I <span class="ot">&lt;-</span></span>
-<span id="cb125-46"><a href="mapas_carencias.html#cb125-46" tabindex="-1"></a>    P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb125-47"><a href="mapas_carencias.html#cb125-47" tabindex="-1"></a>      <span class="at">breaks  =</span> cortes,</span>
-<span id="cb125-48"><a href="mapas_carencias.html#cb125-48" tabindex="-1"></a>      yks_ind,</span>
-<span id="cb125-49"><a href="mapas_carencias.html#cb125-49" tabindex="-1"></a>      <span class="co"># style = &quot;quantile&quot;,</span></span>
-<span id="cb125-50"><a href="mapas_carencias.html#cb125-50" tabindex="-1"></a>      <span class="at">title =</span>  <span class="fu">paste0</span>(<span class="st">&quot;Estimación de la carencia 2020 -&quot;</span>, yks_ind ),</span>
-<span id="cb125-51"><a href="mapas_carencias.html#cb125-51" tabindex="-1"></a>      <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb125-52"><a href="mapas_carencias.html#cb125-52" tabindex="-1"></a>      <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb125-53"><a href="mapas_carencias.html#cb125-53" tabindex="-1"></a>    ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb125-54"><a href="mapas_carencias.html#cb125-54" tabindex="-1"></a>                  <span class="co">#legend.outside = TRUE,</span></span>
-<span id="cb125-55"><a href="mapas_carencias.html#cb125-55" tabindex="-1"></a>                  <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb125-56"><a href="mapas_carencias.html#cb125-56" tabindex="-1"></a>                  <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb125-57"><a href="mapas_carencias.html#cb125-57" tabindex="-1"></a>                  <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb125-58"><a href="mapas_carencias.html#cb125-58" tabindex="-1"></a>                  <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb125-59"><a href="mapas_carencias.html#cb125-59" tabindex="-1"></a>                  <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb125-60"><a href="mapas_carencias.html#cb125-60" tabindex="-1"></a>                  <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb125-61"><a href="mapas_carencias.html#cb125-61" tabindex="-1"></a>                  <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb125-62"><a href="mapas_carencias.html#cb125-62" tabindex="-1"></a>  </span>
-<span id="cb125-63"><a href="mapas_carencias.html#cb125-63" tabindex="-1"></a>  </span>
-<span id="cb125-64"><a href="mapas_carencias.html#cb125-64" tabindex="-1"></a>  <span class="fu">tmap_save</span>(</span>
-<span id="cb125-65"><a href="mapas_carencias.html#cb125-65" tabindex="-1"></a>    Mapa_I,</span>
-<span id="cb125-66"><a href="mapas_carencias.html#cb125-66" tabindex="-1"></a>    <span class="at">filename =</span>  <span class="fu">paste0</span>(<span class="st">&quot;../output/Entregas/2020/mapas/carencia_&quot;</span>, yks_ind, <span class="st">&quot;.png&quot;</span>),</span>
-<span id="cb125-67"><a href="mapas_carencias.html#cb125-67" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb125-68"><a href="mapas_carencias.html#cb125-68" tabindex="-1"></a>    <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb125-69"><a href="mapas_carencias.html#cb125-69" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb125-70"><a href="mapas_carencias.html#cb125-70" tabindex="-1"></a>  )</span>
-<span id="cb125-71"><a href="mapas_carencias.html#cb125-71" tabindex="-1"></a>  </span>
-<span id="cb125-72"><a href="mapas_carencias.html#cb125-72" tabindex="-1"></a>    </span>
-<span id="cb125-73"><a href="mapas_carencias.html#cb125-73" tabindex="-1"></a>}</span>
-<span id="cb125-74"><a href="mapas_carencias.html#cb125-74" tabindex="-1"></a></span>
-<span id="cb125-75"><a href="mapas_carencias.html#cb125-75" tabindex="-1"></a></span>
-<span id="cb125-76"><a href="mapas_carencias.html#cb125-76" tabindex="-1"></a></span>
-<span id="cb125-77"><a href="mapas_carencias.html#cb125-77" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb125-78"><a href="mapas_carencias.html#cb125-78" tabindex="-1"></a><span class="do">## Errores </span></span>
-<span id="cb125-79"><a href="mapas_carencias.html#cb125-79" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb125-80"><a href="mapas_carencias.html#cb125-80" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">10</span>, <span class="dv">25</span>,  <span class="dv">50</span>,  <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
-<span id="cb125-81"><a href="mapas_carencias.html#cb125-81" tabindex="-1"></a></span>
-<span id="cb125-82"><a href="mapas_carencias.html#cb125-82" tabindex="-1"></a>ind_ee <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;ee_&quot;</span>, ind)</span>
-<span id="cb125-83"><a href="mapas_carencias.html#cb125-83" tabindex="-1"></a></span>
-<span id="cb125-84"><a href="mapas_carencias.html#cb125-84" tabindex="-1"></a><span class="cf">for</span>(yks_ind <span class="cf">in</span> ind_ee){</span>
-<span id="cb125-85"><a href="mapas_carencias.html#cb125-85" tabindex="-1"></a></span>
-<span id="cb125-86"><a href="mapas_carencias.html#cb125-86" tabindex="-1"></a>  Mapa_I_ee <span class="ot">&lt;-</span></span>
-<span id="cb125-87"><a href="mapas_carencias.html#cb125-87" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb125-88"><a href="mapas_carencias.html#cb125-88" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb125-89"><a href="mapas_carencias.html#cb125-89" tabindex="-1"></a>    yks_ind,</span>
-<span id="cb125-90"><a href="mapas_carencias.html#cb125-90" tabindex="-1"></a>    <span class="co"># style = &quot;quantile&quot;,</span></span>
-<span id="cb125-91"><a href="mapas_carencias.html#cb125-91" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Error de estimación de la carencia 2020 - &quot;</span>, yks_ind),</span>
-<span id="cb125-92"><a href="mapas_carencias.html#cb125-92" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb125-93"><a href="mapas_carencias.html#cb125-93" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb125-94"><a href="mapas_carencias.html#cb125-94" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb125-95"><a href="mapas_carencias.html#cb125-95" tabindex="-1"></a>                <span class="co">#legend.outside = TRUE,</span></span>
-<span id="cb125-96"><a href="mapas_carencias.html#cb125-96" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb125-97"><a href="mapas_carencias.html#cb125-97" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb125-98"><a href="mapas_carencias.html#cb125-98" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb125-99"><a href="mapas_carencias.html#cb125-99" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb125-100"><a href="mapas_carencias.html#cb125-100" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb125-101"><a href="mapas_carencias.html#cb125-101" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb125-102"><a href="mapas_carencias.html#cb125-102" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb125-103"><a href="mapas_carencias.html#cb125-103" tabindex="-1"></a></span>
-<span id="cb125-104"><a href="mapas_carencias.html#cb125-104" tabindex="-1"></a></span>
-<span id="cb125-105"><a href="mapas_carencias.html#cb125-105" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb125-106"><a href="mapas_carencias.html#cb125-106" tabindex="-1"></a>  Mapa_I_ee,</span>
-<span id="cb125-107"><a href="mapas_carencias.html#cb125-107" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="fu">paste0</span>(<span class="st">&quot;../output/Entregas/2020/mapas/carencia_&quot;</span>, yks_ind, <span class="st">&quot;.png&quot;</span>),</span>
-<span id="cb125-108"><a href="mapas_carencias.html#cb125-108" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb125-109"><a href="mapas_carencias.html#cb125-109" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb125-110"><a href="mapas_carencias.html#cb125-110" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb125-111"><a href="mapas_carencias.html#cb125-111" tabindex="-1"></a>)</span>
-<span id="cb125-112"><a href="mapas_carencias.html#cb125-112" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="mapas_carencias.html#cb134-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb134-2"><a href="mapas_carencias.html#cb134-2" tabindex="-1"></a><span class="fu">gc</span>()</span>
+<span id="cb134-3"><a href="mapas_carencias.html#cb134-3" tabindex="-1"></a></span>
+<span id="cb134-4"><a href="mapas_carencias.html#cb134-4" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb134-5"><a href="mapas_carencias.html#cb134-5" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
+<span id="cb134-6"><a href="mapas_carencias.html#cb134-6" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb134-7"><a href="mapas_carencias.html#cb134-7" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb134-8"><a href="mapas_carencias.html#cb134-8" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb134-9"><a href="mapas_carencias.html#cb134-9" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb134-10"><a href="mapas_carencias.html#cb134-10" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb134-11"><a href="mapas_carencias.html#cb134-11" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb134-12"><a href="mapas_carencias.html#cb134-12" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb134-13"><a href="mapas_carencias.html#cb134-13" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb134-14"><a href="mapas_carencias.html#cb134-14" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb134-15"><a href="mapas_carencias.html#cb134-15" tabindex="-1"></a>select <span class="ot">&lt;-</span> dplyr<span class="sc">::</span>select</span>
+<span id="cb134-16"><a href="mapas_carencias.html#cb134-16" tabindex="-1"></a></span>
+<span id="cb134-17"><a href="mapas_carencias.html#cb134-17" tabindex="-1"></a><span class="do">###------------ Definiendo el límite de la memoria RAM a emplear ------------</span><span class="al">###</span></span>
+<span id="cb134-18"><a href="mapas_carencias.html#cb134-18" tabindex="-1"></a></span>
+<span id="cb134-19"><a href="mapas_carencias.html#cb134-19" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">250000000</span>)</span>
+<span id="cb134-20"><a href="mapas_carencias.html#cb134-20" tabindex="-1"></a></span>
+<span id="cb134-21"><a href="mapas_carencias.html#cb134-21" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb134-22"><a href="mapas_carencias.html#cb134-22" tabindex="-1"></a><span class="do">###----------------------------- Loading datasets ---------------------------</span><span class="al">###</span></span>
+<span id="cb134-23"><a href="mapas_carencias.html#cb134-23" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb134-24"><a href="mapas_carencias.html#cb134-24" tabindex="-1"></a>ipm_mpios <span class="ot">&lt;-</span> </span>
+<span id="cb134-25"><a href="mapas_carencias.html#cb134-25" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../output/Entregas/2020/result_mpios_carencia.RDS&quot;</span>)   </span>
+<span id="cb134-26"><a href="mapas_carencias.html#cb134-26" tabindex="-1"></a></span>
+<span id="cb134-27"><a href="mapas_carencias.html#cb134-27" tabindex="-1"></a>ShapeDAM <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;../shapefile/2020/MEX_2020.shp&quot;</span>)</span>
+<span id="cb134-28"><a href="mapas_carencias.html#cb134-28" tabindex="-1"></a>ShapeDAM <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">cve_mun =</span> CVEGEO ,</span>
+<span id="cb134-29"><a href="mapas_carencias.html#cb134-29" tabindex="-1"></a>                     <span class="at">ent =</span> <span class="fu">substr</span>(cve_mun, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb134-30"><a href="mapas_carencias.html#cb134-30" tabindex="-1"></a>                     <span class="at">CVEGEO =</span> <span class="cn">NULL</span>) </span>
+<span id="cb134-31"><a href="mapas_carencias.html#cb134-31" tabindex="-1"></a></span>
+<span id="cb134-32"><a href="mapas_carencias.html#cb134-32" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">80</span>, <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
+<span id="cb134-33"><a href="mapas_carencias.html#cb134-33" tabindex="-1"></a></span>
+<span id="cb134-34"><a href="mapas_carencias.html#cb134-34" tabindex="-1"></a>P1_mpio_norte <span class="ot">&lt;-</span></span>
+<span id="cb134-35"><a href="mapas_carencias.html#cb134-35" tabindex="-1"></a>  <span class="fu">tm_shape</span>(ShapeDAM <span class="sc">%&gt;%</span></span>
+<span id="cb134-36"><a href="mapas_carencias.html#cb134-36" tabindex="-1"></a>             <span class="fu">left_join</span>(ipm_mpios,   <span class="at">by =</span> <span class="st">&quot;cve_mun&quot;</span>))</span>
+<span id="cb134-37"><a href="mapas_carencias.html#cb134-37" tabindex="-1"></a><span class="fu">names</span>(ipm_mpios)</span>
+<span id="cb134-38"><a href="mapas_carencias.html#cb134-38" tabindex="-1"></a></span>
+<span id="cb134-39"><a href="mapas_carencias.html#cb134-39" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;pobrea_lp&quot;</span>, <span class="st">&quot;pobrea_li&quot;</span>,<span class="st">&quot;tol_ic_1&quot;</span>,<span class="st">&quot;tol_ic_2&quot;</span>,<span class="st">&quot;ic_segsoc&quot;</span>, </span>
+<span id="cb134-40"><a href="mapas_carencias.html#cb134-40" tabindex="-1"></a>         <span class="st">&quot;ic_ali_nc&quot;</span>)</span>
+<span id="cb134-41"><a href="mapas_carencias.html#cb134-41" tabindex="-1"></a></span>
+<span id="cb134-42"><a href="mapas_carencias.html#cb134-42" tabindex="-1"></a></span>
+<span id="cb134-43"><a href="mapas_carencias.html#cb134-43" tabindex="-1"></a><span class="cf">for</span>(yks_ind <span class="cf">in</span> ind){</span>
+<span id="cb134-44"><a href="mapas_carencias.html#cb134-44" tabindex="-1"></a></span>
+<span id="cb134-45"><a href="mapas_carencias.html#cb134-45" tabindex="-1"></a>  Mapa_I <span class="ot">&lt;-</span></span>
+<span id="cb134-46"><a href="mapas_carencias.html#cb134-46" tabindex="-1"></a>    P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb134-47"><a href="mapas_carencias.html#cb134-47" tabindex="-1"></a>      <span class="at">breaks  =</span> cortes,</span>
+<span id="cb134-48"><a href="mapas_carencias.html#cb134-48" tabindex="-1"></a>      yks_ind,</span>
+<span id="cb134-49"><a href="mapas_carencias.html#cb134-49" tabindex="-1"></a>      <span class="co"># style = &quot;quantile&quot;,</span></span>
+<span id="cb134-50"><a href="mapas_carencias.html#cb134-50" tabindex="-1"></a>      <span class="at">title =</span>  <span class="fu">paste0</span>(<span class="st">&quot;Estimación de la carencia 2020 -&quot;</span>, yks_ind ),</span>
+<span id="cb134-51"><a href="mapas_carencias.html#cb134-51" tabindex="-1"></a>      <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb134-52"><a href="mapas_carencias.html#cb134-52" tabindex="-1"></a>      <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb134-53"><a href="mapas_carencias.html#cb134-53" tabindex="-1"></a>    ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb134-54"><a href="mapas_carencias.html#cb134-54" tabindex="-1"></a>                  <span class="co">#legend.outside = TRUE,</span></span>
+<span id="cb134-55"><a href="mapas_carencias.html#cb134-55" tabindex="-1"></a>                  <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb134-56"><a href="mapas_carencias.html#cb134-56" tabindex="-1"></a>                  <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb134-57"><a href="mapas_carencias.html#cb134-57" tabindex="-1"></a>                  <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb134-58"><a href="mapas_carencias.html#cb134-58" tabindex="-1"></a>                  <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb134-59"><a href="mapas_carencias.html#cb134-59" tabindex="-1"></a>                  <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb134-60"><a href="mapas_carencias.html#cb134-60" tabindex="-1"></a>                  <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb134-61"><a href="mapas_carencias.html#cb134-61" tabindex="-1"></a>                  <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb134-62"><a href="mapas_carencias.html#cb134-62" tabindex="-1"></a>  </span>
+<span id="cb134-63"><a href="mapas_carencias.html#cb134-63" tabindex="-1"></a>  </span>
+<span id="cb134-64"><a href="mapas_carencias.html#cb134-64" tabindex="-1"></a>  <span class="fu">tmap_save</span>(</span>
+<span id="cb134-65"><a href="mapas_carencias.html#cb134-65" tabindex="-1"></a>    Mapa_I,</span>
+<span id="cb134-66"><a href="mapas_carencias.html#cb134-66" tabindex="-1"></a>    <span class="at">filename =</span>  <span class="fu">paste0</span>(<span class="st">&quot;../output/Entregas/2020/mapas/carencia_&quot;</span>, yks_ind, <span class="st">&quot;.png&quot;</span>),</span>
+<span id="cb134-67"><a href="mapas_carencias.html#cb134-67" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb134-68"><a href="mapas_carencias.html#cb134-68" tabindex="-1"></a>    <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb134-69"><a href="mapas_carencias.html#cb134-69" tabindex="-1"></a>    <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb134-70"><a href="mapas_carencias.html#cb134-70" tabindex="-1"></a>  )</span>
+<span id="cb134-71"><a href="mapas_carencias.html#cb134-71" tabindex="-1"></a>  </span>
+<span id="cb134-72"><a href="mapas_carencias.html#cb134-72" tabindex="-1"></a>    </span>
+<span id="cb134-73"><a href="mapas_carencias.html#cb134-73" tabindex="-1"></a>}</span>
+<span id="cb134-74"><a href="mapas_carencias.html#cb134-74" tabindex="-1"></a></span>
+<span id="cb134-75"><a href="mapas_carencias.html#cb134-75" tabindex="-1"></a></span>
+<span id="cb134-76"><a href="mapas_carencias.html#cb134-76" tabindex="-1"></a></span>
+<span id="cb134-77"><a href="mapas_carencias.html#cb134-77" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb134-78"><a href="mapas_carencias.html#cb134-78" tabindex="-1"></a><span class="do">## Errores </span></span>
+<span id="cb134-79"><a href="mapas_carencias.html#cb134-79" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb134-80"><a href="mapas_carencias.html#cb134-80" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">10</span>, <span class="dv">25</span>,  <span class="dv">50</span>,  <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
+<span id="cb134-81"><a href="mapas_carencias.html#cb134-81" tabindex="-1"></a></span>
+<span id="cb134-82"><a href="mapas_carencias.html#cb134-82" tabindex="-1"></a>ind_ee <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;ee_&quot;</span>, ind)</span>
+<span id="cb134-83"><a href="mapas_carencias.html#cb134-83" tabindex="-1"></a></span>
+<span id="cb134-84"><a href="mapas_carencias.html#cb134-84" tabindex="-1"></a><span class="cf">for</span>(yks_ind <span class="cf">in</span> ind_ee){</span>
+<span id="cb134-85"><a href="mapas_carencias.html#cb134-85" tabindex="-1"></a></span>
+<span id="cb134-86"><a href="mapas_carencias.html#cb134-86" tabindex="-1"></a>  Mapa_I_ee <span class="ot">&lt;-</span></span>
+<span id="cb134-87"><a href="mapas_carencias.html#cb134-87" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb134-88"><a href="mapas_carencias.html#cb134-88" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb134-89"><a href="mapas_carencias.html#cb134-89" tabindex="-1"></a>    yks_ind,</span>
+<span id="cb134-90"><a href="mapas_carencias.html#cb134-90" tabindex="-1"></a>    <span class="co"># style = &quot;quantile&quot;,</span></span>
+<span id="cb134-91"><a href="mapas_carencias.html#cb134-91" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Error de estimación de la carencia 2020 - &quot;</span>, yks_ind),</span>
+<span id="cb134-92"><a href="mapas_carencias.html#cb134-92" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb134-93"><a href="mapas_carencias.html#cb134-93" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb134-94"><a href="mapas_carencias.html#cb134-94" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb134-95"><a href="mapas_carencias.html#cb134-95" tabindex="-1"></a>                <span class="co">#legend.outside = TRUE,</span></span>
+<span id="cb134-96"><a href="mapas_carencias.html#cb134-96" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb134-97"><a href="mapas_carencias.html#cb134-97" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb134-98"><a href="mapas_carencias.html#cb134-98" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb134-99"><a href="mapas_carencias.html#cb134-99" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb134-100"><a href="mapas_carencias.html#cb134-100" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb134-101"><a href="mapas_carencias.html#cb134-101" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb134-102"><a href="mapas_carencias.html#cb134-102" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb134-103"><a href="mapas_carencias.html#cb134-103" tabindex="-1"></a></span>
+<span id="cb134-104"><a href="mapas_carencias.html#cb134-104" tabindex="-1"></a></span>
+<span id="cb134-105"><a href="mapas_carencias.html#cb134-105" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb134-106"><a href="mapas_carencias.html#cb134-106" tabindex="-1"></a>  Mapa_I_ee,</span>
+<span id="cb134-107"><a href="mapas_carencias.html#cb134-107" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="fu">paste0</span>(<span class="st">&quot;../output/Entregas/2020/mapas/carencia_&quot;</span>, yks_ind, <span class="st">&quot;.png&quot;</span>),</span>
+<span id="cb134-108"><a href="mapas_carencias.html#cb134-108" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb134-109"><a href="mapas_carencias.html#cb134-109" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb134-110"><a href="mapas_carencias.html#cb134-110" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb134-111"><a href="mapas_carencias.html#cb134-111" tabindex="-1"></a>)</span>
+<span id="cb134-112"><a href="mapas_carencias.html#cb134-112" tabindex="-1"></a>}</span></code></pre></div>
 
 </div>
             </section>

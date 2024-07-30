@@ -150,8 +150,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
-<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a></li>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
+<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a>
+<ul>
+<li class="chapter" data-level="0.0.1" data-path="union_predictores.html"><a href="union_predictores.html#configuración-inicial-y-carga-de-librerías"><i class="fa fa-check"></i><b>0.0.1</b> Configuración Inicial y Carga de Librerías</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a>
+<ul>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados"><i class="fa fa-check"></i>Resumen y Guardado de Datos Agrupados</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i>04_Armonizar_encuesta.R</a></li>
 <li class="chapter" data-level="" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i>05_Validacion_encuestas.R</a></li>
 <li class="chapter" data-level="" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i>06_Modelo_unidad_ictpc.R</a></li>
@@ -194,84 +200,119 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Para la ejecución del presente archivo, debe abrir el archivo <strong>02_Union_predictores.R</strong> disponible en la ruta <em>Rcodes/2020/02_Union_predictores.R</em>.</p>
 <p>Este script en R está orientado a la integración y limpieza de bases de datos a nivel municipal para el año 2020, combinando datos satelitales y de contexto. Primero, el entorno de trabajo se limpia y se cargan las bibliotecas necesarias para la manipulación y análisis de datos, incluyendo tidyverse, data.table, y openxlsx.</p>
 <p>En la primera parte, se carga una base de datos satelital en formato RDS, se renombra una columna para alinear los nombres y se eliminan columnas no necesarias. Luego, se obtienen los códigos municipales únicos de esta base de datos. A continuación, se carga una base de datos adicional en formato Stata (.dta), se convierten algunas variables a factores y se escalan las variables numéricas. Se realiza un análisis para identificar códigos municipales presentes en la base de datos satelital pero no en la de contexto, y se comprueba si hay columnas sin valores faltantes en la base de datos de contexto. Finalmente, se realiza un inner_join para combinar ambas bases de datos utilizando solo las columnas sin valores faltantes y se guarda el resultado en un archivo RDS para futuros análisis.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="union_predictores.html#cb20-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
-<span id="cb20-2"><a href="union_predictores.html#cb20-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb20-3"><a href="union_predictores.html#cb20-3" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="union_predictores.html#cb20-4" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb20-5"><a href="union_predictores.html#cb20-5" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
-<span id="cb20-6"><a href="union_predictores.html#cb20-6" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb20-7"><a href="union_predictores.html#cb20-7" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb20-8"><a href="union_predictores.html#cb20-8" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb20-9"><a href="union_predictores.html#cb20-9" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
-<span id="cb20-10"><a href="union_predictores.html#cb20-10" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb20-11"><a href="union_predictores.html#cb20-11" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
-<span id="cb20-12"><a href="union_predictores.html#cb20-12" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb20-13"><a href="union_predictores.html#cb20-13" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
-<span id="cb20-14"><a href="union_predictores.html#cb20-14" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
-<span id="cb20-15"><a href="union_predictores.html#cb20-15" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
-<span id="cb20-16"><a href="union_predictores.html#cb20-16" tabindex="-1"></a></span>
-<span id="cb20-17"><a href="union_predictores.html#cb20-17" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb20-18"><a href="union_predictores.html#cb20-18" tabindex="-1"></a><span class="co"># Lectura de bases de contexto 2020</span></span>
-<span id="cb20-19"><a href="union_predictores.html#cb20-19" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb20-20"><a href="union_predictores.html#cb20-20" tabindex="-1"></a><span class="do">## Covariables</span></span>
-<span id="cb20-21"><a href="union_predictores.html#cb20-21" tabindex="-1"></a><span class="co"># Contexto_munXX : la base de datos contexto_20XX.dta contiene información de </span></span>
-<span id="cb20-22"><a href="union_predictores.html#cb20-22" tabindex="-1"></a><span class="co"># variables a nivel municipal. </span></span>
-<span id="cb20-23"><a href="union_predictores.html#cb20-23" tabindex="-1"></a></span>
-<span id="cb20-24"><a href="union_predictores.html#cb20-24" tabindex="-1"></a><span class="co"># Cargar la base de datos satelital y renombrar la columna &quot;CVEGEO&quot; a &quot;cve_mun&quot;</span></span>
-<span id="cb20-25"><a href="union_predictores.html#cb20-25" tabindex="-1"></a>satelital <span class="ot">&lt;-</span></span>
-<span id="cb20-26"><a href="union_predictores.html#cb20-26" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_satelite.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-27"><a href="union_predictores.html#cb20-27" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">cve_mun  =</span> CVEGEO) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">ent =</span> <span class="cn">NULL</span>)</span>
-<span id="cb20-28"><a href="union_predictores.html#cb20-28" tabindex="-1"></a></span>
-<span id="cb20-29"><a href="union_predictores.html#cb20-29" tabindex="-1"></a><span class="co"># Obtener los códigos municipales únicos de la base de datos satelital</span></span>
-<span id="cb20-30"><a href="union_predictores.html#cb20-30" tabindex="-1"></a>cod_mun <span class="ot">&lt;-</span> satelital <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(cve_mun)</span>
-<span id="cb20-31"><a href="union_predictores.html#cb20-31" tabindex="-1"></a></span>
-<span id="cb20-32"><a href="union_predictores.html#cb20-32" tabindex="-1"></a><span class="co"># Cargar la base de datos &quot;Contexto_mun20&quot; en formato Stata y renombrar la columna &quot;CVEGEO&quot; a &quot;cve_mun&quot;</span></span>
-<span id="cb20-33"><a href="union_predictores.html#cb20-33" tabindex="-1"></a>Contexto_mun <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/predictores/contexto_2020.dta&quot;</span>)</span>
-<span id="cb20-34"><a href="union_predictores.html#cb20-34" tabindex="-1"></a>Contexto_mun <span class="sc">%&gt;%</span> <span class="fu">as_factor</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb20-35"><a href="union_predictores.html#cb20-35" tabindex="-1"></a>  <span class="fu">apply</span>(., <span class="dv">2</span>, n_distinct) <span class="sc">%&gt;%</span> <span class="fu">sort</span>()</span>
-<span id="cb20-36"><a href="union_predictores.html#cb20-36" tabindex="-1"></a></span>
-<span id="cb20-37"><a href="union_predictores.html#cb20-37" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>elec_mun19</span>
-<span id="cb20-38"><a href="union_predictores.html#cb20-38" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>elec_mun20</span>
-<span id="cb20-39"><a href="union_predictores.html#cb20-39" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>smg1</span>
-<span id="cb20-40"><a href="union_predictores.html#cb20-40" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>ql_porc_cpa_urb</span>
-<span id="cb20-41"><a href="union_predictores.html#cb20-41" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>ql_porc_cpa_rur   </span>
-<span id="cb20-42"><a href="union_predictores.html#cb20-42" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>dec_geologicas </span>
-<span id="cb20-43"><a href="union_predictores.html#cb20-43" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>dec_hidrometeo  </span>
-<span id="cb20-44"><a href="union_predictores.html#cb20-44" tabindex="-1"></a></span>
-<span id="cb20-45"><a href="union_predictores.html#cb20-45" tabindex="-1"></a>Contexto_mun <span class="sc">%&lt;&gt;%</span> <span class="fu">as_factor</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb20-46"><a href="union_predictores.html#cb20-46" tabindex="-1"></a>  <span class="fu">mutate_at</span>(</span>
-<span id="cb20-47"><a href="union_predictores.html#cb20-47" tabindex="-1"></a>    <span class="at">.vars =</span> <span class="fu">c</span>(</span>
-<span id="cb20-48"><a href="union_predictores.html#cb20-48" tabindex="-1"></a>      <span class="st">&quot;elec_mun19&quot;</span>,</span>
-<span id="cb20-49"><a href="union_predictores.html#cb20-49" tabindex="-1"></a>      <span class="st">&quot;elec_mun20&quot;</span>,</span>
-<span id="cb20-50"><a href="union_predictores.html#cb20-50" tabindex="-1"></a>      <span class="st">&quot;smg1&quot;</span>,</span>
-<span id="cb20-51"><a href="union_predictores.html#cb20-51" tabindex="-1"></a>      <span class="st">&quot;ql_porc_cpa_urb&quot;</span>,</span>
-<span id="cb20-52"><a href="union_predictores.html#cb20-52" tabindex="-1"></a>      <span class="st">&quot;ql_porc_cpa_rur&quot;</span>,</span>
-<span id="cb20-53"><a href="union_predictores.html#cb20-53" tabindex="-1"></a>      <span class="st">&quot;dec_geologicas&quot;</span>,</span>
-<span id="cb20-54"><a href="union_predictores.html#cb20-54" tabindex="-1"></a>      <span class="st">&quot;dec_hidrometeo&quot;</span></span>
-<span id="cb20-55"><a href="union_predictores.html#cb20-55" tabindex="-1"></a>    ),</span>
-<span id="cb20-56"><a href="union_predictores.html#cb20-56" tabindex="-1"></a>    as.factor</span>
-<span id="cb20-57"><a href="union_predictores.html#cb20-57" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb20-58"><a href="union_predictores.html#cb20-58" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.numeric, <span class="cf">function</span>(x)</span>
-<span id="cb20-59"><a href="union_predictores.html#cb20-59" tabindex="-1"></a>    <span class="fu">as.numeric</span>(<span class="fu">scale</span>(x)))</span>
-<span id="cb20-60"><a href="union_predictores.html#cb20-60" tabindex="-1"></a></span>
-<span id="cb20-61"><a href="union_predictores.html#cb20-61" tabindex="-1"></a><span class="co"># Realizar una anti_join para identificar códigos municipales presentes en &quot;cod_mun&quot; pero no en &quot;Contexto_mun&quot;</span></span>
-<span id="cb20-62"><a href="union_predictores.html#cb20-62" tabindex="-1"></a><span class="fu">anti_join</span>(cod_mun, Contexto_mun)</span>
-<span id="cb20-63"><a href="union_predictores.html#cb20-63" tabindex="-1"></a></span>
-<span id="cb20-64"><a href="union_predictores.html#cb20-64" tabindex="-1"></a><span class="co"># Realizar un análisis para determinar si alguna columna de &quot;Contexto_mun&quot; no tiene valores faltantes</span></span>
-<span id="cb20-65"><a href="union_predictores.html#cb20-65" tabindex="-1"></a>paso <span class="ot">&lt;-</span> <span class="fu">apply</span>(Contexto_mun, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="sc">!</span><span class="fu">any</span>(<span class="fu">is.na</span>(x)))</span>
-<span id="cb20-66"><a href="union_predictores.html#cb20-66" tabindex="-1"></a></span>
-<span id="cb20-67"><a href="union_predictores.html#cb20-67" tabindex="-1"></a><span class="co"># Mostrar la frecuencia de columnas sin valores faltantes</span></span>
-<span id="cb20-68"><a href="union_predictores.html#cb20-68" tabindex="-1"></a><span class="fu">table</span>(paso)</span>
-<span id="cb20-69"><a href="union_predictores.html#cb20-69" tabindex="-1"></a></span>
-<span id="cb20-70"><a href="union_predictores.html#cb20-70" tabindex="-1"></a><span class="co"># Realizar una inner_join entre las bases de datos &quot;satelital&quot; y &quot;Contexto_mun&quot; utilizando solo las columnas sin valores faltantes</span></span>
-<span id="cb20-71"><a href="union_predictores.html#cb20-71" tabindex="-1"></a>statelevel_predictors <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(satelital, Contexto_mun[, paso])</span>
-<span id="cb20-72"><a href="union_predictores.html#cb20-72" tabindex="-1"></a></span>
-<span id="cb20-73"><a href="union_predictores.html#cb20-73" tabindex="-1"></a><span class="co"># Obtener las dimensiones de la base de datos resultante</span></span>
-<span id="cb20-74"><a href="union_predictores.html#cb20-74" tabindex="-1"></a><span class="fu">dim</span>(statelevel_predictors)</span>
-<span id="cb20-75"><a href="union_predictores.html#cb20-75" tabindex="-1"></a></span>
-<span id="cb20-76"><a href="union_predictores.html#cb20-76" tabindex="-1"></a><span class="do">## Guardar </span></span>
-<span id="cb20-77"><a href="union_predictores.html#cb20-77" tabindex="-1"></a><span class="fu">saveRDS</span>(statelevel_predictors,<span class="at">file =</span> <span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span></code></pre></div>
+<div id="configuración-inicial-y-carga-de-librerías" class="section level3 hasAnchor" number="0.0.1">
+<h3><span class="header-section-number">0.0.1</span> Configuración Inicial y Carga de Librerías<a href="union_predictores.html#configuración-inicial-y-carga-de-librerías" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Este bloque de código está dedicado a la limpieza del entorno de trabajo y a la carga de las librerías necesarias para el análisis de datos en R.</p>
+<p>Primero, <code>rm(list = ls())</code> se utiliza para eliminar todos los objetos en el entorno de trabajo de R, asegurando que no haya datos o variables residuales que puedan interferir con el análisis actual.</p>
+<p>A continuación, se cargan varias librerías esenciales:</p>
+<ul>
+<li><strong><code>tidyverse</code></strong>: Un conjunto de paquetes que incluye <code>ggplot2</code>, <code>dplyr</code>, <code>tidyr</code>, entre otros, para la manipulación y visualización de datos.</li>
+<li><strong><code>data.table</code></strong>: Ofrece una manera rápida y eficiente de manejar y manipular datos en grandes conjuntos.</li>
+<li><strong><code>openxlsx</code></strong>: Utilizado para leer y escribir archivos Excel.</li>
+<li><strong><code>magrittr</code></strong>: Proporciona operadores para la manipulación fluida de datos, como <code>%&gt;%</code>.</li>
+<li><strong><code>DataExplorer</code></strong>: Facilita la exploración y visualización rápida de datos.</li>
+<li><strong><code>haven</code></strong>: Permite la importación y exportación de datos en formatos utilizados por otros paquetes estadísticos, como Stata y SPSS.</li>
+<li><strong><code>purrr</code></strong>: Ofrece herramientas para la programación funcional, como la aplicación de funciones a listas o vectores.</li>
+<li><strong><code>labelled</code></strong>: Maneja y procesa datos con etiquetas, comúnmente utilizados en encuestas.</li>
+</ul>
+<p>Finalmente, <code>cat("\f")</code> limpia la consola para asegurar que el entorno esté ordenado antes de comenzar el análisis.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="union_predictores.html#cb23-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
+<span id="cb23-2"><a href="union_predictores.html#cb23-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb23-3"><a href="union_predictores.html#cb23-3" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="union_predictores.html#cb23-4" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb23-5"><a href="union_predictores.html#cb23-5" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
+<span id="cb23-6"><a href="union_predictores.html#cb23-6" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb23-7"><a href="union_predictores.html#cb23-7" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb23-8"><a href="union_predictores.html#cb23-8" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb23-9"><a href="union_predictores.html#cb23-9" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb23-10"><a href="union_predictores.html#cb23-10" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb23-11"><a href="union_predictores.html#cb23-11" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
+<span id="cb23-12"><a href="union_predictores.html#cb23-12" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb23-13"><a href="union_predictores.html#cb23-13" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb23-14"><a href="union_predictores.html#cb23-14" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
+<span id="cb23-15"><a href="union_predictores.html#cb23-15" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div id="lectura-de-bases-de-contexto-2020" class="section level4 unnumbered hasAnchor">
+<h4>Lectura de bases de contexto 2020<a href="union_predictores.html#lectura-de-bases-de-contexto-2020" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Este bloque de código se encarga de cargar y procesar datos adicionales relacionados con el contexto municipal para el año 2020, que serán utilizados para enriquecer el análisis de datos.</p>
+<p><strong>Carga y Procesamiento de Datos Satelitales:</strong></p>
+<p>Se carga una base de datos previamente guardada en formato <code>.rds</code> que contiene predictores satelitales a nivel municipal. La columna “CVEGEO” se renombra a “cve_mun” para estandarizar los nombres de las variables, y se elimina la columna “ent” que no es necesaria para el análisis actual. Luego, se extraen los códigos municipales únicos de esta base de datos para su posterior uso.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="union_predictores.html#cb24-1" tabindex="-1"></a><span class="do">## Covariables</span></span>
+<span id="cb24-2"><a href="union_predictores.html#cb24-2" tabindex="-1"></a><span class="co"># Contexto_munXX : la base de datos contexto_20XX.dta contiene información de </span></span>
+<span id="cb24-3"><a href="union_predictores.html#cb24-3" tabindex="-1"></a><span class="co"># variables a nivel municipal. </span></span>
+<span id="cb24-4"><a href="union_predictores.html#cb24-4" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="union_predictores.html#cb24-5" tabindex="-1"></a><span class="co"># Cargar la base de datos satelital y renombrar la columna &quot;CVEGEO&quot; a &quot;cve_mun&quot;</span></span>
+<span id="cb24-6"><a href="union_predictores.html#cb24-6" tabindex="-1"></a>satelital <span class="ot">&lt;-</span></span>
+<span id="cb24-7"><a href="union_predictores.html#cb24-7" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_satelite.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-8"><a href="union_predictores.html#cb24-8" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">cve_mun  =</span> CVEGEO) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">ent =</span> <span class="cn">NULL</span>)</span>
+<span id="cb24-9"><a href="union_predictores.html#cb24-9" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="union_predictores.html#cb24-10" tabindex="-1"></a><span class="co"># Obtener los códigos municipales únicos de la base de datos satelital</span></span>
+<span id="cb24-11"><a href="union_predictores.html#cb24-11" tabindex="-1"></a>cod_mun <span class="ot">&lt;-</span> satelital <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(cve_mun)</span></code></pre></div>
+<p><strong>Carga y Exploración de Datos Contextuales:</strong></p>
+<p>Se carga una base de datos en formato Stata (<code>contexto_2020.dta</code>) que contiene variables contextuales a nivel municipal. La función <code>as_factor()</code> se usa para asegurar que las variables sean tratadas como factores, y <code>apply(., 2, n_distinct) %&gt;% sort()</code> se emplea para obtener y ordenar el número de valores únicos por variable. Esto ayuda a entender la estructura de los datos y la cantidad de información contenida en cada variable.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="union_predictores.html#cb25-1" tabindex="-1"></a><span class="co"># Cargar la base de datos &quot;Contexto_mun20&quot; en formato Stata y renombrar la columna &quot;CVEGEO&quot; a &quot;cve_mun&quot;</span></span>
+<span id="cb25-2"><a href="union_predictores.html#cb25-2" tabindex="-1"></a>Contexto_mun <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/predictores/contexto_2020.dta&quot;</span>)</span>
+<span id="cb25-3"><a href="union_predictores.html#cb25-3" tabindex="-1"></a>Contexto_mun <span class="sc">%&gt;%</span> <span class="fu">as_factor</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb25-4"><a href="union_predictores.html#cb25-4" tabindex="-1"></a>  <span class="fu">apply</span>(., <span class="dv">2</span>, n_distinct) <span class="sc">%&gt;%</span> <span class="fu">sort</span>()</span>
+<span id="cb25-5"><a href="union_predictores.html#cb25-5" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="union_predictores.html#cb25-6" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>elec_mun19</span>
+<span id="cb25-7"><a href="union_predictores.html#cb25-7" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>elec_mun20</span>
+<span id="cb25-8"><a href="union_predictores.html#cb25-8" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>smg1</span>
+<span id="cb25-9"><a href="union_predictores.html#cb25-9" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>ql_porc_cpa_urb</span>
+<span id="cb25-10"><a href="union_predictores.html#cb25-10" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>ql_porc_cpa_rur   </span>
+<span id="cb25-11"><a href="union_predictores.html#cb25-11" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>dec_geologicas </span>
+<span id="cb25-12"><a href="union_predictores.html#cb25-12" tabindex="-1"></a>Contexto_mun<span class="sc">$</span>dec_hidrometeo</span></code></pre></div>
+</div>
+<div id="procesamiento-y-unión-de-datos-contextuales" class="section level4 unnumbered hasAnchor">
+<h4>Procesamiento y Unión de Datos Contextuales<a href="union_predictores.html#procesamiento-y-unión-de-datos-contextuales" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Este bloque de código se centra en la preparación final y la combinación de datos contextuales a nivel municipal, asegurando que se utilicen solo las variables relevantes y sin valores faltantes.</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Estandarización y Escalado de Variables Contextuales:</strong>
+La base de datos <code>Contexto_mun</code> se transforma para asegurar que las variables categóricas sean tratadas como factores, mientras que las variables numéricas se escalan. Se utilizan las funciones <code>mutate_at</code> y <code>mutate_if</code> para realizar estas transformaciones en las variables especificadas y en todas las variables numéricas, respectivamente.</p></li>
+<li><p><strong>Identificación de Códigos Municipales Inexistentes:</strong>
+Se realiza una operación de <code>anti_join</code> entre los códigos municipales de la base de datos satelital (<code>cod_mun</code>) y la base de datos de contexto (<code>Contexto_mun</code>). Esta operación identifica los códigos municipales que están presentes en la base de datos satelital pero que no se encuentran en la base de datos de contexto.</p></li>
+<li><p><strong>Detección de Columnas sin Valores Faltantes:</strong>
+Se analiza cada columna de <code>Contexto_mun</code> para verificar si tiene valores faltantes utilizando <code>apply</code> y <code>any(is.na(x))</code>. El resultado es una lista que indica si cada columna contiene valores faltantes o no. La función <code>table(paso)</code> se utiliza para mostrar la frecuencia de columnas sin valores faltantes.</p></li>
+<li><p><strong>Unión de Bases de Datos:</strong>
+Se realiza una <code>inner_join</code> entre las bases de datos <code>satelital</code> y <code>Contexto_mun</code>, pero solo utilizando las columnas sin valores faltantes, como se determinó en el paso anterior. Esto garantiza que la base de datos resultante solo incluya variables completas y coherentes.</p></li>
+<li><p><strong>Guardado del Conjunto de Datos Combinado:</strong>
+Finalmente, la base de datos combinada <code>statelevel_predictors</code> se guarda en un archivo <code>.rds</code> para su uso futuro.</p></li>
+</ol>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="union_predictores.html#cb26-1" tabindex="-1"></a>Contexto_mun <span class="sc">%&lt;&gt;%</span> <span class="fu">as_factor</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="union_predictores.html#cb26-2" tabindex="-1"></a>  <span class="fu">mutate_at</span>(</span>
+<span id="cb26-3"><a href="union_predictores.html#cb26-3" tabindex="-1"></a>    <span class="at">.vars =</span> <span class="fu">c</span>(</span>
+<span id="cb26-4"><a href="union_predictores.html#cb26-4" tabindex="-1"></a>      <span class="st">&quot;elec_mun19&quot;</span>,</span>
+<span id="cb26-5"><a href="union_predictores.html#cb26-5" tabindex="-1"></a>      <span class="st">&quot;elec_mun20&quot;</span>,</span>
+<span id="cb26-6"><a href="union_predictores.html#cb26-6" tabindex="-1"></a>      <span class="st">&quot;smg1&quot;</span>,</span>
+<span id="cb26-7"><a href="union_predictores.html#cb26-7" tabindex="-1"></a>      <span class="st">&quot;ql_porc_cpa_urb&quot;</span>,</span>
+<span id="cb26-8"><a href="union_predictores.html#cb26-8" tabindex="-1"></a>      <span class="st">&quot;ql_porc_cpa_rur&quot;</span>,</span>
+<span id="cb26-9"><a href="union_predictores.html#cb26-9" tabindex="-1"></a>      <span class="st">&quot;dec_geologicas&quot;</span>,</span>
+<span id="cb26-10"><a href="union_predictores.html#cb26-10" tabindex="-1"></a>      <span class="st">&quot;dec_hidrometeo&quot;</span></span>
+<span id="cb26-11"><a href="union_predictores.html#cb26-11" tabindex="-1"></a>    ),</span>
+<span id="cb26-12"><a href="union_predictores.html#cb26-12" tabindex="-1"></a>    as.factor</span>
+<span id="cb26-13"><a href="union_predictores.html#cb26-13" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb26-14"><a href="union_predictores.html#cb26-14" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.numeric, <span class="cf">function</span>(x)</span>
+<span id="cb26-15"><a href="union_predictores.html#cb26-15" tabindex="-1"></a>    <span class="fu">as.numeric</span>(<span class="fu">scale</span>(x)))</span>
+<span id="cb26-16"><a href="union_predictores.html#cb26-16" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="union_predictores.html#cb26-17" tabindex="-1"></a><span class="co"># Realizar una anti_join para identificar códigos municipales presentes en &quot;cod_mun&quot; pero no en &quot;Contexto_mun&quot;</span></span>
+<span id="cb26-18"><a href="union_predictores.html#cb26-18" tabindex="-1"></a><span class="fu">anti_join</span>(cod_mun, Contexto_mun)</span>
+<span id="cb26-19"><a href="union_predictores.html#cb26-19" tabindex="-1"></a></span>
+<span id="cb26-20"><a href="union_predictores.html#cb26-20" tabindex="-1"></a><span class="co"># Realizar un análisis para determinar si alguna columna de &quot;Contexto_mun&quot; no tiene valores faltantes</span></span>
+<span id="cb26-21"><a href="union_predictores.html#cb26-21" tabindex="-1"></a>paso <span class="ot">&lt;-</span> <span class="fu">apply</span>(Contexto_mun, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="sc">!</span><span class="fu">any</span>(<span class="fu">is.na</span>(x)))</span>
+<span id="cb26-22"><a href="union_predictores.html#cb26-22" tabindex="-1"></a></span>
+<span id="cb26-23"><a href="union_predictores.html#cb26-23" tabindex="-1"></a><span class="co"># Mostrar la frecuencia de columnas sin valores faltantes</span></span>
+<span id="cb26-24"><a href="union_predictores.html#cb26-24" tabindex="-1"></a><span class="fu">table</span>(paso)</span>
+<span id="cb26-25"><a href="union_predictores.html#cb26-25" tabindex="-1"></a></span>
+<span id="cb26-26"><a href="union_predictores.html#cb26-26" tabindex="-1"></a><span class="co"># Realizar una inner_join entre las bases de datos &quot;satelital&quot; y &quot;Contexto_mun&quot; utilizando solo las columnas sin valores faltantes</span></span>
+<span id="cb26-27"><a href="union_predictores.html#cb26-27" tabindex="-1"></a>statelevel_predictors <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(satelital, Contexto_mun[, paso])</span>
+<span id="cb26-28"><a href="union_predictores.html#cb26-28" tabindex="-1"></a></span>
+<span id="cb26-29"><a href="union_predictores.html#cb26-29" tabindex="-1"></a><span class="co"># Obtener las dimensiones de la base de datos resultante</span></span>
+<span id="cb26-30"><a href="union_predictores.html#cb26-30" tabindex="-1"></a><span class="fu">dim</span>(statelevel_predictors)</span>
+<span id="cb26-31"><a href="union_predictores.html#cb26-31" tabindex="-1"></a></span>
+<span id="cb26-32"><a href="union_predictores.html#cb26-32" tabindex="-1"></a><span class="do">## Guardar </span></span>
+<span id="cb26-33"><a href="union_predictores.html#cb26-33" tabindex="-1"></a><span class="fu">saveRDS</span>(statelevel_predictors,<span class="at">file =</span> <span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span></code></pre></div>
 
+</div>
+</div>
 </div>
             </section>
 

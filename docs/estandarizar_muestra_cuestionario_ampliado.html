@@ -150,8 +150,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
-<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a></li>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
+<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a>
+<ul>
+<li class="chapter" data-level="0.0.1" data-path="union_predictores.html"><a href="union_predictores.html#configuración-inicial-y-carga-de-librerías"><i class="fa fa-check"></i><b>0.0.1</b> Configuración Inicial y Carga de Librerías</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a>
+<ul>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados"><i class="fa fa-check"></i>Resumen y Guardado de Datos Agrupados</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i>04_Armonizar_encuesta.R</a></li>
 <li class="chapter" data-level="" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i>05_Validacion_encuestas.R</a></li>
 <li class="chapter" data-level="" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i>06_Modelo_unidad_ictpc.R</a></li>
@@ -194,205 +200,235 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Para la ejecución del presente archivo, debe abrir el archivo <strong>02_Union_predictores.R</strong> disponible en la ruta <em>Rcodes/2020/02_Union_predictores.R</em>. Este script está diseñado para llevar a cabo un análisis detallado de datos mediante un proceso estructurado en varias fases.</p>
 <p>En la etapa inicial, el código limpia el entorno de R eliminando todos los objetos existentes para comenzar con un espacio de trabajo limpio. A continuación, carga las bibliotecas necesarias, como <code>tidyverse</code> y <code>data.table</code>, que son fundamentales para la manipulación y análisis de datos, así como para la importación y exportación de archivos. Luego, el código lee las bases de datos correspondientes al censo de personas 2020 y a la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH). Estas bases se utilizan para identificar indicadores clave relacionados con carencia en salud, calidad de vivienda, servicios básicos y rezago educativo.</p>
 <p>Seguidamente, el código valida y armoniza las variables entre ambas bases de datos para asegurar la consistencia en códigos y etiquetas. Esto incluye la comparación de variables como códigos de entidad y municipio, áreas urbanas y rurales, sexo, edad, nivel educativo, discapacidad y lengua indígena. Posteriormente, estandariza las variables del censo para alinearlas con las de la encuesta y filtra los datos para eliminar cualquier inconsistencia. Finalmente, resume el conjunto de datos estandarizado por grupo y guarda los datos procesados en dos versiones: una con los datos estandarizados y otra con los datos resumidos.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
-<span id="cb21-2"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb21-3"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-3" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-4" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb21-5"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-5" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
-<span id="cb21-6"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-6" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb21-7"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-7" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb21-8"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-8" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb21-9"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-9" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
-<span id="cb21-10"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-10" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb21-11"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-11" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
-<span id="cb21-12"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-12" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb21-13"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-13" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
-<span id="cb21-14"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-14" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
-<span id="cb21-15"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-15" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
-<span id="cb21-16"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-16" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
-<span id="cb21-17"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-17" tabindex="-1"></a></span>
-<span id="cb21-18"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-18" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-19"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-19" tabindex="-1"></a><span class="co"># Lectura de bases censo persona 2020</span></span>
-<span id="cb21-20"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-20" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-21"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-21" tabindex="-1"></a>muestra_cuestionario_ampliado <span class="ot">&lt;-</span></span>
-<span id="cb21-22"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-22" tabindex="-1"></a>  <span class="fu">readRDS</span>(</span>
-<span id="cb21-23"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-23" tabindex="-1"></a>    <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span></span>
-<span id="cb21-24"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-24" tabindex="-1"></a>  )</span>
-<span id="cb21-25"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-25" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span>
-<span id="cb21-26"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-26" tabindex="-1"></a>muestra_cuestionario_ampliado <span class="sc">%&gt;%</span> <span class="fu">dim</span>()</span>
-<span id="cb21-27"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-27" tabindex="-1"></a></span>
-<span id="cb21-28"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-28" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-29"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-29" tabindex="-1"></a><span class="co"># Identificando indicadores </span></span>
-<span id="cb21-30"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-30" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-31"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-31" tabindex="-1"></a><span class="co"># Indicador de carencia por acceso a los servicios de salud (CENSO)</span></span>
-<span id="cb21-32"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-32" tabindex="-1"></a><span class="fu">head</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_asalud)</span>
-<span id="cb21-33"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-33" tabindex="-1"></a></span>
-<span id="cb21-34"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-34" tabindex="-1"></a><span class="co"># Carencia por la calidad y espacios de la vivienda. (CENSO)</span></span>
-<span id="cb21-35"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-35" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_cv)<span class="sc">$</span>label   </span>
-<span id="cb21-36"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-36" tabindex="-1"></a></span>
-<span id="cb21-37"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-37" tabindex="-1"></a><span class="co"># Carencia por servicios básicos en la vivienda. (CENSO)</span></span>
-<span id="cb21-38"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-38" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_sbv)<span class="sc">$</span>label</span>
-<span id="cb21-39"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-39" tabindex="-1"></a></span>
-<span id="cb21-40"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-40" tabindex="-1"></a><span class="co"># Carencia por rezago educativo. </span></span>
-<span id="cb21-41"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-41" tabindex="-1"></a><span class="fu">attributes</span>( muestra_cuestionario_ampliado<span class="sc">$</span>ic_rezedu)<span class="sc">$</span>label</span>
-<span id="cb21-42"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-42" tabindex="-1"></a></span>
-<span id="cb21-43"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-43" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-44"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-44" tabindex="-1"></a><span class="do">## Validaciones para la armonización de variables</span></span>
-<span id="cb21-45"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-45" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-46"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-46" tabindex="-1"></a></span>
-<span id="cb21-47"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-47" tabindex="-1"></a><span class="do">## codigos de ent y municipio </span></span>
-<span id="cb21-48"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-48" tabindex="-1"></a></span>
-<span id="cb21-49"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-49" tabindex="-1"></a><span class="do">## Encuesta </span></span>
-<span id="cb21-50"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-50" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>ent) <span class="co"># cod_dam</span></span>
-<span id="cb21-51"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-51" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>cve_mun) <span class="co"># cod_mun</span></span>
-<span id="cb21-52"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-52" tabindex="-1"></a></span>
-<span id="cb21-53"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-53" tabindex="-1"></a><span class="do">## censo </span></span>
-<span id="cb21-54"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-54" tabindex="-1"></a><span class="fu">n_distinct</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ent)</span>
-<span id="cb21-55"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-55" tabindex="-1"></a><span class="fu">n_distinct</span>(muestra_cuestionario_ampliado<span class="sc">$</span>cve_mun)</span>
-<span id="cb21-56"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-56" tabindex="-1"></a></span>
-<span id="cb21-57"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-57" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-58"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-58" tabindex="-1"></a></span>
-<span id="cb21-59"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-59" tabindex="-1"></a><span class="do">## area </span></span>
-<span id="cb21-60"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-60" tabindex="-1"></a></span>
-<span id="cb21-61"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-61" tabindex="-1"></a><span class="do">## Encuesta </span></span>
-<span id="cb21-62"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-62" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>rururb) </span>
-<span id="cb21-63"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-63" tabindex="-1"></a></span>
-<span id="cb21-64"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-64" tabindex="-1"></a><span class="do">## censo </span></span>
-<span id="cb21-65"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-65" tabindex="-1"></a><span class="fu">table</span>(muestra_cuestionario_ampliado<span class="sc">$</span>rururb, <span class="at">useNA =</span> <span class="st">&quot;a&quot;</span>)</span>
-<span id="cb21-66"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-66" tabindex="-1"></a><span class="co"># 0 Urbano</span></span>
-<span id="cb21-67"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-67" tabindex="-1"></a><span class="co"># 1 Rural</span></span>
-<span id="cb21-68"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-68" tabindex="-1"></a></span>
-<span id="cb21-69"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-69" tabindex="-1"></a></span>
-<span id="cb21-70"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-70" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-71"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-71" tabindex="-1"></a></span>
-<span id="cb21-72"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-72" tabindex="-1"></a><span class="do">## Sexo </span></span>
-<span id="cb21-73"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-73" tabindex="-1"></a></span>
-<span id="cb21-74"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-74" tabindex="-1"></a><span class="do">## Encuesta </span></span>
-<span id="cb21-75"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-75" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>sexo) </span>
-<span id="cb21-76"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-76" tabindex="-1"></a><span class="co"># 2 Mujer</span></span>
-<span id="cb21-77"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-77" tabindex="-1"></a><span class="co"># 1 Hombre</span></span>
-<span id="cb21-78"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-78" tabindex="-1"></a></span>
-<span id="cb21-79"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-79" tabindex="-1"></a><span class="do">## censo </span></span>
-<span id="cb21-80"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-80" tabindex="-1"></a><span class="fu">table</span>(muestra_cuestionario_ampliado<span class="sc">$</span>sexo, <span class="at">useNA =</span> <span class="st">&quot;a&quot;</span>)</span>
-<span id="cb21-81"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-81" tabindex="-1"></a><span class="co"># 0 Mujer</span></span>
-<span id="cb21-82"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-82" tabindex="-1"></a><span class="co"># 1 Hombre</span></span>
-<span id="cb21-83"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-83" tabindex="-1"></a></span>
-<span id="cb21-84"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-84" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-85"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-85" tabindex="-1"></a><span class="do">## edad </span></span>
-<span id="cb21-86"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-86" tabindex="-1"></a></span>
-<span id="cb21-87"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-87" tabindex="-1"></a><span class="do">## Encuesta </span></span>
-<span id="cb21-88"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-88" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>edad) </span>
-<span id="cb21-89"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-89" tabindex="-1"></a></span>
-<span id="cb21-90"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-90" tabindex="-1"></a><span class="do">## censo </span></span>
-<span id="cb21-91"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-91" tabindex="-1"></a><span class="fu">head</span>(muestra_cuestionario_ampliado<span class="sc">$</span>edad_cat)</span>
-<span id="cb21-92"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-92" tabindex="-1"></a></span>
-<span id="cb21-93"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-93" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-94"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-94" tabindex="-1"></a><span class="do">## nivel_edu # </span></span>
-<span id="cb21-95"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-95" tabindex="-1"></a></span>
-<span id="cb21-96"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-96" tabindex="-1"></a><span class="do">## Encuesta </span></span>
-<span id="cb21-97"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-97" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>niv_ed) </span>
-<span id="cb21-98"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-98" tabindex="-1"></a></span>
-<span id="cb21-99"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-99" tabindex="-1"></a><span class="co"># 0 [Con primaria incompleta o menos]                 </span></span>
-<span id="cb21-100"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-100" tabindex="-1"></a><span class="co"># 1 [Primaria completa o secundaria incompleta]       </span></span>
-<span id="cb21-101"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-101" tabindex="-1"></a><span class="co"># 2 [Secundaria completa o media superior incompleta] </span></span>
-<span id="cb21-102"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-102" tabindex="-1"></a><span class="co"># 3 [Media superior completa o mayor nivel educativo] </span></span>
-<span id="cb21-103"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-103" tabindex="-1"></a><span class="co"># NA  Niños de 0 a 3 años</span></span>
-<span id="cb21-104"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-104" tabindex="-1"></a></span>
-<span id="cb21-105"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-105" tabindex="-1"></a><span class="do">## censo </span></span>
-<span id="cb21-106"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-106" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>niv_ed)</span>
-<span id="cb21-107"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-107" tabindex="-1"></a></span>
-<span id="cb21-108"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-108" tabindex="-1"></a><span class="co"># 0 [Con primaria incompleta o menos]                 </span></span>
-<span id="cb21-109"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-109" tabindex="-1"></a><span class="co"># 1 [Primaria completa o secundaria incompleta]       </span></span>
-<span id="cb21-110"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-110" tabindex="-1"></a><span class="co"># 2 [Secundaria completa o media superior incompleta] </span></span>
-<span id="cb21-111"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-111" tabindex="-1"></a><span class="co"># 3 [Media superior completa o mayor nivel educativo] </span></span>
-<span id="cb21-112"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-112" tabindex="-1"></a><span class="co"># NA  Niños de 0 a 3 años</span></span>
-<span id="cb21-113"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-113" tabindex="-1"></a></span>
-<span id="cb21-114"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-114" tabindex="-1"></a></span>
-<span id="cb21-115"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-115" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-116"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-116" tabindex="-1"></a><span class="do">## Discapacidad # </span></span>
-<span id="cb21-117"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-117" tabindex="-1"></a><span class="do">## se puede eliminar o solicitar que sea enviada en el mismo formato que la encuesta </span></span>
-<span id="cb21-118"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-118" tabindex="-1"></a></span>
-<span id="cb21-119"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-119" tabindex="-1"></a><span class="do">## Encuesta </span></span>
-<span id="cb21-120"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-120" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>discap) </span>
-<span id="cb21-121"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-121" tabindex="-1"></a></span>
-<span id="cb21-122"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-122" tabindex="-1"></a><span class="do">## censo</span></span>
-<span id="cb21-123"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-123" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>discap) </span>
-<span id="cb21-124"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-124" tabindex="-1"></a></span>
-<span id="cb21-125"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-125" tabindex="-1"></a></span>
-<span id="cb21-126"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-126" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb21-127"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-127" tabindex="-1"></a><span class="do">## Habla dialecto o lengua indígena</span></span>
-<span id="cb21-128"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-128" tabindex="-1"></a></span>
-<span id="cb21-129"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-129" tabindex="-1"></a><span class="do">## Encuesta </span></span>
-<span id="cb21-130"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-130" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>hli) </span>
-<span id="cb21-131"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-131" tabindex="-1"></a></span>
-<span id="cb21-132"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-132" tabindex="-1"></a></span>
-<span id="cb21-133"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-133" tabindex="-1"></a><span class="do">## censo</span></span>
-<span id="cb21-134"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb21-134" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>hli)</span></code></pre></div>
+<div id="lectura-y-preparación-de-datos" class="section level4 unnumbered hasAnchor">
+<h4>Lectura y Preparación de Datos<a href="estandarizar_muestra_cuestionario_ampliado.html#lectura-y-preparación-de-datos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>En este bloque de código, se inicia el entorno de trabajo en R, cargando las bibliotecas necesarias y preparando los datos para el análisis.</p>
+<p>Primero, se limpia el entorno de R con <code>rm(list = ls())</code> para asegurar que no haya variables o datos residuales que puedan interferir con el análisis. Luego, se cargan diversas bibliotecas que proporcionan herramientas para la manipulación de datos, la lectura de archivos, la exploración de datos y el análisis estadístico. Entre estas bibliotecas se encuentran <code>tidyverse</code>, <code>data.table</code>, <code>openxlsx</code>, <code>magrittr</code>, <code>DataExplorer</code>, <code>haven</code>, <code>purrr</code>, <code>labelled</code> y <code>sampling</code>.</p>
+<p>A continuación, se lee el archivo <code>muestra_cuestionario_ampliado.rds</code> usando <code>readRDS()</code>, que contiene un dataframe con los datos ampliados del censo. También se lee el archivo <code>enigh.rds</code>, que contiene datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH) de 2020. Finalmente, se muestra la dimensión del dataframe <code>muestra_cuestionario_ampliado</code> con <code>dim()</code> para obtener una visión general de su tamaño y estructura.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
+<span id="cb27-2"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb27-3"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-3" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-4" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb27-5"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-5" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
+<span id="cb27-6"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-6" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb27-7"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-7" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb27-8"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-8" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb27-9"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-9" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb27-10"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-10" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb27-11"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-11" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
+<span id="cb27-12"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-12" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb27-13"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-13" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb27-14"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-14" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
+<span id="cb27-15"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-15" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb27-16"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-16" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
+<span id="cb27-17"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-17" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-18" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb27-19"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-19" tabindex="-1"></a><span class="co"># Lectura de bases censo persona 2020</span></span>
+<span id="cb27-20"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-20" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb27-21"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-21" tabindex="-1"></a>muestra_cuestionario_ampliado <span class="ot">&lt;-</span></span>
+<span id="cb27-22"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-22" tabindex="-1"></a>  <span class="fu">readRDS</span>(</span>
+<span id="cb27-23"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-23" tabindex="-1"></a>    <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span></span>
+<span id="cb27-24"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-24" tabindex="-1"></a>  )</span>
+<span id="cb27-25"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-25" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span>
+<span id="cb27-26"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb27-26" tabindex="-1"></a>muestra_cuestionario_ampliado <span class="sc">%&gt;%</span> <span class="fu">dim</span>()</span></code></pre></div>
+</div>
+<div id="identificando-indicadores" class="section level4 unnumbered hasAnchor">
+<h4>Identificando indicadores<a href="estandarizar_muestra_cuestionario_ampliado.html#identificando-indicadores" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>En este bloque de código, se realiza una revisión inicial de los indicadores clave presentes en el dataframe <code>muestra_cuestionario_ampliado</code> para comprender su contenido y estructura.</p>
+<p>Se comienza revisando el indicador de carencia por acceso a los servicios de salud (<code>ic_asalud</code>) mediante la función <code>head()</code>, que muestra las primeras entradas de este indicador en el dataframe. Esto ayuda a obtener una visión general de los datos disponibles para este indicador específico.</p>
+<p>Luego, se exploran las etiquetas asociadas a los atributos de los indicadores de carencia por calidad y espacios de la vivienda (<code>ic_cv</code>) y carencia por servicios básicos en la vivienda (<code>ic_sbv</code>) utilizando la función <code>attributes()</code> y <code>$label</code>. Esto proporciona información sobre las descripciones o categorías asociadas con estos indicadores, facilitando la comprensión de los datos.</p>
+<p>Finalmente, se revisa el indicador de carencia por rezago educativo (<code>ic_rezedu</code>) de la misma manera, explorando sus etiquetas para entender las descripciones asociadas con este indicador.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-1" tabindex="-1"></a><span class="co"># Indicador de carencia por acceso a los servicios de salud (CENSO)</span></span>
+<span id="cb28-2"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-2" tabindex="-1"></a><span class="fu">head</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_asalud)</span>
+<span id="cb28-3"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-3" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-4" tabindex="-1"></a><span class="co"># Carencia por la calidad y espacios de la vivienda. (CENSO)</span></span>
+<span id="cb28-5"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-5" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_cv)<span class="sc">$</span>label   </span>
+<span id="cb28-6"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-6" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-7" tabindex="-1"></a><span class="co"># Carencia por servicios básicos en la vivienda. (CENSO)</span></span>
+<span id="cb28-8"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-8" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ic_sbv)<span class="sc">$</span>label</span>
+<span id="cb28-9"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-9" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-10" tabindex="-1"></a><span class="co"># Carencia por rezago educativo. </span></span>
+<span id="cb28-11"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb28-11" tabindex="-1"></a><span class="fu">attributes</span>( muestra_cuestionario_ampliado<span class="sc">$</span>ic_rezedu)<span class="sc">$</span>label</span></code></pre></div>
+</div>
+<div id="validaciones-para-la-armonización-de-variables" class="section level4 unnumbered hasAnchor">
+<h4>Validaciones para la armonización de variables<a href="estandarizar_muestra_cuestionario_ampliado.html#validaciones-para-la-armonización-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>En este bloque de código, se realizan una serie de validaciones para asegurar la armonización de variables entre los datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH) y el censo ampliado.</p>
+<p>Primero, se revisan los códigos de entidad (<code>ent</code>) y municipio (<code>cve_mun</code>) en ambos conjuntos de datos. Se utiliza <code>n_distinct()</code> para contar el número de valores únicos en cada variable, comparando así los códigos de entidad y municipio entre la encuesta y el censo.</p>
+<p>A continuación, se analiza la variable <code>rururb</code>, que indica si un área es urbana o rural. Se exploran los atributos de esta variable en la encuesta y se utiliza <code>table()</code> para mostrar la distribución de esta variable en el censo, verificando los valores únicos y su correspondencia.</p>
+<p>Luego, se validan las variables relacionadas con el sexo (<code>sexo</code>). Se revisan los atributos de esta variable en la encuesta y se utiliza <code>table()</code> para mostrar la distribución en el censo. Esto asegura que las categorías de sexo sean consistentes entre ambos conjuntos de datos.</p>
+<p>Se revisa la variable de edad (<code>edad</code>). Se exploran los atributos de esta variable en la encuesta y se muestran las primeras entradas de la variable <code>edad_cat</code> en el censo para comparar y validar las categorías de edad.</p>
+<p>Para la variable de nivel educativo (<code>niv_ed</code>), se comparan los atributos de esta variable en la encuesta y el censo. Se asegura que las categorías de nivel educativo sean consistentes en ambos conjuntos de datos.</p>
+<p>Se valida la variable de discapacidad (<code>discap</code>). Se revisan los atributos de esta variable en ambos conjuntos de datos para determinar si se necesita realizar alguna conversión o armonización.</p>
+<p>Finalmente, se revisa la variable que indica si la persona habla un dialecto o lengua indígena (<code>hli</code>). Se comparan los atributos de esta variable en la encuesta y el censo para asegurar que los datos sean coherentes.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-1" tabindex="-1"></a><span class="do">## codigos de ent y municipio </span></span>
+<span id="cb29-2"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-2" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-3" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb29-4"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-4" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>ent) <span class="co"># cod_dam</span></span>
+<span id="cb29-5"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-5" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh<span class="sc">$</span>cve_mun) <span class="co"># cod_mun</span></span>
+<span id="cb29-6"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-6" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-7" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb29-8"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-8" tabindex="-1"></a><span class="fu">n_distinct</span>(muestra_cuestionario_ampliado<span class="sc">$</span>ent)</span>
+<span id="cb29-9"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-9" tabindex="-1"></a><span class="fu">n_distinct</span>(muestra_cuestionario_ampliado<span class="sc">$</span>cve_mun)</span>
+<span id="cb29-10"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-10" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-11" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb29-12"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-12" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-13" tabindex="-1"></a><span class="do">## area </span></span>
+<span id="cb29-14"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-14" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-15" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb29-16"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-16" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>rururb) </span>
+<span id="cb29-17"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-17" tabindex="-1"></a></span>
+<span id="cb29-18"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-18" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb29-19"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-19" tabindex="-1"></a><span class="fu">table</span>(muestra_cuestionario_ampliado<span class="sc">$</span>rururb, <span class="at">useNA =</span> <span class="st">&quot;a&quot;</span>)</span>
+<span id="cb29-20"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-20" tabindex="-1"></a><span class="co"># 0 Urbano</span></span>
+<span id="cb29-21"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-21" tabindex="-1"></a><span class="co"># 1 Rural</span></span>
+<span id="cb29-22"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-22" tabindex="-1"></a></span>
+<span id="cb29-23"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-23" tabindex="-1"></a></span>
+<span id="cb29-24"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-24" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb29-25"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-25" tabindex="-1"></a></span>
+<span id="cb29-26"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-26" tabindex="-1"></a><span class="do">## Sexo </span></span>
+<span id="cb29-27"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-27" tabindex="-1"></a></span>
+<span id="cb29-28"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-28" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb29-29"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-29" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>sexo) </span>
+<span id="cb29-30"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-30" tabindex="-1"></a><span class="co"># 2 Mujer</span></span>
+<span id="cb29-31"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-31" tabindex="-1"></a><span class="co"># 1 Hombre</span></span>
+<span id="cb29-32"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-32" tabindex="-1"></a></span>
+<span id="cb29-33"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-33" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb29-34"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-34" tabindex="-1"></a><span class="fu">table</span>(muestra_cuestionario_ampliado<span class="sc">$</span>sexo, <span class="at">useNA =</span> <span class="st">&quot;a&quot;</span>)</span>
+<span id="cb29-35"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-35" tabindex="-1"></a><span class="co"># 0 Mujer</span></span>
+<span id="cb29-36"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-36" tabindex="-1"></a><span class="co"># 1 Hombre</span></span>
+<span id="cb29-37"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-37" tabindex="-1"></a></span>
+<span id="cb29-38"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-38" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb29-39"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-39" tabindex="-1"></a><span class="do">## edad </span></span>
+<span id="cb29-40"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-40" tabindex="-1"></a></span>
+<span id="cb29-41"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-41" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb29-42"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-42" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>edad) </span>
+<span id="cb29-43"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-43" tabindex="-1"></a></span>
+<span id="cb29-44"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-44" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb29-45"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-45" tabindex="-1"></a><span class="fu">head</span>(muestra_cuestionario_ampliado<span class="sc">$</span>edad_cat)</span>
+<span id="cb29-46"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-46" tabindex="-1"></a></span>
+<span id="cb29-47"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-47" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb29-48"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-48" tabindex="-1"></a><span class="do">## nivel_edu # </span></span>
+<span id="cb29-49"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-49" tabindex="-1"></a></span>
+<span id="cb29-50"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-50" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb29-51"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-51" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>niv_ed) </span>
+<span id="cb29-52"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-52" tabindex="-1"></a></span>
+<span id="cb29-53"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-53" tabindex="-1"></a><span class="co"># 0 [Con primaria incompleta o menos]                 </span></span>
+<span id="cb29-54"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-54" tabindex="-1"></a><span class="co"># 1 [Primaria completa o secundaria incompleta]       </span></span>
+<span id="cb29-55"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-55" tabindex="-1"></a><span class="co"># 2 [Secundaria completa o media superior incompleta] </span></span>
+<span id="cb29-56"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-56" tabindex="-1"></a><span class="co"># 3 [Media superior completa o mayor nivel educativo] </span></span>
+<span id="cb29-57"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-57" tabindex="-1"></a><span class="co"># NA  Niños de 0 a 3 años</span></span>
+<span id="cb29-58"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-58" tabindex="-1"></a></span>
+<span id="cb29-59"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-59" tabindex="-1"></a><span class="do">## censo </span></span>
+<span id="cb29-60"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-60" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>niv_ed)</span>
+<span id="cb29-61"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-61" tabindex="-1"></a></span>
+<span id="cb29-62"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-62" tabindex="-1"></a><span class="co"># 0 [Con primaria incompleta o menos]                 </span></span>
+<span id="cb29-63"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-63" tabindex="-1"></a><span class="co"># 1 [Primaria completa o secundaria incompleta]       </span></span>
+<span id="cb29-64"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-64" tabindex="-1"></a><span class="co"># 2 [Secundaria completa o media superior incompleta] </span></span>
+<span id="cb29-65"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-65" tabindex="-1"></a><span class="co"># 3 [Media superior completa o mayor nivel educativo] </span></span>
+<span id="cb29-66"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-66" tabindex="-1"></a><span class="co"># NA  Niños de 0 a 3 años</span></span>
+<span id="cb29-67"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-67" tabindex="-1"></a></span>
+<span id="cb29-68"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-68" tabindex="-1"></a></span>
+<span id="cb29-69"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-69" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb29-70"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-70" tabindex="-1"></a><span class="do">## Discapacidad # </span></span>
+<span id="cb29-71"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-71" tabindex="-1"></a></span>
+<span id="cb29-72"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-72" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb29-73"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-73" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>discap) </span>
+<span id="cb29-74"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-74" tabindex="-1"></a></span>
+<span id="cb29-75"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-75" tabindex="-1"></a><span class="do">## censo</span></span>
+<span id="cb29-76"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-76" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>discap) </span>
+<span id="cb29-77"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-77" tabindex="-1"></a></span>
+<span id="cb29-78"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-78" tabindex="-1"></a></span>
+<span id="cb29-79"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-79" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb29-80"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-80" tabindex="-1"></a><span class="do">## Habla dialecto o lengua indígena</span></span>
+<span id="cb29-81"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-81" tabindex="-1"></a></span>
+<span id="cb29-82"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-82" tabindex="-1"></a><span class="do">## Encuesta </span></span>
+<span id="cb29-83"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-83" tabindex="-1"></a><span class="fu">attributes</span>(enigh<span class="sc">$</span>hli) </span>
+<span id="cb29-84"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-84" tabindex="-1"></a></span>
+<span id="cb29-85"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-85" tabindex="-1"></a></span>
+<span id="cb29-86"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-86" tabindex="-1"></a><span class="do">## censo</span></span>
+<span id="cb29-87"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb29-87" tabindex="-1"></a><span class="fu">attributes</span>(muestra_cuestionario_ampliado<span class="sc">$</span>hli)</span></code></pre></div>
+</div>
 <div id="estandarizando-el-censo" class="section level4 unnumbered hasAnchor">
 <h4>Estandarizando el censo<a href="estandarizar_muestra_cuestionario_ampliado.html#estandarizando-el-censo" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-1" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> muestra_cuestionario_ampliado <span class="sc">%&gt;%</span></span>
-<span id="cb22-2"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-2" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb22-3"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-3" tabindex="-1"></a>    ent,</span>
-<span id="cb22-4"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-4" tabindex="-1"></a>    cve_mun,</span>
-<span id="cb22-5"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-5" tabindex="-1"></a>    upm,</span>
-<span id="cb22-6"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-6" tabindex="-1"></a>    estrato,</span>
-<span id="cb22-7"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-7" tabindex="-1"></a>    <span class="at">area =</span> <span class="fu">as.character</span>(rururb),</span>
-<span id="cb22-8"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-8" tabindex="-1"></a>    <span class="at">sexo =</span> <span class="fu">if_else</span>(sexo <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;2&quot;</span>),</span>
-<span id="cb22-9"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-9" tabindex="-1"></a>    <span class="at">edad =</span> <span class="fu">as.character</span>(edad_cat),</span>
-<span id="cb22-10"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-10" tabindex="-1"></a>    <span class="at">nivel_edu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(niv_ed, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb22-11"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-11" tabindex="-1"></a>    <span class="at">discapacidad =</span> <span class="fu">as.character</span>(discap),</span>
-<span id="cb22-12"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-12" tabindex="-1"></a>    <span class="at">discapacidad =</span> <span class="fu">if_else</span>(<span class="fu">is.na</span>(discapacidad), <span class="st">&quot;0&quot;</span>, discapacidad),</span>
-<span id="cb22-13"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-13" tabindex="-1"></a>    <span class="at">hlengua =</span> <span class="fu">as.character</span>(hli),</span>
-<span id="cb22-14"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-14" tabindex="-1"></a>    <span class="at">hlengua =</span> <span class="fu">if_else</span>(<span class="fu">is.na</span>(hlengua), <span class="st">&quot;0&quot;</span>, hlengua),</span>
-<span id="cb22-15"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-15" tabindex="-1"></a>    </span>
-<span id="cb22-16"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-16" tabindex="-1"></a>    <span class="at">ic_asalud=</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_asalud, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb22-17"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-17" tabindex="-1"></a>    <span class="at">ic_cv =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_cv, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb22-18"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-18" tabindex="-1"></a>    <span class="at">ic_sbv =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_sbv, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb22-19"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-19" tabindex="-1"></a>    <span class="at">ic_rezedu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_rezedu, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
-<span id="cb22-20"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-20" tabindex="-1"></a>    factor</span>
-<span id="cb22-21"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-21" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb22-22"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-22" tabindex="-1"></a>  <span class="fu">filter</span>( <span class="sc">!</span>cve_mun <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;04012&quot;</span>, <span class="st">&quot;07125&quot;</span>, <span class="st">&quot;29048&quot;</span>))</span>
-<span id="cb22-23"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-23" tabindex="-1"></a></span>
-<span id="cb22-24"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-24" tabindex="-1"></a></span>
-<span id="cb22-25"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-25" tabindex="-1"></a></span>
-<span id="cb22-26"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-26" tabindex="-1"></a></span>
-<span id="cb22-27"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-27" tabindex="-1"></a>censo_sta2 <span class="ot">&lt;-</span> censo_sta <span class="sc">%&gt;%</span></span>
-<span id="cb22-28"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-28" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb22-29"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-29" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(nivel_edu),</span>
-<span id="cb22-30"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-30" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(edad),</span>
-<span id="cb22-31"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-31" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_sbv),</span>
-<span id="cb22-32"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-32" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_cv),</span>
-<span id="cb22-33"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-33" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_rezedu),</span>
-<span id="cb22-34"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-34" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_asalud),</span>
-<span id="cb22-35"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-35" tabindex="-1"></a>  )</span>
-<span id="cb22-36"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-36" tabindex="-1"></a></span>
-<span id="cb22-37"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-37" tabindex="-1"></a><span class="fu">sum</span>(censo_sta2<span class="sc">$</span>factor) <span class="sc">/</span> <span class="fu">sum</span>(censo_sta<span class="sc">$</span>factor)</span>
-<span id="cb22-38"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-38" tabindex="-1"></a></span>
-<span id="cb22-39"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-39" tabindex="-1"></a><span class="co">#Se guarda el conjunto de datos estandarizado:</span></span>
-<span id="cb22-40"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-40" tabindex="-1"></a></span>
-<span id="cb22-41"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-41" tabindex="-1"></a><span class="fu">saveRDS</span>(censo_sta2,<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
-<span id="cb22-42"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-42" tabindex="-1"></a></span>
-<span id="cb22-43"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-43" tabindex="-1"></a><span class="co">#Se resumen los datos por grupo:</span></span>
-<span id="cb22-44"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-44" tabindex="-1"></a></span>
-<span id="cb22-45"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-45" tabindex="-1"></a>censo_sta2 <span class="sc">%&lt;&gt;%</span> <span class="fu">group_by</span>(</span>
-<span id="cb22-46"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-46" tabindex="-1"></a>  ent,</span>
-<span id="cb22-47"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-47" tabindex="-1"></a>  cve_mun,</span>
-<span id="cb22-48"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-48" tabindex="-1"></a>  area,</span>
-<span id="cb22-49"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-49" tabindex="-1"></a>  hlengua,</span>
-<span id="cb22-50"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-50" tabindex="-1"></a>  sexo,</span>
-<span id="cb22-51"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-51" tabindex="-1"></a>  edad,</span>
-<span id="cb22-52"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-52" tabindex="-1"></a>  nivel_edu,</span>
-<span id="cb22-53"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-53" tabindex="-1"></a>  discapacidad,</span>
-<span id="cb22-54"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-54" tabindex="-1"></a>  ic_asalud,</span>
-<span id="cb22-55"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-55" tabindex="-1"></a>  ic_cv,</span>
-<span id="cb22-56"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-56" tabindex="-1"></a>  ic_sbv,</span>
-<span id="cb22-57"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-57" tabindex="-1"></a>  ic_rezedu</span>
-<span id="cb22-58"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-58" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb22-59"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-59" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) </span>
-<span id="cb22-60"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-60" tabindex="-1"></a></span>
-<span id="cb22-61"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-61" tabindex="-1"></a><span class="co">#Se guarda el conjunto de datos resumido:</span></span>
-<span id="cb22-62"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-62" tabindex="-1"></a></span>
-<span id="cb22-63"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb22-63" tabindex="-1"></a><span class="fu">saveRDS</span>(censo_sta2, <span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span></code></pre></div>
+<p>Este bloque de código se centra en la estandarización y limpieza del conjunto de datos del censo para prepararlo para el análisis.</p>
+<p>Primero, se crea un nuevo dataframe <code>censo_sta</code> a partir del dataframe <code>muestra_cuestionario_ampliado</code>. En este proceso, se realiza una transformación y estandarización de las variables. Se convierten las variables categóricas a tipo <code>character</code> o <code>factor</code>, y se manejan los valores faltantes. Específicamente:</p>
+<ul>
+<li>La variable <code>area</code> se convierte a tipo <code>character</code>.</li>
+<li>La variable <code>sexo</code> se estandariza para que los valores sean “1” para hombre y “2” para mujer.</li>
+<li>Las variables de edad, nivel educativo y discapacidad se transforman a tipo <code>character</code>, con los valores de discapacidad y lengua indígena establecidos en “0” si son <code>NA</code>.</li>
+<li>Las variables <code>ic_asalud</code>, <code>ic_cv</code>, <code>ic_sbv</code>, e <code>ic_rezedu</code> se convierten a tipo <code>factor</code> utilizando <code>haven::as_factor()</code>.</li>
+</ul>
+<p>Después, se filtran ciertos municipios excluidos mediante <code>filter()</code>, eliminando aquellos con códigos específicos (04012, 07125, 29048).</p>
+<p>A continuación, se crea un segundo dataframe <code>censo_sta2</code> a partir de <code>censo_sta</code>, filtrando los registros con valores faltantes en las variables de interés (<code>nivel_edu</code>, <code>edad</code>, <code>ic_sbv</code>, <code>ic_cv</code>, <code>ic_rezedu</code>, <code>ic_asalud</code>).</p>
+<p>Finalmente, se calcula la proporción del total del <code>factor</code> en <code>censo_sta2</code> respecto a <code>censo_sta</code>, lo que permite verificar la representatividad del subconjunto filtrado. El dataframe estandarizado <code>censo_sta2</code> se guarda en un archivo <code>.rds</code> para su uso en análisis futuros.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-1" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> muestra_cuestionario_ampliado <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-2" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb30-3"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-3" tabindex="-1"></a>    ent,</span>
+<span id="cb30-4"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-4" tabindex="-1"></a>    cve_mun,</span>
+<span id="cb30-5"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-5" tabindex="-1"></a>    upm,</span>
+<span id="cb30-6"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-6" tabindex="-1"></a>    estrato,</span>
+<span id="cb30-7"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-7" tabindex="-1"></a>    <span class="at">area =</span> <span class="fu">as.character</span>(rururb),</span>
+<span id="cb30-8"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-8" tabindex="-1"></a>    <span class="at">sexo =</span> <span class="fu">if_else</span>(sexo <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;2&quot;</span>),</span>
+<span id="cb30-9"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-9" tabindex="-1"></a>    <span class="at">edad =</span> <span class="fu">as.character</span>(edad_cat),</span>
+<span id="cb30-10"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-10" tabindex="-1"></a>    <span class="at">nivel_edu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(niv_ed, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb30-11"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-11" tabindex="-1"></a>    <span class="at">discapacidad =</span> <span class="fu">as.character</span>(discap),</span>
+<span id="cb30-12"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-12" tabindex="-1"></a>    <span class="at">discapacidad =</span> <span class="fu">if_else</span>(<span class="fu">is.na</span>(discapacidad), <span class="st">&quot;0&quot;</span>, discapacidad),</span>
+<span id="cb30-13"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-13" tabindex="-1"></a>    <span class="at">hlengua =</span> <span class="fu">as.character</span>(hli),</span>
+<span id="cb30-14"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-14" tabindex="-1"></a>    <span class="at">hlengua =</span> <span class="fu">if_else</span>(<span class="fu">is.na</span>(hlengua), <span class="st">&quot;0&quot;</span>, hlengua),</span>
+<span id="cb30-15"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-15" tabindex="-1"></a>    </span>
+<span id="cb30-16"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-16" tabindex="-1"></a>    <span class="at">ic_asalud=</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_asalud, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb30-17"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-17" tabindex="-1"></a>    <span class="at">ic_cv =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_cv, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb30-18"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-18" tabindex="-1"></a>    <span class="at">ic_sbv =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_sbv, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb30-19"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-19" tabindex="-1"></a>    <span class="at">ic_rezedu =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(ic_rezedu, <span class="at">levels  =</span> <span class="st">&quot;values&quot;</span>),</span>
+<span id="cb30-20"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-20" tabindex="-1"></a>    factor</span>
+<span id="cb30-21"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-21" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-22"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-22" tabindex="-1"></a>  <span class="fu">filter</span>( <span class="sc">!</span>cve_mun <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;04012&quot;</span>, <span class="st">&quot;07125&quot;</span>, <span class="st">&quot;29048&quot;</span>))</span>
+<span id="cb30-23"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-23" tabindex="-1"></a></span>
+<span id="cb30-24"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-24" tabindex="-1"></a></span>
+<span id="cb30-25"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-25" tabindex="-1"></a></span>
+<span id="cb30-26"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-26" tabindex="-1"></a></span>
+<span id="cb30-27"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-27" tabindex="-1"></a>censo_sta2 <span class="ot">&lt;-</span> censo_sta <span class="sc">%&gt;%</span></span>
+<span id="cb30-28"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-28" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb30-29"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-29" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(nivel_edu),</span>
+<span id="cb30-30"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-30" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(edad),</span>
+<span id="cb30-31"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-31" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_sbv),</span>
+<span id="cb30-32"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-32" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_cv),</span>
+<span id="cb30-33"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-33" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_rezedu),</span>
+<span id="cb30-34"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-34" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(ic_asalud),</span>
+<span id="cb30-35"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-35" tabindex="-1"></a>  )</span>
+<span id="cb30-36"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-36" tabindex="-1"></a></span>
+<span id="cb30-37"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-37" tabindex="-1"></a><span class="fu">sum</span>(censo_sta2<span class="sc">$</span>factor) <span class="sc">/</span> <span class="fu">sum</span>(censo_sta<span class="sc">$</span>factor)</span>
+<span id="cb30-38"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-38" tabindex="-1"></a></span>
+<span id="cb30-39"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-39" tabindex="-1"></a><span class="co">#Se guarda el conjunto de datos estandarizado:</span></span>
+<span id="cb30-40"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-40" tabindex="-1"></a></span>
+<span id="cb30-41"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb30-41" tabindex="-1"></a><span class="fu">saveRDS</span>(censo_sta2,<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span></code></pre></div>
+</div>
+<div id="resumen-y-guardado-de-datos-agrupados" class="section level3 unnumbered hasAnchor">
+<h3>Resumen y Guardado de Datos Agrupados<a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Este bloque de código realiza un resumen de los datos estandarizados del censo y guarda el conjunto de datos resultante.</p>
+<p>Primero, el dataframe <code>censo_sta2</code> se agrupa utilizando <code>group_by()</code> en base a múltiples variables: <code>ent</code>, <code>cve_mun</code>, <code>area</code>, <code>hlengua</code>, <code>sexo</code>, <code>edad</code>, <code>nivel_edu</code>, <code>discapacidad</code>, <code>ic_asalud</code>, <code>ic_cv</code>, <code>ic_sbv</code>, e <code>ic_rezedu</code>. Para cada grupo definido por estas variables, se calcula la suma de la variable <code>factor</code> utilizando <code>summarise()</code>. El resultado es un dataframe que contiene el total de observaciones (<code>n</code>) para cada combinación única de los grupos especificados.</p>
+<p>Finalmente, el dataframe resumido se guarda en un archivo <code>.rds</code> en la ruta <code>"../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds"</code>. Este archivo puede ser utilizado para análisis posteriores, proporcionando una versión compacta y organizada del conjunto de datos.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-1" tabindex="-1"></a><span class="co">#Se resumen los datos por grupo:</span></span>
+<span id="cb31-2"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-2" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-3" tabindex="-1"></a>censo_sta2 <span class="sc">%&lt;&gt;%</span> <span class="fu">group_by</span>(</span>
+<span id="cb31-4"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-4" tabindex="-1"></a>  ent,</span>
+<span id="cb31-5"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-5" tabindex="-1"></a>  cve_mun,</span>
+<span id="cb31-6"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-6" tabindex="-1"></a>  area,</span>
+<span id="cb31-7"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-7" tabindex="-1"></a>  hlengua,</span>
+<span id="cb31-8"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-8" tabindex="-1"></a>  sexo,</span>
+<span id="cb31-9"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-9" tabindex="-1"></a>  edad,</span>
+<span id="cb31-10"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-10" tabindex="-1"></a>  nivel_edu,</span>
+<span id="cb31-11"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-11" tabindex="-1"></a>  discapacidad,</span>
+<span id="cb31-12"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-12" tabindex="-1"></a>  ic_asalud,</span>
+<span id="cb31-13"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-13" tabindex="-1"></a>  ic_cv,</span>
+<span id="cb31-14"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-14" tabindex="-1"></a>  ic_sbv,</span>
+<span id="cb31-15"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-15" tabindex="-1"></a>  ic_rezedu</span>
+<span id="cb31-16"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-16" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-17"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-17" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">sum</span>(factor), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) </span>
+<span id="cb31-18"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-18" tabindex="-1"></a></span>
+<span id="cb31-19"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-19" tabindex="-1"></a><span class="co">#Se guarda el conjunto de datos resumido:</span></span>
+<span id="cb31-20"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-20" tabindex="-1"></a></span>
+<span id="cb31-21"><a href="estandarizar_muestra_cuestionario_ampliado.html#cb31-21" tabindex="-1"></a><span class="fu">saveRDS</span>(censo_sta2, <span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

@@ -126,17 +126,18 @@ for (ii in 1:32) {
   cat(file_muestra_censo_2020_estado[ii], "\n")
 }
 ```
-Se iteran los archivos de datos del censo, se combinan y se almacenan en archivos `.rds` individuales y en un dataframe único.
+
+Se guarda el dataframe combinado en un archivo `.rds`.
 
 
 ``` r
 saveRDS(df, file = "../output/2020/muestra_cuestionario_ampliado.rds")
 ```
-Se guarda el dataframe combinado en un archivo `.rds`.
-
 
 
 #### Lectura y Combinación de Datos de la ENIGH{-}
+
+Este bloque de código está diseñado para leer, verificar y combinar datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH) 2020. La finalidad es consolidar la información de diferentes archivos de datos en un único dataframe para su posterior análisis.
 
 
 ``` r
@@ -169,17 +170,29 @@ Se combinan los datos de pobreza y hogares utilizando un `inner_join`.
 
 #### Selección y Renombramiento de Variables {-}
 
-``` r
-enigh$ic_ali_nc
-enigh$ictpc_pers
-enigh$ictpc <- enigh$ictpc_pers
-enigh$ic_segsoc
-```
-Se seleccionan y renombran variables clave para asegurar la consistencia en el análisis.
+En esta sección, se seleccionan y renombran algunas variables clave del dataframe combinado para asegurar la consistencia en el análisis y facilitar su manipulación posterior.
 
-#### Guardado del DataFrame Combinado{-}
+
 
 ``` r
-saveRDS(enigh, file = "../output/2020/enigh.rds")
+   enigh$ic_ali_nc
+   enigh$ictpc_pers
+   enigh$ictpc <- enigh$ictpc_pers
+   enigh$ic_segsoc
 ```
-Se guarda el dataframe combinado en un archivo `.rds` para facilitar el acceso y análisis futuros.
+   - `enigh$ic_ali_nc`: Selección de la variable que indica carencia por acceso a la alimentación nutritiva y de calidad.
+   - `enigh$ictpc_pers`: Selección de la variable que representa el ingreso corriente total por persona.
+   - `enigh$ictpc <- enigh$ictpc_pers`: Renombramiento de `ictpc_pers` a `ictpc` para simplificar su uso en análisis posteriores.
+   - `enigh$ic_segsoc`: Selección de la variable que indica carencia por acceso a la seguridad social.
+
+#### Guardado del DataFrame Combinado {-}
+
+Finalmente, se guarda el dataframe combinado en un archivo `.rds` para facilitar el acceso y análisis futuros.
+
+
+
+``` r
+   saveRDS(enigh, file = "../output/2020/enigh.rds")
+```
+Se guarda el dataframe `enigh` en un archivo `.rds` en la ruta especificada `../output/2020/enigh.rds`.
+

@@ -198,17 +198,17 @@ En esta sección se presentan los diferentes indicadores utilizados para medir y
 
 13. **Rezago educativo**
     - **Script utilizado**: 
-      - *20_Estimacion_directa_censo.R*
+      - *20_estimacion_directa_carencias.R*
 
 14. **Carencia por acceso a los servicios de salud**
     - **Script utilizado**: 
-      - *20_Estimacion_directa_censo.R*
+      - *20_estimacion_directa_carencias.R*
 
 15. **Carencia por calidad y espacios de la vivienda**
     - **Script utilizado**: 
-      - *20_Estimacion_directa_censo.R*
+      - *20_estimacion_directa_carencias.R*
 
 16. **Carencia por acceso a los servicios básicos en la vivienda**
     - **Script utilizado**: 
-      - *20_Estimacion_directa_censo.R*
+      - *20_estimacion_directa_carencias.R*
 

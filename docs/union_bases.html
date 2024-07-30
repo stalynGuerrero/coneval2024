@@ -150,8 +150,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
-<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a></li>
-<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
+<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a>
+<ul>
+<li class="chapter" data-level="0.0.1" data-path="union_predictores.html"><a href="union_predictores.html#configuración-inicial-y-carga-de-librerías"><i class="fa fa-check"></i><b>0.0.1</b> Configuración Inicial y Carga de Librerías</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a>
+<ul>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html#resumen-y-guardado-de-datos-agrupados"><i class="fa fa-check"></i>Resumen y Guardado de Datos Agrupados</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i>04_Armonizar_encuesta.R</a></li>
 <li class="chapter" data-level="" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i>05_Validacion_encuestas.R</a></li>
 <li class="chapter" data-level="" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i>06_Modelo_unidad_ictpc.R</a></li>
@@ -275,12 +281,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-15"><a href="union_bases.html#cb8-15" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df, muestra_censo)</span>
 <span id="cb8-16"><a href="union_bases.html#cb8-16" tabindex="-1"></a>  <span class="fu">cat</span>(file_muestra_censo_2020_estado[ii], <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
 <span id="cb8-17"><a href="union_bases.html#cb8-17" tabindex="-1"></a>}</span></code></pre></div>
-<p>Se iteran los archivos de datos del censo, se combinan y se almacenan en archivos <code>.rds</code> individuales y en un dataframe único.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="union_bases.html#cb9-1" tabindex="-1"></a><span class="fu">saveRDS</span>(df, <span class="at">file =</span> <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span>)</span></code></pre></div>
 <p>Se guarda el dataframe combinado en un archivo <code>.rds</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="union_bases.html#cb9-1" tabindex="-1"></a><span class="fu">saveRDS</span>(df, <span class="at">file =</span> <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span>)</span></code></pre></div>
 </div>
 <div id="lectura-y-combinación-de-datos-de-la-enigh" class="section level4 unnumbered hasAnchor">
 <h4>Lectura y Combinación de Datos de la ENIGH<a href="union_bases.html#lectura-y-combinación-de-datos-de-la-enigh" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Este bloque de código está diseñado para leer, verificar y combinar datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH) 2020. La finalidad es consolidar la información de diferentes archivos de datos en un único dataframe para su posterior análisis.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="union_bases.html#cb10-1" tabindex="-1"></a>enigh_hogares <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/base_hogares20.dta&quot;</span>)</span>
 <span id="cb10-2"><a href="union_bases.html#cb10-2" tabindex="-1"></a>enigh_pobreza <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/pobreza_20.dta&quot;</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb10-3"><a href="union_bases.html#cb10-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ent)</span></code></pre></div>
@@ -301,16 +307,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="selección-y-renombramiento-de-variables" class="section level4 unnumbered hasAnchor">
 <h4>Selección y Renombramiento de Variables<a href="union_bases.html#selección-y-renombramiento-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="union_bases.html#cb13-1" tabindex="-1"></a>enigh<span class="sc">$</span>ic_ali_nc</span>
-<span id="cb13-2"><a href="union_bases.html#cb13-2" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc_pers</span>
-<span id="cb13-3"><a href="union_bases.html#cb13-3" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc <span class="ot">&lt;-</span> enigh<span class="sc">$</span>ictpc_pers</span>
-<span id="cb13-4"><a href="union_bases.html#cb13-4" tabindex="-1"></a>enigh<span class="sc">$</span>ic_segsoc</span></code></pre></div>
-<p>Se seleccionan y renombran variables clave para asegurar la consistencia en el análisis.</p>
+<p>En esta sección, se seleccionan y renombran algunas variables clave del dataframe combinado para asegurar la consistencia en el análisis y facilitar su manipulación posterior.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="union_bases.html#cb13-1" tabindex="-1"></a>   enigh<span class="sc">$</span>ic_ali_nc</span>
+<span id="cb13-2"><a href="union_bases.html#cb13-2" tabindex="-1"></a>   enigh<span class="sc">$</span>ictpc_pers</span>
+<span id="cb13-3"><a href="union_bases.html#cb13-3" tabindex="-1"></a>   enigh<span class="sc">$</span>ictpc <span class="ot">&lt;-</span> enigh<span class="sc">$</span>ictpc_pers</span>
+<span id="cb13-4"><a href="union_bases.html#cb13-4" tabindex="-1"></a>   enigh<span class="sc">$</span>ic_segsoc</span></code></pre></div>
+<ul>
+<li><code>enigh$ic_ali_nc</code>: Selección de la variable que indica carencia por acceso a la alimentación nutritiva y de calidad.</li>
+<li><code>enigh$ictpc_pers</code>: Selección de la variable que representa el ingreso corriente total por persona.</li>
+<li><code>enigh$ictpc &lt;- enigh$ictpc_pers</code>: Renombramiento de <code>ictpc_pers</code> a <code>ictpc</code> para simplificar su uso en análisis posteriores.</li>
+<li><code>enigh$ic_segsoc</code>: Selección de la variable que indica carencia por acceso a la seguridad social.</li>
+</ul>
 </div>
 <div id="guardado-del-dataframe-combinado" class="section level4 unnumbered hasAnchor">
 <h4>Guardado del DataFrame Combinado<a href="union_bases.html#guardado-del-dataframe-combinado" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="union_bases.html#cb14-1" tabindex="-1"></a><span class="fu">saveRDS</span>(enigh, <span class="at">file =</span> <span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span></code></pre></div>
-<p>Se guarda el dataframe combinado en un archivo <code>.rds</code> para facilitar el acceso y análisis futuros.</p>
+<p>Finalmente, se guarda el dataframe combinado en un archivo <code>.rds</code> para facilitar el acceso y análisis futuros.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="union_bases.html#cb14-1" tabindex="-1"></a>   <span class="fu">saveRDS</span>(enigh, <span class="at">file =</span> <span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span></code></pre></div>
+<p>Se guarda el dataframe <code>enigh</code> en un archivo <code>.rds</code> en la ruta especificada <code>../output/2020/enigh.rds</code>.</p>
 
 </div>
 </div>
