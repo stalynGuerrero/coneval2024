@@ -103,6 +103,9 @@ Estas listas de archivos permiten acceder y gestionar de manera eficiente los da
 
 #### Lectura y Combinación de Datos del Censo{-}
 
+Este bloque de código está diseñado para leer, combinar y guardar datos provenientes de múltiples archivos del censo. El objetivo es consolidar la información de diferentes fuentes en un único dataframe y almacenar los resultados intermedios y finales en archivos `.rds`.
+
+
 
 ``` r
 df <- data.frame()

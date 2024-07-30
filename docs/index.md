@@ -128,21 +128,87 @@ Estas librerías y bases de datos son fundamentales para la implementación de l
 ## Indicadores estimados {-}
 
 En esta sección se presentan los diferentes indicadores utilizados para medir y analizar la situación de pobreza y vulnerabilidad en la población. A continuación, se describen los indicadores estimados:
+### Descripción de las Funciones de Estimación en R
 
-1. Población en situación de pobreza multidimensional (I):  *13_Estimacion_ent_02.R*, *14_estimacion_municipios_ipm_pobreza.R* y  *15_estimacion_municipios_ipm_pobreza_error.R*
-2. Población en situación de pobreza moderada: *13_Estimacion_ent_02.R*, *14_estimacion_municipios_ipm_pobreza.R* y  *15_estimacion_municipios_ipm_pobreza_error.R*
-3. Población en situación de pobreza extrema: *13_Estimacion_ent_02.R*, *14_estimacion_municipios_ipm_pobreza.R* y  *15_estimacion_municipios_ipm_pobreza_error.R*
-4. Población vulnerable por carencias sociales (II): *13_Estimacion_ent_02.R*, *14_estimacion_municipios_ipm_pobreza.R* y  *15_estimacion_municipios_ipm_pobreza_error.R*
-5. Población vulnerable por ingresos (III): *13_Estimacion_ent_02.R*, *14_estimacion_municipios_ipm_pobreza.R* y  *15_estimacion_municipios_ipm_pobreza_error.R*
-6. Población no pobre multidimensional y no vulnerable (IV): *13_Estimacion_ent_02.R*, *14_estimacion_municipios_ipm_pobreza.R* y  *15_estimacion_municipios_ipm_pobreza_error.R*
-7. Población con al menos una carencia social (tol_ic_1): *17_estimacion_municipios_carencias.R* y *18_estimacion_municipios_carencias_error.R* 
-8. Población con al menos tres carencias sociales (tol_ic_2): *17_estimacion_municipios_carencias.R* y *18_estimacion_municipios_carencias_error.R*
-9. Carencia por acceso a la seguridad social (ic_segsoc): *17_estimacion_municipios_carencias.R* y *18_estimacion_municipios_carencias_error.R*
-10. Carencia por acceso a la alimentación nutritiva y de calidad (ic_ali_nc): *17_estimacion_municipios_carencias.R* y *18_estimacion_municipios_carencias_error.R*
-11. Población con ingreso inferior a la línea de pobreza extrema por ingresos (pobrea_li): *17_estimacion_municipios_carencias.R* y *18_estimacion_municipios_carencias_error.R*
-12. Población con ingreso inferior a la línea de pobreza por ingresos (pobrea_lp): *17_estimacion_municipios_carencias.R* y *18_estimacion_municipios_carencias_error.R*
-13. Rezago educativo: *20_Estimacion_directa_censo.R* 
-14. Carencia por acceso a los servicios de salud: *20_Estimacion_directa_censo.R*
-15. Carencia por calidad y espacios de la vivienda: *20_Estimacion_directa_censo.R* 
-16. Carencia por acceso a los servicios básicos en la vivienda: *20_Estimacion_directa_censo.R*
+1. **Población en situación de pobreza multidimensional (I)**
+   - **Scripts utilizados**: 
+     - *13_Estimacion_ent_02.R*
+     - *14_estimacion_municipios_ipm_pobreza.R*
+     - *15_estimacion_municipios_ipm_pobreza_error.R*
+
+2. **Población en situación de pobreza moderada**
+   - **Scripts utilizados**: 
+     - *13_Estimacion_ent_02.R*
+     - *14_estimacion_municipios_ipm_pobreza.R*
+     - *15_estimacion_municipios_ipm_pobreza_error.R*
+
+3. **Población en situación de pobreza extrema**
+   - **Scripts utilizados**: 
+     - *13_Estimacion_ent_02.R*
+     - *14_estimacion_municipios_ipm_pobreza.R*
+     - *15_estimacion_municipios_ipm_pobreza_error.R*
+
+4. **Población vulnerable por carencias sociales (II)**
+   - **Scripts utilizados**: 
+     - *13_Estimacion_ent_02.R*
+     - *14_estimacion_municipios_ipm_pobreza.R*
+     - *15_estimacion_municipios_ipm_pobreza_error.R*
+
+5. **Población vulnerable por ingresos (III)**
+   - **Scripts utilizados**: 
+     - *13_Estimacion_ent_02.R*
+     - *14_estimacion_municipios_ipm_pobreza.R*
+     - *15_estimacion_municipios_ipm_pobreza_error.R*
+
+6. **Población no pobre multidimensional y no vulnerable (IV)**
+   - **Scripts utilizados**: 
+     - *13_Estimacion_ent_02.R*
+     - *14_estimacion_municipios_ipm_pobreza.R*
+     - *15_estimacion_municipios_ipm_pobreza_error.R*
+
+7. **Población con al menos una carencia social (tol_ic_1)**
+   - **Scripts utilizados**: 
+     - *17_estimacion_municipios_carencias.R*
+     - *18_estimacion_municipios_carencias_error.R*
+
+8. **Población con al menos tres carencias sociales (tol_ic_2)**
+   - **Scripts utilizados**: 
+     - *17_estimacion_municipios_carencias.R*
+     - *18_estimacion_municipios_carencias_error.R*
+
+9. **Carencia por acceso a la seguridad social (ic_segsoc)**
+   - **Scripts utilizados**: 
+     - *17_estimacion_municipios_carencias.R*
+     - *18_estimacion_municipios_carencias_error.R*
+
+10. **Carencia por acceso a la alimentación nutritiva y de calidad (ic_ali_nc)**
+    - **Scripts utilizados**: 
+      - *17_estimacion_municipios_carencias.R*
+      - *18_estimacion_municipios_carencias_error.R*
+
+11. **Población con ingreso inferior a la línea de pobreza extrema por ingresos (pobrea_li)**
+    - **Scripts utilizados**: 
+      - *17_estimacion_municipios_carencias.R*
+      - *18_estimacion_municipios_carencias_error.R*
+
+12. **Población con ingreso inferior a la línea de pobreza por ingresos (pobrea_lp)**
+    - **Scripts utilizados**: 
+      - *17_estimacion_municipios_carencias.R*
+      - *18_estimacion_municipios_carencias_error.R*
+
+13. **Rezago educativo**
+    - **Script utilizado**: 
+      - *20_Estimacion_directa_censo.R*
+
+14. **Carencia por acceso a los servicios de salud**
+    - **Script utilizado**: 
+      - *20_Estimacion_directa_censo.R*
+
+15. **Carencia por calidad y espacios de la vivienda**
+    - **Script utilizado**: 
+      - *20_Estimacion_directa_censo.R*
+
+16. **Carencia por acceso a los servicios básicos en la vivienda**
+    - **Script utilizado**: 
+      - *20_Estimacion_directa_censo.R*
 
