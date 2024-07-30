@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Taller de instalación de capacidades en SAE</a></li>
+<li><a href="./">Manual de procesamiento.</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introducción</a>
@@ -146,7 +146,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-proyecto"><i class="fa fa-check"></i>Estructura del Proyecto</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#librerias-de-r-y-otros-insumos"><i class="fa fa-check"></i>Librerias de <em>R</em> y otros insumos</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#bases-de-datos-utilizadas"><i class="fa fa-check"></i>Bases de Datos Utilizadas</a></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html#indicadores-procesados"><i class="fa fa-check"></i>Indicadores procesados</a></li>
+<li class="chapter" data-level="" data-path="indicadores-estimados.html"><a href="indicadores-estimados.html"><i class="fa fa-check"></i>Indicadores estimados</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
@@ -168,8 +168,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a></li>
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias_error.html"><a href="estimacion_municipios_carencias_error.html"><i class="fa fa-check"></i>18_estimacion_municipios_carencias_error.R</a></li>
 <li class="chapter" data-level="" data-path="mapas_carencias.html"><a href="mapas_carencias.html"><i class="fa fa-check"></i>19_Mapas_carencias.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_directa_carencias.html"><a href="estimacion_directa_carencias.html"><i class="fa fa-check"></i>20_estimacion_directa_carencias.R</a></li>
 <li class="divider"></li>
-<li><a Taller de instalación de capacidades en SAE </a></li>
+<li><a Manual de procesamiento. </a></li>
 
 </ul>
 
@@ -197,151 +198,151 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="limpieza-del-entorno-y-carga-de-bibliotecas-5" class="section level4 unnumbered hasAnchor">
 <h4>Limpieza del Entorno y Carga de Bibliotecas<a href="modelo_unidad_py_ic_segsoc.html#limpieza-del-entorno-y-carga-de-bibliotecas-5" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Se limpia el entorno de R y se cargan las bibliotecas necesarias para el análisis, incluyendo <code>reticulate</code> para interactuar con Python.</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="modelo_unidad_py_ic_segsoc.html#cb53-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span><span class="fu">ls</span>())</span>
-<span id="cb53-2"><a href="modelo_unidad_py_ic_segsoc.html#cb53-2" tabindex="-1"></a></span>
-<span id="cb53-3"><a href="modelo_unidad_py_ic_segsoc.html#cb53-3" tabindex="-1"></a><span class="co"># Loading required libraries ----------------------------------------------</span></span>
-<span id="cb53-4"><a href="modelo_unidad_py_ic_segsoc.html#cb53-4" tabindex="-1"></a></span>
-<span id="cb53-5"><a href="modelo_unidad_py_ic_segsoc.html#cb53-5" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb53-6"><a href="modelo_unidad_py_ic_segsoc.html#cb53-6" tabindex="-1"></a><span class="fu">library</span>(nortest)</span>
-<span id="cb53-7"><a href="modelo_unidad_py_ic_segsoc.html#cb53-7" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb53-8"><a href="modelo_unidad_py_ic_segsoc.html#cb53-8" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb53-9"><a href="modelo_unidad_py_ic_segsoc.html#cb53-9" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb53-10"><a href="modelo_unidad_py_ic_segsoc.html#cb53-10" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
-<span id="cb53-11"><a href="modelo_unidad_py_ic_segsoc.html#cb53-11" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb53-12"><a href="modelo_unidad_py_ic_segsoc.html#cb53-12" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
-<span id="cb53-13"><a href="modelo_unidad_py_ic_segsoc.html#cb53-13" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span>
-<span id="cb53-14"><a href="modelo_unidad_py_ic_segsoc.html#cb53-14" tabindex="-1"></a></span>
-<span id="cb53-15"><a href="modelo_unidad_py_ic_segsoc.html#cb53-15" tabindex="-1"></a>pd <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;pandas&quot;</span>)</span>
-<span id="cb53-16"><a href="modelo_unidad_py_ic_segsoc.html#cb53-16" tabindex="-1"></a>sklearn_fs <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;sklearn.feature_selection&quot;</span>)</span>
-<span id="cb53-17"><a href="modelo_unidad_py_ic_segsoc.html#cb53-17" tabindex="-1"></a>sklearn_ensemble <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;sklearn.ensemble&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="modelo_unidad_py_ic_segsoc.html#cb55-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span><span class="fu">ls</span>())</span>
+<span id="cb55-2"><a href="modelo_unidad_py_ic_segsoc.html#cb55-2" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="modelo_unidad_py_ic_segsoc.html#cb55-3" tabindex="-1"></a><span class="co"># Loading required libraries ----------------------------------------------</span></span>
+<span id="cb55-4"><a href="modelo_unidad_py_ic_segsoc.html#cb55-4" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="modelo_unidad_py_ic_segsoc.html#cb55-5" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb55-6"><a href="modelo_unidad_py_ic_segsoc.html#cb55-6" tabindex="-1"></a><span class="fu">library</span>(nortest)</span>
+<span id="cb55-7"><a href="modelo_unidad_py_ic_segsoc.html#cb55-7" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb55-8"><a href="modelo_unidad_py_ic_segsoc.html#cb55-8" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb55-9"><a href="modelo_unidad_py_ic_segsoc.html#cb55-9" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb55-10"><a href="modelo_unidad_py_ic_segsoc.html#cb55-10" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb55-11"><a href="modelo_unidad_py_ic_segsoc.html#cb55-11" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb55-12"><a href="modelo_unidad_py_ic_segsoc.html#cb55-12" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb55-13"><a href="modelo_unidad_py_ic_segsoc.html#cb55-13" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span>
+<span id="cb55-14"><a href="modelo_unidad_py_ic_segsoc.html#cb55-14" tabindex="-1"></a></span>
+<span id="cb55-15"><a href="modelo_unidad_py_ic_segsoc.html#cb55-15" tabindex="-1"></a>pd <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;pandas&quot;</span>)</span>
+<span id="cb55-16"><a href="modelo_unidad_py_ic_segsoc.html#cb55-16" tabindex="-1"></a>sklearn_fs <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;sklearn.feature_selection&quot;</span>)</span>
+<span id="cb55-17"><a href="modelo_unidad_py_ic_segsoc.html#cb55-17" tabindex="-1"></a>sklearn_ensemble <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;sklearn.ensemble&quot;</span>)</span></code></pre></div>
 </div>
 <div id="carga-de-datos-2" class="section level4 unnumbered hasAnchor">
 <h4>Carga de Datos<a href="modelo_unidad_py_ic_segsoc.html#carga-de-datos-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Se cargan los datos de la encuesta, el censo y los predictores a nivel estatal.</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="modelo_unidad_py_ic_segsoc.html#cb54-1" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">10000000</span>)</span>
-<span id="cb54-2"><a href="modelo_unidad_py_ic_segsoc.html#cb54-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/modelos_freq.R&quot;</span>)</span>
-<span id="cb54-3"><a href="modelo_unidad_py_ic_segsoc.html#cb54-3" tabindex="-1"></a><span class="co"># Loading data ------------------------------------------------------------</span></span>
-<span id="cb54-4"><a href="modelo_unidad_py_ic_segsoc.html#cb54-4" tabindex="-1"></a></span>
-<span id="cb54-5"><a href="modelo_unidad_py_ic_segsoc.html#cb54-5" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">10000000</span>)</span>
-<span id="cb54-6"><a href="modelo_unidad_py_ic_segsoc.html#cb54-6" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>)</span>
-<span id="cb54-7"><a href="modelo_unidad_py_ic_segsoc.html#cb54-7" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
-<span id="cb54-8"><a href="modelo_unidad_py_ic_segsoc.html#cb54-8" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
-<span id="cb54-9"><a href="modelo_unidad_py_ic_segsoc.html#cb54-9" tabindex="-1"></a></span>
-<span id="cb54-10"><a href="modelo_unidad_py_ic_segsoc.html#cb54-10" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">names</span>(statelevel_predictors_df)</span>
-<span id="cb54-11"><a href="modelo_unidad_py_ic_segsoc.html#cb54-11" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> cov_names[<span class="sc">!</span><span class="fu">grepl</span>(<span class="at">x =</span> cov_names, <span class="at">pattern =</span> <span class="st">&quot;^hog_|cve_mun&quot;</span>)]</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="modelo_unidad_py_ic_segsoc.html#cb56-1" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">10000000</span>)</span>
+<span id="cb56-2"><a href="modelo_unidad_py_ic_segsoc.html#cb56-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/modelos_freq.R&quot;</span>)</span>
+<span id="cb56-3"><a href="modelo_unidad_py_ic_segsoc.html#cb56-3" tabindex="-1"></a><span class="co"># Loading data ------------------------------------------------------------</span></span>
+<span id="cb56-4"><a href="modelo_unidad_py_ic_segsoc.html#cb56-4" tabindex="-1"></a></span>
+<span id="cb56-5"><a href="modelo_unidad_py_ic_segsoc.html#cb56-5" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">10000000</span>)</span>
+<span id="cb56-6"><a href="modelo_unidad_py_ic_segsoc.html#cb56-6" tabindex="-1"></a>encuesta_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>)</span>
+<span id="cb56-7"><a href="modelo_unidad_py_ic_segsoc.html#cb56-7" tabindex="-1"></a>censo_sta <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds&quot;</span>)</span>
+<span id="cb56-8"><a href="modelo_unidad_py_ic_segsoc.html#cb56-8" tabindex="-1"></a>statelevel_predictors_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
+<span id="cb56-9"><a href="modelo_unidad_py_ic_segsoc.html#cb56-9" tabindex="-1"></a></span>
+<span id="cb56-10"><a href="modelo_unidad_py_ic_segsoc.html#cb56-10" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">names</span>(statelevel_predictors_df)</span>
+<span id="cb56-11"><a href="modelo_unidad_py_ic_segsoc.html#cb56-11" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> cov_names[<span class="sc">!</span><span class="fu">grepl</span>(<span class="at">x =</span> cov_names, <span class="at">pattern =</span> <span class="st">&quot;^hog_|cve_mun&quot;</span>)]</span></code></pre></div>
 </div>
 <div id="selección-de-variables-2" class="section level4 unnumbered hasAnchor">
 <h4>Selección de Variables<a href="modelo_unidad_py_ic_segsoc.html#selección-de-variables-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Se definen las variables de agregación y se seleccionan las variables predictoras más relevantes.</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="modelo_unidad_py_ic_segsoc.html#cb55-1" tabindex="-1"></a><span class="do">## Selección de variables</span></span>
-<span id="cb55-2"><a href="modelo_unidad_py_ic_segsoc.html#cb55-2" tabindex="-1"></a></span>
-<span id="cb55-3"><a href="modelo_unidad_py_ic_segsoc.html#cb55-3" tabindex="-1"></a>byAgrega <span class="ot">&lt;-</span></span>
-<span id="cb55-4"><a href="modelo_unidad_py_ic_segsoc.html#cb55-4" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
-<span id="cb55-5"><a href="modelo_unidad_py_ic_segsoc.html#cb55-5" tabindex="-1"></a>    <span class="st">&quot;cve_mun&quot;</span>,</span>
-<span id="cb55-6"><a href="modelo_unidad_py_ic_segsoc.html#cb55-6" tabindex="-1"></a>    <span class="st">&quot;area&quot;</span>,</span>
-<span id="cb55-7"><a href="modelo_unidad_py_ic_segsoc.html#cb55-7" tabindex="-1"></a>    <span class="st">&quot;sexo&quot;</span>,</span>
-<span id="cb55-8"><a href="modelo_unidad_py_ic_segsoc.html#cb55-8" tabindex="-1"></a>    <span class="st">&quot;edad&quot;</span>,</span>
-<span id="cb55-9"><a href="modelo_unidad_py_ic_segsoc.html#cb55-9" tabindex="-1"></a>    <span class="st">&quot;discapacidad&quot;</span>,</span>
-<span id="cb55-10"><a href="modelo_unidad_py_ic_segsoc.html#cb55-10" tabindex="-1"></a>    <span class="st">&quot;hlengua&quot;</span>,</span>
-<span id="cb55-11"><a href="modelo_unidad_py_ic_segsoc.html#cb55-11" tabindex="-1"></a>    <span class="st">&quot;nivel_edu&quot;</span> )</span>
-<span id="cb55-12"><a href="modelo_unidad_py_ic_segsoc.html#cb55-12" tabindex="-1"></a></span>
-<span id="cb55-13"><a href="modelo_unidad_py_ic_segsoc.html#cb55-13" tabindex="-1"></a><span class="co"># encuesta_sta2 &lt;- encuesta_sta %&gt;%   mutate(</span></span>
-<span id="cb55-14"><a href="modelo_unidad_py_ic_segsoc.html#cb55-14" tabindex="-1"></a><span class="co">#   yk = as.factor(ifelse(ic_asegsoc == 1 ,1,0))) %&gt;%</span></span>
-<span id="cb55-15"><a href="modelo_unidad_py_ic_segsoc.html#cb55-15" tabindex="-1"></a><span class="co">#   inner_join(statelevel_predictors_df[, c(&quot;cve_mun&quot;,cov_names)])</span></span>
-<span id="cb55-16"><a href="modelo_unidad_py_ic_segsoc.html#cb55-16" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb55-17"><a href="modelo_unidad_py_ic_segsoc.html#cb55-17" tabindex="-1"></a><span class="co"># table(encuesta_sta2$yk, encuesta_sta2$ic_segsoc)</span></span>
-<span id="cb55-18"><a href="modelo_unidad_py_ic_segsoc.html#cb55-18" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb55-19"><a href="modelo_unidad_py_ic_segsoc.html#cb55-19" tabindex="-1"></a><span class="co"># # Convertir &#39;encuesta_sta2&#39; a un dataframe de Python</span></span>
-<span id="cb55-20"><a href="modelo_unidad_py_ic_segsoc.html#cb55-20" tabindex="-1"></a><span class="co"># encuesta_sta2_py &lt;- pd$DataFrame(encuesta_sta2)</span></span>
-<span id="cb55-21"><a href="modelo_unidad_py_ic_segsoc.html#cb55-21" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb55-22"><a href="modelo_unidad_py_ic_segsoc.html#cb55-22" tabindex="-1"></a><span class="co"># # Obtener &#39;X&#39; y &#39;y&#39; del dataframe de Python</span></span>
-<span id="cb55-23"><a href="modelo_unidad_py_ic_segsoc.html#cb55-23" tabindex="-1"></a><span class="co"># X &lt;- encuesta_sta2_py[cov_names]</span></span>
-<span id="cb55-24"><a href="modelo_unidad_py_ic_segsoc.html#cb55-24" tabindex="-1"></a><span class="co"># y &lt;- encuesta_sta2_py[[&#39;yk&#39;]]</span></span>
-<span id="cb55-25"><a href="modelo_unidad_py_ic_segsoc.html#cb55-25" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb55-26"><a href="modelo_unidad_py_ic_segsoc.html#cb55-26" tabindex="-1"></a><span class="co"># # Crear el modelo de clasificación, por ejemplo, un Random Forest</span></span>
-<span id="cb55-27"><a href="modelo_unidad_py_ic_segsoc.html#cb55-27" tabindex="-1"></a><span class="co"># modelo &lt;- sklearn_ensemble$RandomForestClassifier()</span></span>
-<span id="cb55-28"><a href="modelo_unidad_py_ic_segsoc.html#cb55-28" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb55-29"><a href="modelo_unidad_py_ic_segsoc.html#cb55-29" tabindex="-1"></a><span class="co"># # Crear el selector RFE con el modelo y el número de características a seleccionar</span></span>
-<span id="cb55-30"><a href="modelo_unidad_py_ic_segsoc.html#cb55-30" tabindex="-1"></a><span class="co"># selector &lt;- sklearn_fs$RFE(modelo, n_features_to_select = as.integer(10))</span></span>
-<span id="cb55-31"><a href="modelo_unidad_py_ic_segsoc.html#cb55-31" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb55-32"><a href="modelo_unidad_py_ic_segsoc.html#cb55-32" tabindex="-1"></a><span class="co"># # Ajustar los datos</span></span>
-<span id="cb55-33"><a href="modelo_unidad_py_ic_segsoc.html#cb55-33" tabindex="-1"></a><span class="co"># selector$fit(X, y)</span></span>
-<span id="cb55-34"><a href="modelo_unidad_py_ic_segsoc.html#cb55-34" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb55-35"><a href="modelo_unidad_py_ic_segsoc.html#cb55-35" tabindex="-1"></a><span class="co"># # Obtener las variables seleccionadas</span></span>
-<span id="cb55-36"><a href="modelo_unidad_py_ic_segsoc.html#cb55-36" tabindex="-1"></a><span class="co"># variables_seleccionadas &lt;- X[selector$support_] %&gt;% names()</span></span>
-<span id="cb55-37"><a href="modelo_unidad_py_ic_segsoc.html#cb55-37" tabindex="-1"></a></span>
-<span id="cb55-38"><a href="modelo_unidad_py_ic_segsoc.html#cb55-38" tabindex="-1"></a>variables_seleccionadas <span class="ot">&lt;-</span></span>
-<span id="cb55-39"><a href="modelo_unidad_py_ic_segsoc.html#cb55-39" tabindex="-1"></a>  <span class="fu">c</span>(</span>
-<span id="cb55-40"><a href="modelo_unidad_py_ic_segsoc.html#cb55-40" tabindex="-1"></a>    <span class="st">&quot;porc_rur&quot;</span>,</span>
-<span id="cb55-41"><a href="modelo_unidad_py_ic_segsoc.html#cb55-41" tabindex="-1"></a>    <span class="st">&quot;porc_urb&quot;</span>,</span>
-<span id="cb55-42"><a href="modelo_unidad_py_ic_segsoc.html#cb55-42" tabindex="-1"></a>    <span class="st">&quot;porc_ing_ilpi_rur&quot;</span>,</span>
-<span id="cb55-43"><a href="modelo_unidad_py_ic_segsoc.html#cb55-43" tabindex="-1"></a>    <span class="st">&quot;porc_ing_ilpi_urb&quot;</span>,</span>
-<span id="cb55-44"><a href="modelo_unidad_py_ic_segsoc.html#cb55-44" tabindex="-1"></a>    <span class="st">&quot;porc_jub_urb&quot;</span>,</span>
-<span id="cb55-45"><a href="modelo_unidad_py_ic_segsoc.html#cb55-45" tabindex="-1"></a>    <span class="st">&quot;porc_segsoc15&quot;</span>,</span>
-<span id="cb55-46"><a href="modelo_unidad_py_ic_segsoc.html#cb55-46" tabindex="-1"></a>    <span class="st">&quot;plp15&quot;</span>,</span>
-<span id="cb55-47"><a href="modelo_unidad_py_ic_segsoc.html#cb55-47" tabindex="-1"></a>    <span class="st">&quot;ictpc15&quot;</span>,</span>
-<span id="cb55-48"><a href="modelo_unidad_py_ic_segsoc.html#cb55-48" tabindex="-1"></a>    <span class="st">&quot;pob_urb&quot;</span>,</span>
-<span id="cb55-49"><a href="modelo_unidad_py_ic_segsoc.html#cb55-49" tabindex="-1"></a>    <span class="st">&quot;pob_tot&quot;</span></span>
-<span id="cb55-50"><a href="modelo_unidad_py_ic_segsoc.html#cb55-50" tabindex="-1"></a>  )</span>
-<span id="cb55-51"><a href="modelo_unidad_py_ic_segsoc.html#cb55-51" tabindex="-1"></a></span>
-<span id="cb55-52"><a href="modelo_unidad_py_ic_segsoc.html#cb55-52" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb55-53"><a href="modelo_unidad_py_ic_segsoc.html#cb55-53" tabindex="-1"></a>  <span class="st">&quot;modifica_humana&quot;</span>,</span>
-<span id="cb55-54"><a href="modelo_unidad_py_ic_segsoc.html#cb55-54" tabindex="-1"></a>  <span class="st">&quot;acceso_hosp&quot;</span>,</span>
-<span id="cb55-55"><a href="modelo_unidad_py_ic_segsoc.html#cb55-55" tabindex="-1"></a>  <span class="st">&quot;acceso_hosp_caminando&quot;</span>,</span>
-<span id="cb55-56"><a href="modelo_unidad_py_ic_segsoc.html#cb55-56" tabindex="-1"></a>  <span class="st">&quot;cubrimiento_cultivo&quot;</span>,</span>
-<span id="cb55-57"><a href="modelo_unidad_py_ic_segsoc.html#cb55-57" tabindex="-1"></a>  <span class="st">&quot;cubrimiento_urbano&quot;</span>,</span>
-<span id="cb55-58"><a href="modelo_unidad_py_ic_segsoc.html#cb55-58" tabindex="-1"></a>  <span class="st">&quot;luces_nocturnas&quot;</span>,</span>
-<span id="cb55-59"><a href="modelo_unidad_py_ic_segsoc.html#cb55-59" tabindex="-1"></a>  variables_seleccionadas</span>
-<span id="cb55-60"><a href="modelo_unidad_py_ic_segsoc.html#cb55-60" tabindex="-1"></a>)</span>
-<span id="cb55-61"><a href="modelo_unidad_py_ic_segsoc.html#cb55-61" tabindex="-1"></a></span>
-<span id="cb55-62"><a href="modelo_unidad_py_ic_segsoc.html#cb55-62" tabindex="-1"></a>cov_registros <span class="ot">&lt;-</span></span>
-<span id="cb55-63"><a href="modelo_unidad_py_ic_segsoc.html#cb55-63" tabindex="-1"></a>  <span class="fu">setdiff</span>(</span>
-<span id="cb55-64"><a href="modelo_unidad_py_ic_segsoc.html#cb55-64" tabindex="-1"></a>    cov_names,</span>
-<span id="cb55-65"><a href="modelo_unidad_py_ic_segsoc.html#cb55-65" tabindex="-1"></a>    <span class="fu">c</span>(</span>
-<span id="cb55-66"><a href="modelo_unidad_py_ic_segsoc.html#cb55-66" tabindex="-1"></a>      <span class="st">&quot;elec_mun20&quot;</span>,</span>
-<span id="cb55-67"><a href="modelo_unidad_py_ic_segsoc.html#cb55-67" tabindex="-1"></a>      <span class="st">&quot;elec_mun19&quot;</span>,</span>
-<span id="cb55-68"><a href="modelo_unidad_py_ic_segsoc.html#cb55-68" tabindex="-1"></a>      <span class="st">&quot;transf_gobpc_15_20&quot;</span>,</span>
-<span id="cb55-69"><a href="modelo_unidad_py_ic_segsoc.html#cb55-69" tabindex="-1"></a>      <span class="st">&quot;derhab_pea_15_20&quot;</span>,</span>
-<span id="cb55-70"><a href="modelo_unidad_py_ic_segsoc.html#cb55-70" tabindex="-1"></a>      <span class="st">&quot;vabpc_15_19&quot;</span>,</span>
-<span id="cb55-71"><a href="modelo_unidad_py_ic_segsoc.html#cb55-71" tabindex="-1"></a>      <span class="st">&quot;itlpis_15_20&quot;</span>,</span>
-<span id="cb55-72"><a href="modelo_unidad_py_ic_segsoc.html#cb55-72" tabindex="-1"></a>      <span class="st">&quot;remespc_15_20&quot;</span>,</span>
-<span id="cb55-73"><a href="modelo_unidad_py_ic_segsoc.html#cb55-73" tabindex="-1"></a>      <span class="st">&quot;desem_15_20&quot;</span>,</span>
-<span id="cb55-74"><a href="modelo_unidad_py_ic_segsoc.html#cb55-74" tabindex="-1"></a>      <span class="st">&quot;porc_urb&quot;</span>,</span>
-<span id="cb55-75"><a href="modelo_unidad_py_ic_segsoc.html#cb55-75" tabindex="-1"></a>      <span class="st">&quot;edad65mas_urb&quot;</span>,</span>
-<span id="cb55-76"><a href="modelo_unidad_py_ic_segsoc.html#cb55-76" tabindex="-1"></a>      <span class="st">&quot;pob_tot&quot;</span>,</span>
-<span id="cb55-77"><a href="modelo_unidad_py_ic_segsoc.html#cb55-77" tabindex="-1"></a>      <span class="st">&quot;acc_muyalto&quot;</span>,</span>
-<span id="cb55-78"><a href="modelo_unidad_py_ic_segsoc.html#cb55-78" tabindex="-1"></a>      <span class="st">&quot;smg1&quot;</span>,</span>
-<span id="cb55-79"><a href="modelo_unidad_py_ic_segsoc.html#cb55-79" tabindex="-1"></a>      <span class="st">&quot;ql_porc_cpa_rur&quot;</span>,</span>
-<span id="cb55-80"><a href="modelo_unidad_py_ic_segsoc.html#cb55-80" tabindex="-1"></a>      <span class="st">&quot;ql_porc_cpa_urb&quot;</span></span>
-<span id="cb55-81"><a href="modelo_unidad_py_ic_segsoc.html#cb55-81" tabindex="-1"></a>    )</span>
-<span id="cb55-82"><a href="modelo_unidad_py_ic_segsoc.html#cb55-82" tabindex="-1"></a>  )</span>
-<span id="cb55-83"><a href="modelo_unidad_py_ic_segsoc.html#cb55-83" tabindex="-1"></a></span>
-<span id="cb55-84"><a href="modelo_unidad_py_ic_segsoc.html#cb55-84" tabindex="-1"></a>cov_registros <span class="ot">&lt;-</span> <span class="fu">paste0</span>(cov_registros, <span class="at">collapse =</span> <span class="st">&quot; + &quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="modelo_unidad_py_ic_segsoc.html#cb57-1" tabindex="-1"></a><span class="do">## Selección de variables</span></span>
+<span id="cb57-2"><a href="modelo_unidad_py_ic_segsoc.html#cb57-2" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="modelo_unidad_py_ic_segsoc.html#cb57-3" tabindex="-1"></a>byAgrega <span class="ot">&lt;-</span></span>
+<span id="cb57-4"><a href="modelo_unidad_py_ic_segsoc.html#cb57-4" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
+<span id="cb57-5"><a href="modelo_unidad_py_ic_segsoc.html#cb57-5" tabindex="-1"></a>    <span class="st">&quot;cve_mun&quot;</span>,</span>
+<span id="cb57-6"><a href="modelo_unidad_py_ic_segsoc.html#cb57-6" tabindex="-1"></a>    <span class="st">&quot;area&quot;</span>,</span>
+<span id="cb57-7"><a href="modelo_unidad_py_ic_segsoc.html#cb57-7" tabindex="-1"></a>    <span class="st">&quot;sexo&quot;</span>,</span>
+<span id="cb57-8"><a href="modelo_unidad_py_ic_segsoc.html#cb57-8" tabindex="-1"></a>    <span class="st">&quot;edad&quot;</span>,</span>
+<span id="cb57-9"><a href="modelo_unidad_py_ic_segsoc.html#cb57-9" tabindex="-1"></a>    <span class="st">&quot;discapacidad&quot;</span>,</span>
+<span id="cb57-10"><a href="modelo_unidad_py_ic_segsoc.html#cb57-10" tabindex="-1"></a>    <span class="st">&quot;hlengua&quot;</span>,</span>
+<span id="cb57-11"><a href="modelo_unidad_py_ic_segsoc.html#cb57-11" tabindex="-1"></a>    <span class="st">&quot;nivel_edu&quot;</span> )</span>
+<span id="cb57-12"><a href="modelo_unidad_py_ic_segsoc.html#cb57-12" tabindex="-1"></a></span>
+<span id="cb57-13"><a href="modelo_unidad_py_ic_segsoc.html#cb57-13" tabindex="-1"></a><span class="co"># encuesta_sta2 &lt;- encuesta_sta %&gt;%   mutate(</span></span>
+<span id="cb57-14"><a href="modelo_unidad_py_ic_segsoc.html#cb57-14" tabindex="-1"></a><span class="co">#   yk = as.factor(ifelse(ic_asegsoc == 1 ,1,0))) %&gt;%</span></span>
+<span id="cb57-15"><a href="modelo_unidad_py_ic_segsoc.html#cb57-15" tabindex="-1"></a><span class="co">#   inner_join(statelevel_predictors_df[, c(&quot;cve_mun&quot;,cov_names)])</span></span>
+<span id="cb57-16"><a href="modelo_unidad_py_ic_segsoc.html#cb57-16" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb57-17"><a href="modelo_unidad_py_ic_segsoc.html#cb57-17" tabindex="-1"></a><span class="co"># table(encuesta_sta2$yk, encuesta_sta2$ic_segsoc)</span></span>
+<span id="cb57-18"><a href="modelo_unidad_py_ic_segsoc.html#cb57-18" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb57-19"><a href="modelo_unidad_py_ic_segsoc.html#cb57-19" tabindex="-1"></a><span class="co"># # Convertir &#39;encuesta_sta2&#39; a un dataframe de Python</span></span>
+<span id="cb57-20"><a href="modelo_unidad_py_ic_segsoc.html#cb57-20" tabindex="-1"></a><span class="co"># encuesta_sta2_py &lt;- pd$DataFrame(encuesta_sta2)</span></span>
+<span id="cb57-21"><a href="modelo_unidad_py_ic_segsoc.html#cb57-21" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb57-22"><a href="modelo_unidad_py_ic_segsoc.html#cb57-22" tabindex="-1"></a><span class="co"># # Obtener &#39;X&#39; y &#39;y&#39; del dataframe de Python</span></span>
+<span id="cb57-23"><a href="modelo_unidad_py_ic_segsoc.html#cb57-23" tabindex="-1"></a><span class="co"># X &lt;- encuesta_sta2_py[cov_names]</span></span>
+<span id="cb57-24"><a href="modelo_unidad_py_ic_segsoc.html#cb57-24" tabindex="-1"></a><span class="co"># y &lt;- encuesta_sta2_py[[&#39;yk&#39;]]</span></span>
+<span id="cb57-25"><a href="modelo_unidad_py_ic_segsoc.html#cb57-25" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb57-26"><a href="modelo_unidad_py_ic_segsoc.html#cb57-26" tabindex="-1"></a><span class="co"># # Crear el modelo de clasificación, por ejemplo, un Random Forest</span></span>
+<span id="cb57-27"><a href="modelo_unidad_py_ic_segsoc.html#cb57-27" tabindex="-1"></a><span class="co"># modelo &lt;- sklearn_ensemble$RandomForestClassifier()</span></span>
+<span id="cb57-28"><a href="modelo_unidad_py_ic_segsoc.html#cb57-28" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb57-29"><a href="modelo_unidad_py_ic_segsoc.html#cb57-29" tabindex="-1"></a><span class="co"># # Crear el selector RFE con el modelo y el número de características a seleccionar</span></span>
+<span id="cb57-30"><a href="modelo_unidad_py_ic_segsoc.html#cb57-30" tabindex="-1"></a><span class="co"># selector &lt;- sklearn_fs$RFE(modelo, n_features_to_select = as.integer(10))</span></span>
+<span id="cb57-31"><a href="modelo_unidad_py_ic_segsoc.html#cb57-31" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb57-32"><a href="modelo_unidad_py_ic_segsoc.html#cb57-32" tabindex="-1"></a><span class="co"># # Ajustar los datos</span></span>
+<span id="cb57-33"><a href="modelo_unidad_py_ic_segsoc.html#cb57-33" tabindex="-1"></a><span class="co"># selector$fit(X, y)</span></span>
+<span id="cb57-34"><a href="modelo_unidad_py_ic_segsoc.html#cb57-34" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb57-35"><a href="modelo_unidad_py_ic_segsoc.html#cb57-35" tabindex="-1"></a><span class="co"># # Obtener las variables seleccionadas</span></span>
+<span id="cb57-36"><a href="modelo_unidad_py_ic_segsoc.html#cb57-36" tabindex="-1"></a><span class="co"># variables_seleccionadas &lt;- X[selector$support_] %&gt;% names()</span></span>
+<span id="cb57-37"><a href="modelo_unidad_py_ic_segsoc.html#cb57-37" tabindex="-1"></a></span>
+<span id="cb57-38"><a href="modelo_unidad_py_ic_segsoc.html#cb57-38" tabindex="-1"></a>variables_seleccionadas <span class="ot">&lt;-</span></span>
+<span id="cb57-39"><a href="modelo_unidad_py_ic_segsoc.html#cb57-39" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb57-40"><a href="modelo_unidad_py_ic_segsoc.html#cb57-40" tabindex="-1"></a>    <span class="st">&quot;porc_rur&quot;</span>,</span>
+<span id="cb57-41"><a href="modelo_unidad_py_ic_segsoc.html#cb57-41" tabindex="-1"></a>    <span class="st">&quot;porc_urb&quot;</span>,</span>
+<span id="cb57-42"><a href="modelo_unidad_py_ic_segsoc.html#cb57-42" tabindex="-1"></a>    <span class="st">&quot;porc_ing_ilpi_rur&quot;</span>,</span>
+<span id="cb57-43"><a href="modelo_unidad_py_ic_segsoc.html#cb57-43" tabindex="-1"></a>    <span class="st">&quot;porc_ing_ilpi_urb&quot;</span>,</span>
+<span id="cb57-44"><a href="modelo_unidad_py_ic_segsoc.html#cb57-44" tabindex="-1"></a>    <span class="st">&quot;porc_jub_urb&quot;</span>,</span>
+<span id="cb57-45"><a href="modelo_unidad_py_ic_segsoc.html#cb57-45" tabindex="-1"></a>    <span class="st">&quot;porc_segsoc15&quot;</span>,</span>
+<span id="cb57-46"><a href="modelo_unidad_py_ic_segsoc.html#cb57-46" tabindex="-1"></a>    <span class="st">&quot;plp15&quot;</span>,</span>
+<span id="cb57-47"><a href="modelo_unidad_py_ic_segsoc.html#cb57-47" tabindex="-1"></a>    <span class="st">&quot;ictpc15&quot;</span>,</span>
+<span id="cb57-48"><a href="modelo_unidad_py_ic_segsoc.html#cb57-48" tabindex="-1"></a>    <span class="st">&quot;pob_urb&quot;</span>,</span>
+<span id="cb57-49"><a href="modelo_unidad_py_ic_segsoc.html#cb57-49" tabindex="-1"></a>    <span class="st">&quot;pob_tot&quot;</span></span>
+<span id="cb57-50"><a href="modelo_unidad_py_ic_segsoc.html#cb57-50" tabindex="-1"></a>  )</span>
+<span id="cb57-51"><a href="modelo_unidad_py_ic_segsoc.html#cb57-51" tabindex="-1"></a></span>
+<span id="cb57-52"><a href="modelo_unidad_py_ic_segsoc.html#cb57-52" tabindex="-1"></a>cov_names <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb57-53"><a href="modelo_unidad_py_ic_segsoc.html#cb57-53" tabindex="-1"></a>  <span class="st">&quot;modifica_humana&quot;</span>,</span>
+<span id="cb57-54"><a href="modelo_unidad_py_ic_segsoc.html#cb57-54" tabindex="-1"></a>  <span class="st">&quot;acceso_hosp&quot;</span>,</span>
+<span id="cb57-55"><a href="modelo_unidad_py_ic_segsoc.html#cb57-55" tabindex="-1"></a>  <span class="st">&quot;acceso_hosp_caminando&quot;</span>,</span>
+<span id="cb57-56"><a href="modelo_unidad_py_ic_segsoc.html#cb57-56" tabindex="-1"></a>  <span class="st">&quot;cubrimiento_cultivo&quot;</span>,</span>
+<span id="cb57-57"><a href="modelo_unidad_py_ic_segsoc.html#cb57-57" tabindex="-1"></a>  <span class="st">&quot;cubrimiento_urbano&quot;</span>,</span>
+<span id="cb57-58"><a href="modelo_unidad_py_ic_segsoc.html#cb57-58" tabindex="-1"></a>  <span class="st">&quot;luces_nocturnas&quot;</span>,</span>
+<span id="cb57-59"><a href="modelo_unidad_py_ic_segsoc.html#cb57-59" tabindex="-1"></a>  variables_seleccionadas</span>
+<span id="cb57-60"><a href="modelo_unidad_py_ic_segsoc.html#cb57-60" tabindex="-1"></a>)</span>
+<span id="cb57-61"><a href="modelo_unidad_py_ic_segsoc.html#cb57-61" tabindex="-1"></a></span>
+<span id="cb57-62"><a href="modelo_unidad_py_ic_segsoc.html#cb57-62" tabindex="-1"></a>cov_registros <span class="ot">&lt;-</span></span>
+<span id="cb57-63"><a href="modelo_unidad_py_ic_segsoc.html#cb57-63" tabindex="-1"></a>  <span class="fu">setdiff</span>(</span>
+<span id="cb57-64"><a href="modelo_unidad_py_ic_segsoc.html#cb57-64" tabindex="-1"></a>    cov_names,</span>
+<span id="cb57-65"><a href="modelo_unidad_py_ic_segsoc.html#cb57-65" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb57-66"><a href="modelo_unidad_py_ic_segsoc.html#cb57-66" tabindex="-1"></a>      <span class="st">&quot;elec_mun20&quot;</span>,</span>
+<span id="cb57-67"><a href="modelo_unidad_py_ic_segsoc.html#cb57-67" tabindex="-1"></a>      <span class="st">&quot;elec_mun19&quot;</span>,</span>
+<span id="cb57-68"><a href="modelo_unidad_py_ic_segsoc.html#cb57-68" tabindex="-1"></a>      <span class="st">&quot;transf_gobpc_15_20&quot;</span>,</span>
+<span id="cb57-69"><a href="modelo_unidad_py_ic_segsoc.html#cb57-69" tabindex="-1"></a>      <span class="st">&quot;derhab_pea_15_20&quot;</span>,</span>
+<span id="cb57-70"><a href="modelo_unidad_py_ic_segsoc.html#cb57-70" tabindex="-1"></a>      <span class="st">&quot;vabpc_15_19&quot;</span>,</span>
+<span id="cb57-71"><a href="modelo_unidad_py_ic_segsoc.html#cb57-71" tabindex="-1"></a>      <span class="st">&quot;itlpis_15_20&quot;</span>,</span>
+<span id="cb57-72"><a href="modelo_unidad_py_ic_segsoc.html#cb57-72" tabindex="-1"></a>      <span class="st">&quot;remespc_15_20&quot;</span>,</span>
+<span id="cb57-73"><a href="modelo_unidad_py_ic_segsoc.html#cb57-73" tabindex="-1"></a>      <span class="st">&quot;desem_15_20&quot;</span>,</span>
+<span id="cb57-74"><a href="modelo_unidad_py_ic_segsoc.html#cb57-74" tabindex="-1"></a>      <span class="st">&quot;porc_urb&quot;</span>,</span>
+<span id="cb57-75"><a href="modelo_unidad_py_ic_segsoc.html#cb57-75" tabindex="-1"></a>      <span class="st">&quot;edad65mas_urb&quot;</span>,</span>
+<span id="cb57-76"><a href="modelo_unidad_py_ic_segsoc.html#cb57-76" tabindex="-1"></a>      <span class="st">&quot;pob_tot&quot;</span>,</span>
+<span id="cb57-77"><a href="modelo_unidad_py_ic_segsoc.html#cb57-77" tabindex="-1"></a>      <span class="st">&quot;acc_muyalto&quot;</span>,</span>
+<span id="cb57-78"><a href="modelo_unidad_py_ic_segsoc.html#cb57-78" tabindex="-1"></a>      <span class="st">&quot;smg1&quot;</span>,</span>
+<span id="cb57-79"><a href="modelo_unidad_py_ic_segsoc.html#cb57-79" tabindex="-1"></a>      <span class="st">&quot;ql_porc_cpa_rur&quot;</span>,</span>
+<span id="cb57-80"><a href="modelo_unidad_py_ic_segsoc.html#cb57-80" tabindex="-1"></a>      <span class="st">&quot;ql_porc_cpa_urb&quot;</span></span>
+<span id="cb57-81"><a href="modelo_unidad_py_ic_segsoc.html#cb57-81" tabindex="-1"></a>    )</span>
+<span id="cb57-82"><a href="modelo_unidad_py_ic_segsoc.html#cb57-82" tabindex="-1"></a>  )</span>
+<span id="cb57-83"><a href="modelo_unidad_py_ic_segsoc.html#cb57-83" tabindex="-1"></a></span>
+<span id="cb57-84"><a href="modelo_unidad_py_ic_segsoc.html#cb57-84" tabindex="-1"></a>cov_registros <span class="ot">&lt;-</span> <span class="fu">paste0</span>(cov_registros, <span class="at">collapse =</span> <span class="st">&quot; + &quot;</span>)</span></code></pre></div>
 </div>
 <div id="definición-de-la-fórmula-del-modelo-1" class="section level4 unnumbered hasAnchor">
 <h4>Definición de la Fórmula del Modelo<a href="modelo_unidad_py_ic_segsoc.html#definición-de-la-fórmula-del-modelo-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Se define la fórmula del modelo incluyendo los efectos aleatorios y las variables predictoras seleccionadas.</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="modelo_unidad_py_ic_segsoc.html#cb56-1" tabindex="-1"></a>formula_model <span class="ot">&lt;-</span></span>
-<span id="cb56-2"><a href="modelo_unidad_py_ic_segsoc.html#cb56-2" tabindex="-1"></a>  <span class="fu">paste0</span>(</span>
-<span id="cb56-3"><a href="modelo_unidad_py_ic_segsoc.html#cb56-3" tabindex="-1"></a>    <span class="st">&quot;cbind(si, no) ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) +  nivel_edu + edad  + ent + area + sexo &quot;</span>,</span>
-<span id="cb56-4"><a href="modelo_unidad_py_ic_segsoc.html#cb56-4" tabindex="-1"></a>    <span class="st">&quot; + &quot;</span>,</span>
-<span id="cb56-5"><a href="modelo_unidad_py_ic_segsoc.html#cb56-5" tabindex="-1"></a>    cov_registros</span>
-<span id="cb56-6"><a href="modelo_unidad_py_ic_segsoc.html#cb56-6" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="modelo_unidad_py_ic_segsoc.html#cb58-1" tabindex="-1"></a>formula_model <span class="ot">&lt;-</span></span>
+<span id="cb58-2"><a href="modelo_unidad_py_ic_segsoc.html#cb58-2" tabindex="-1"></a>  <span class="fu">paste0</span>(</span>
+<span id="cb58-3"><a href="modelo_unidad_py_ic_segsoc.html#cb58-3" tabindex="-1"></a>    <span class="st">&quot;cbind(si, no) ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) +  nivel_edu + edad  + ent + area + sexo &quot;</span>,</span>
+<span id="cb58-4"><a href="modelo_unidad_py_ic_segsoc.html#cb58-4" tabindex="-1"></a>    <span class="st">&quot; + &quot;</span>,</span>
+<span id="cb58-5"><a href="modelo_unidad_py_ic_segsoc.html#cb58-5" tabindex="-1"></a>    cov_registros</span>
+<span id="cb58-6"><a href="modelo_unidad_py_ic_segsoc.html#cb58-6" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="ajuste-del-modelo-2" class="section level4 unnumbered hasAnchor">
 <h4>Ajuste del Modelo<a href="modelo_unidad_py_ic_segsoc.html#ajuste-del-modelo-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Se ajusta el modelo utilizando la función <code>modelo_dummy</code> y se guarda el resultado.</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="modelo_unidad_py_ic_segsoc.html#cb57-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">modelo_dummy</span>(</span>
-<span id="cb57-2"><a href="modelo_unidad_py_ic_segsoc.html#cb57-2" tabindex="-1"></a>  <span class="at">encuesta_sta =</span> encuesta_sta <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">yk =</span> <span class="fu">ifelse</span>(ic_segsoc <span class="sc">==</span> <span class="dv">1</span> ,<span class="dv">1</span>,<span class="dv">0</span>)),</span>
-<span id="cb57-3"><a href="modelo_unidad_py_ic_segsoc.html#cb57-3" tabindex="-1"></a>  <span class="at">predictors =</span> statelevel_predictors_df,</span>
-<span id="cb57-4"><a href="modelo_unidad_py_ic_segsoc.html#cb57-4" tabindex="-1"></a>  <span class="at">censo_sta =</span> censo_sta,</span>
-<span id="cb57-5"><a href="modelo_unidad_py_ic_segsoc.html#cb57-5" tabindex="-1"></a>  <span class="at">formula_mod =</span> formula_model,</span>
-<span id="cb57-6"><a href="modelo_unidad_py_ic_segsoc.html#cb57-6" tabindex="-1"></a>  <span class="at">byAgrega =</span> byAgrega</span>
-<span id="cb57-7"><a href="modelo_unidad_py_ic_segsoc.html#cb57-7" tabindex="-1"></a>)</span>
-<span id="cb57-8"><a href="modelo_unidad_py_ic_segsoc.html#cb57-8" tabindex="-1"></a></span>
-<span id="cb57-9"><a href="modelo_unidad_py_ic_segsoc.html#cb57-9" tabindex="-1"></a><span class="co">#--- Exporting Bayesian Multilevel Model Results ---#</span></span>
-<span id="cb57-10"><a href="modelo_unidad_py_ic_segsoc.html#cb57-10" tabindex="-1"></a></span>
-<span id="cb57-11"><a href="modelo_unidad_py_ic_segsoc.html#cb57-11" tabindex="-1"></a><span class="fu">saveRDS</span>(fit, <span class="at">file =</span> <span class="st">&quot;output/2020/modelos/fit_mrp_ic_segsoc.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="modelo_unidad_py_ic_segsoc.html#cb59-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">modelo_dummy</span>(</span>
+<span id="cb59-2"><a href="modelo_unidad_py_ic_segsoc.html#cb59-2" tabindex="-1"></a>  <span class="at">encuesta_sta =</span> encuesta_sta <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">yk =</span> <span class="fu">ifelse</span>(ic_segsoc <span class="sc">==</span> <span class="dv">1</span> ,<span class="dv">1</span>,<span class="dv">0</span>)),</span>
+<span id="cb59-3"><a href="modelo_unidad_py_ic_segsoc.html#cb59-3" tabindex="-1"></a>  <span class="at">predictors =</span> statelevel_predictors_df,</span>
+<span id="cb59-4"><a href="modelo_unidad_py_ic_segsoc.html#cb59-4" tabindex="-1"></a>  <span class="at">censo_sta =</span> censo_sta,</span>
+<span id="cb59-5"><a href="modelo_unidad_py_ic_segsoc.html#cb59-5" tabindex="-1"></a>  <span class="at">formula_mod =</span> formula_model,</span>
+<span id="cb59-6"><a href="modelo_unidad_py_ic_segsoc.html#cb59-6" tabindex="-1"></a>  <span class="at">byAgrega =</span> byAgrega</span>
+<span id="cb59-7"><a href="modelo_unidad_py_ic_segsoc.html#cb59-7" tabindex="-1"></a>)</span>
+<span id="cb59-8"><a href="modelo_unidad_py_ic_segsoc.html#cb59-8" tabindex="-1"></a></span>
+<span id="cb59-9"><a href="modelo_unidad_py_ic_segsoc.html#cb59-9" tabindex="-1"></a><span class="co">#--- Exporting Bayesian Multilevel Model Results ---#</span></span>
+<span id="cb59-10"><a href="modelo_unidad_py_ic_segsoc.html#cb59-10" tabindex="-1"></a></span>
+<span id="cb59-11"><a href="modelo_unidad_py_ic_segsoc.html#cb59-11" tabindex="-1"></a><span class="fu">saveRDS</span>(fit, <span class="at">file =</span> <span class="st">&quot;output/2020/modelos/fit_mrp_ic_segsoc.rds&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>
@@ -393,7 +394,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.pdf", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.epub", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.mobi"],
+"download": ["Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.pdf", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.epub", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.mobi"],
 "search": {
 "engine": "fuse",
 "options": null

@@ -30,7 +30,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
+<link rel="prev" href="indicadores-estimados.html"/>
 <link rel="next" href="descarga_satelitales.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Taller de instalación de capacidades en SAE</a></li>
+<li><a href="./">Manual de procesamiento.</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introducción</a>
@@ -146,7 +146,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-proyecto"><i class="fa fa-check"></i>Estructura del Proyecto</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#librerias-de-r-y-otros-insumos"><i class="fa fa-check"></i>Librerias de <em>R</em> y otros insumos</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#bases-de-datos-utilizadas"><i class="fa fa-check"></i>Bases de Datos Utilizadas</a></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html#indicadores-procesados"><i class="fa fa-check"></i>Indicadores procesados</a></li>
+<li class="chapter" data-level="" data-path="indicadores-estimados.html"><a href="indicadores-estimados.html"><i class="fa fa-check"></i>Indicadores estimados</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
@@ -168,8 +168,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a></li>
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias_error.html"><a href="estimacion_municipios_carencias_error.html"><i class="fa fa-check"></i>18_estimacion_municipios_carencias_error.R</a></li>
 <li class="chapter" data-level="" data-path="mapas_carencias.html"><a href="mapas_carencias.html"><i class="fa fa-check"></i>19_Mapas_carencias.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_directa_carencias.html"><a href="estimacion_directa_carencias.html"><i class="fa fa-check"></i>20_estimacion_directa_carencias.R</a></li>
 <li class="divider"></li>
-<li><a Taller de instalación de capacidades en SAE </a></li>
+<li><a Manual de procesamiento. </a></li>
 
 </ul>
 
@@ -217,6 +218,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="definición-de-variables-y-obtención-de-archivos" class="section level4 unnumbered hasAnchor">
 <h4>Definición de Variables y Obtención de Archivos<a href="union_bases.html#definición-de-variables-y-obtención-de-archivos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Para llevar a cabo la validación y procesamiento de datos del censo 2020, se define un conjunto de variables que serán validadas. Estas variables incluyen indicadores clave como rezago educativo (<code>ic_rezedu</code>), acceso a servicios de salud (<code>ic_asalud</code>), seguridad social (<code>ic_segsoc</code>), calidad de la vivienda (<code>ic_cv</code>), servicios básicos en la vivienda (<code>ic_sbv</code>), acceso a alimentación nutritiva y de calidad (<code>ic_ali_nc</code>), y el índice de pobreza multidimensional (<code>ictpc</code>).</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="union_bases.html#cb4-1" tabindex="-1"></a>validar_var <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb4-2"><a href="union_bases.html#cb4-2" tabindex="-1"></a>  <span class="st">&quot;ic_rezedu&quot;</span>,</span>
 <span id="cb4-3"><a href="union_bases.html#cb4-3" tabindex="-1"></a>  <span class="st">&quot;ic_asalud&quot;</span>,</span>
@@ -226,78 +228,87 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-7"><a href="union_bases.html#cb4-7" tabindex="-1"></a>  <span class="st">&quot;ic_ali_nc&quot;</span>,</span>
 <span id="cb4-8"><a href="union_bases.html#cb4-8" tabindex="-1"></a>  <span class="st">&quot;ictpc&quot;</span></span>
 <span id="cb4-9"><a href="union_bases.html#cb4-9" tabindex="-1"></a>)</span></code></pre></div>
-<p>Se define un conjunto de variables que serán validadas.</p>
+<p>Posteriormente, se obtienen listas de archivos con extensión <code>.dta</code>, que corresponden a diferentes conjuntos de datos del censo 2020. Estos archivos se organizan en tres categorías principales:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Archivos de muestra del censo 2020 por estado</strong>: Se buscan archivos en la ruta <code>../input/2020/muestra_ampliada/SegSocial/SegSoc/</code> que contengan información de seguridad social.</li>
+</ol>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="union_bases.html#cb5-1" tabindex="-1"></a>file_muestra_censo_2020_estado <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
 <span id="cb5-2"><a href="union_bases.html#cb5-2" tabindex="-1"></a>  <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/SegSoc/&quot;</span>,</span>
 <span id="cb5-3"><a href="union_bases.html#cb5-3" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb5-4"><a href="union_bases.html#cb5-4" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
-<span id="cb5-5"><a href="union_bases.html#cb5-5" tabindex="-1"></a>)</span>
-<span id="cb5-6"><a href="union_bases.html#cb5-6" tabindex="-1"></a>file_muestra_censo_2020_estado_complemento <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
-<span id="cb5-7"><a href="union_bases.html#cb5-7" tabindex="-1"></a>  <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/&quot;</span>,</span>
-<span id="cb5-8"><a href="union_bases.html#cb5-8" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-9"><a href="union_bases.html#cb5-9" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
-<span id="cb5-10"><a href="union_bases.html#cb5-10" tabindex="-1"></a>)</span>
-<span id="cb5-11"><a href="union_bases.html#cb5-11" tabindex="-1"></a>muestra_cuestionario_ampliado_censo_2020_estado <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
-<span id="cb5-12"><a href="union_bases.html#cb5-12" tabindex="-1"></a>  <span class="st">&quot;../input/2020/muestra_ampliada/IndicadoresCenso/&quot;</span>,</span>
-<span id="cb5-13"><a href="union_bases.html#cb5-13" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-14"><a href="union_bases.html#cb5-14" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
-<span id="cb5-15"><a href="union_bases.html#cb5-15" tabindex="-1"></a>)</span></code></pre></div>
-<p>Se obtienen listas de archivos <code>.dta</code> correspondientes a diferentes conjuntos de datos del censo 2020.</p>
+<span id="cb5-5"><a href="union_bases.html#cb5-5" tabindex="-1"></a>)</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Archivos complementarios de muestra del censo 2020 por estado</strong>: Se buscan archivos adicionales en la ruta <code>../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/</code> que contienen datos complementarios de seguridad social.</li>
+</ol>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="union_bases.html#cb6-1" tabindex="-1"></a>file_muestra_censo_2020_estado_complemento <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb6-2"><a href="union_bases.html#cb6-2" tabindex="-1"></a>  <span class="st">&quot;../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/&quot;</span>,</span>
+<span id="cb6-3"><a href="union_bases.html#cb6-3" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-4"><a href="union_bases.html#cb6-4" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
+<span id="cb6-5"><a href="union_bases.html#cb6-5" tabindex="-1"></a>)</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Archivos de cuestionario ampliado del censo 2020 por estado</strong>: Se buscan archivos en la ruta <code>../input/2020/muestra_ampliada/IndicadoresCenso/</code> que incluyen indicadores generales del censo.</li>
+</ol>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="union_bases.html#cb7-1" tabindex="-1"></a>muestra_cuestionario_ampliado_censo_2020_estado <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb7-2"><a href="union_bases.html#cb7-2" tabindex="-1"></a>  <span class="st">&quot;../input/2020/muestra_ampliada/IndicadoresCenso/&quot;</span>,</span>
+<span id="cb7-3"><a href="union_bases.html#cb7-3" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-4"><a href="union_bases.html#cb7-4" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">&quot;dta$&quot;</span></span>
+<span id="cb7-5"><a href="union_bases.html#cb7-5" tabindex="-1"></a>)</span></code></pre></div>
+<p>Estas listas de archivos permiten acceder y gestionar de manera eficiente los datos necesarios para el análisis y validación de los indicadores de pobreza y carencias sociales del censo 2020.</p>
 </div>
 <div id="lectura-y-combinación-de-datos-del-censo" class="section level4 unnumbered hasAnchor">
 <h4>Lectura y Combinación de Datos del Censo<a href="union_bases.html#lectura-y-combinación-de-datos-del-censo" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="union_bases.html#cb6-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb6-2"><a href="union_bases.html#cb6-2" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="union_bases.html#cb6-3" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">32</span>) {</span>
-<span id="cb6-4"><a href="union_bases.html#cb6-4" tabindex="-1"></a>  muestra_censo_2020_estado_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(file_muestra_censo_2020_estado[ii])</span>
-<span id="cb6-5"><a href="union_bases.html#cb6-5" tabindex="-1"></a>  muestra_censo_2020_estado_complemento_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(file_muestra_censo_2020_estado_complemento[ii]) <span class="sc">%&gt;%</span></span>
-<span id="cb6-6"><a href="union_bases.html#cb6-6" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">id_per =</span> id_persona)</span>
-<span id="cb6-7"><a href="union_bases.html#cb6-7" tabindex="-1"></a>  muestra_cuestionario_ampliado_censo_2020_estado_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(muestra_cuestionario_ampliado_censo_2020_estado[ii])</span>
-<span id="cb6-8"><a href="union_bases.html#cb6-8" tabindex="-1"></a>  </span>
-<span id="cb6-9"><a href="union_bases.html#cb6-9" tabindex="-1"></a>  muestra_censo <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(muestra_censo_2020_estado_ii, muestra_censo_2020_estado_complemento_ii) <span class="sc">%&gt;%</span></span>
-<span id="cb6-10"><a href="union_bases.html#cb6-10" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>tamloc) <span class="sc">%&gt;%</span></span>
-<span id="cb6-11"><a href="union_bases.html#cb6-11" tabindex="-1"></a>    <span class="fu">inner_join</span>(muestra_cuestionario_ampliado_censo_2020_estado_ii)</span>
-<span id="cb6-12"><a href="union_bases.html#cb6-12" tabindex="-1"></a>  </span>
-<span id="cb6-13"><a href="union_bases.html#cb6-13" tabindex="-1"></a>  <span class="fu">saveRDS</span>(muestra_censo, <span class="fu">paste0</span>(<span class="st">&quot;../output/2020/muestra_censo/depto_&quot;</span>, ii, <span class="st">&quot;.rds&quot;</span>))</span>
-<span id="cb6-14"><a href="union_bases.html#cb6-14" tabindex="-1"></a>  </span>
-<span id="cb6-15"><a href="union_bases.html#cb6-15" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df, muestra_censo)</span>
-<span id="cb6-16"><a href="union_bases.html#cb6-16" tabindex="-1"></a>  <span class="fu">cat</span>(file_muestra_censo_2020_estado[ii], <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb6-17"><a href="union_bases.html#cb6-17" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="union_bases.html#cb8-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb8-2"><a href="union_bases.html#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="union_bases.html#cb8-3" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">32</span>) {</span>
+<span id="cb8-4"><a href="union_bases.html#cb8-4" tabindex="-1"></a>  muestra_censo_2020_estado_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(file_muestra_censo_2020_estado[ii])</span>
+<span id="cb8-5"><a href="union_bases.html#cb8-5" tabindex="-1"></a>  muestra_censo_2020_estado_complemento_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(file_muestra_censo_2020_estado_complemento[ii]) <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="union_bases.html#cb8-6" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">id_per =</span> id_persona)</span>
+<span id="cb8-7"><a href="union_bases.html#cb8-7" tabindex="-1"></a>  muestra_cuestionario_ampliado_censo_2020_estado_ii <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(muestra_cuestionario_ampliado_censo_2020_estado[ii])</span>
+<span id="cb8-8"><a href="union_bases.html#cb8-8" tabindex="-1"></a>  </span>
+<span id="cb8-9"><a href="union_bases.html#cb8-9" tabindex="-1"></a>  muestra_censo <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(muestra_censo_2020_estado_ii, muestra_censo_2020_estado_complemento_ii) <span class="sc">%&gt;%</span></span>
+<span id="cb8-10"><a href="union_bases.html#cb8-10" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>tamloc) <span class="sc">%&gt;%</span></span>
+<span id="cb8-11"><a href="union_bases.html#cb8-11" tabindex="-1"></a>    <span class="fu">inner_join</span>(muestra_cuestionario_ampliado_censo_2020_estado_ii)</span>
+<span id="cb8-12"><a href="union_bases.html#cb8-12" tabindex="-1"></a>  </span>
+<span id="cb8-13"><a href="union_bases.html#cb8-13" tabindex="-1"></a>  <span class="fu">saveRDS</span>(muestra_censo, <span class="fu">paste0</span>(<span class="st">&quot;../output/2020/muestra_censo/depto_&quot;</span>, ii, <span class="st">&quot;.rds&quot;</span>))</span>
+<span id="cb8-14"><a href="union_bases.html#cb8-14" tabindex="-1"></a>  </span>
+<span id="cb8-15"><a href="union_bases.html#cb8-15" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df, muestra_censo)</span>
+<span id="cb8-16"><a href="union_bases.html#cb8-16" tabindex="-1"></a>  <span class="fu">cat</span>(file_muestra_censo_2020_estado[ii], <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-17"><a href="union_bases.html#cb8-17" tabindex="-1"></a>}</span></code></pre></div>
 <p>Se iteran los archivos de datos del censo, se combinan y se almacenan en archivos <code>.rds</code> individuales y en un dataframe único.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="union_bases.html#cb7-1" tabindex="-1"></a><span class="fu">saveRDS</span>(df, <span class="at">file =</span> <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="union_bases.html#cb9-1" tabindex="-1"></a><span class="fu">saveRDS</span>(df, <span class="at">file =</span> <span class="st">&quot;../output/2020/muestra_cuestionario_ampliado.rds&quot;</span>)</span></code></pre></div>
 <p>Se guarda el dataframe combinado en un archivo <code>.rds</code>.</p>
 </div>
 <div id="lectura-y-combinación-de-datos-de-la-enigh" class="section level4 unnumbered hasAnchor">
 <h4>Lectura y Combinación de Datos de la ENIGH<a href="union_bases.html#lectura-y-combinación-de-datos-de-la-enigh" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="union_bases.html#cb8-1" tabindex="-1"></a>enigh_hogares <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/base_hogares20.dta&quot;</span>)</span>
-<span id="cb8-2"><a href="union_bases.html#cb8-2" tabindex="-1"></a>enigh_pobreza <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/pobreza_20.dta&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-3"><a href="union_bases.html#cb8-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ent)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="union_bases.html#cb10-1" tabindex="-1"></a>enigh_hogares <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/base_hogares20.dta&quot;</span>)</span>
+<span id="cb10-2"><a href="union_bases.html#cb10-2" tabindex="-1"></a>enigh_pobreza <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;../input/2020/enigh/pobreza_20.dta&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-3"><a href="union_bases.html#cb10-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ent)</span></code></pre></div>
 <p>Se leen los datos de hogares y pobreza de la ENIGH 2020.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="union_bases.html#cb9-1" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_pobreza<span class="sc">$</span>folioviv)</span>
-<span id="cb9-2"><a href="union_bases.html#cb9-2" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_hogares<span class="sc">$</span>folioviv)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="union_bases.html#cb11-1" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_pobreza<span class="sc">$</span>folioviv)</span>
+<span id="cb11-2"><a href="union_bases.html#cb11-2" tabindex="-1"></a><span class="fu">n_distinct</span>(enigh_hogares<span class="sc">$</span>folioviv)</span></code></pre></div>
 <p>Se verifica la unicidad de los identificadores de viviendas.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="union_bases.html#cb10-1" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(</span>
-<span id="cb10-2"><a href="union_bases.html#cb10-2" tabindex="-1"></a>  enigh_pobreza,</span>
-<span id="cb10-3"><a href="union_bases.html#cb10-3" tabindex="-1"></a>  enigh_hogares,</span>
-<span id="cb10-4"><a href="union_bases.html#cb10-4" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">join_by</span>(</span>
-<span id="cb10-5"><a href="union_bases.html#cb10-5" tabindex="-1"></a>    folioviv, foliohog, est_dis, upm,</span>
-<span id="cb10-6"><a href="union_bases.html#cb10-6" tabindex="-1"></a>    factor, rururb, ubica_geo</span>
-<span id="cb10-7"><a href="union_bases.html#cb10-7" tabindex="-1"></a>  ), </span>
-<span id="cb10-8"><a href="union_bases.html#cb10-8" tabindex="-1"></a>  <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">&quot;_pers&quot;</span>, <span class="st">&quot;_hog&quot;</span>)</span>
-<span id="cb10-9"><a href="union_bases.html#cb10-9" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="union_bases.html#cb12-1" tabindex="-1"></a>enigh <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(</span>
+<span id="cb12-2"><a href="union_bases.html#cb12-2" tabindex="-1"></a>  enigh_pobreza,</span>
+<span id="cb12-3"><a href="union_bases.html#cb12-3" tabindex="-1"></a>  enigh_hogares,</span>
+<span id="cb12-4"><a href="union_bases.html#cb12-4" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">join_by</span>(</span>
+<span id="cb12-5"><a href="union_bases.html#cb12-5" tabindex="-1"></a>    folioviv, foliohog, est_dis, upm,</span>
+<span id="cb12-6"><a href="union_bases.html#cb12-6" tabindex="-1"></a>    factor, rururb, ubica_geo</span>
+<span id="cb12-7"><a href="union_bases.html#cb12-7" tabindex="-1"></a>  ), </span>
+<span id="cb12-8"><a href="union_bases.html#cb12-8" tabindex="-1"></a>  <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">&quot;_pers&quot;</span>, <span class="st">&quot;_hog&quot;</span>)</span>
+<span id="cb12-9"><a href="union_bases.html#cb12-9" tabindex="-1"></a>)</span></code></pre></div>
 <p>Se combinan los datos de pobreza y hogares utilizando un <code>inner_join</code>.</p>
 </div>
 <div id="selección-y-renombramiento-de-variables" class="section level4 unnumbered hasAnchor">
 <h4>Selección y Renombramiento de Variables<a href="union_bases.html#selección-y-renombramiento-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="union_bases.html#cb11-1" tabindex="-1"></a>enigh<span class="sc">$</span>ic_ali_nc</span>
-<span id="cb11-2"><a href="union_bases.html#cb11-2" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc_pers</span>
-<span id="cb11-3"><a href="union_bases.html#cb11-3" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc <span class="ot">&lt;-</span> enigh<span class="sc">$</span>ictpc_pers</span>
-<span id="cb11-4"><a href="union_bases.html#cb11-4" tabindex="-1"></a>enigh<span class="sc">$</span>ic_segsoc</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="union_bases.html#cb13-1" tabindex="-1"></a>enigh<span class="sc">$</span>ic_ali_nc</span>
+<span id="cb13-2"><a href="union_bases.html#cb13-2" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc_pers</span>
+<span id="cb13-3"><a href="union_bases.html#cb13-3" tabindex="-1"></a>enigh<span class="sc">$</span>ictpc <span class="ot">&lt;-</span> enigh<span class="sc">$</span>ictpc_pers</span>
+<span id="cb13-4"><a href="union_bases.html#cb13-4" tabindex="-1"></a>enigh<span class="sc">$</span>ic_segsoc</span></code></pre></div>
 <p>Se seleccionan y renombran variables clave para asegurar la consistencia en el análisis.</p>
 </div>
 <div id="guardado-del-dataframe-combinado" class="section level4 unnumbered hasAnchor">
 <h4>Guardado del DataFrame Combinado<a href="union_bases.html#guardado-del-dataframe-combinado" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="union_bases.html#cb12-1" tabindex="-1"></a><span class="fu">saveRDS</span>(enigh, <span class="at">file =</span> <span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="union_bases.html#cb14-1" tabindex="-1"></a><span class="fu">saveRDS</span>(enigh, <span class="at">file =</span> <span class="st">&quot;../output/2020/enigh.rds&quot;</span>)</span></code></pre></div>
 <p>Se guarda el dataframe combinado en un archivo <code>.rds</code> para facilitar el acceso y análisis futuros.</p>
 
 </div>
@@ -307,7 +318,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="indicadores-estimados.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 <a href="descarga_satelitales.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
@@ -350,7 +361,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.pdf", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.epub", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.mobi"],
+"download": ["Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.pdf", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.epub", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.mobi"],
 "search": {
 "engine": "fuse",
 "options": null

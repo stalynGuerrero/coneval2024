@@ -31,7 +31,7 @@
   
   
 
-<link rel="next" href="union_bases.html"/>
+<link rel="next" href="indicadores-estimados.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Taller de instalación de capacidades en SAE</a></li>
+<li><a href="./">Manual de procesamiento.</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introducción</a>
@@ -146,7 +146,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-proyecto"><i class="fa fa-check"></i>Estructura del Proyecto</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#librerias-de-r-y-otros-insumos"><i class="fa fa-check"></i>Librerias de <em>R</em> y otros insumos</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#bases-de-datos-utilizadas"><i class="fa fa-check"></i>Bases de Datos Utilizadas</a></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html#indicadores-procesados"><i class="fa fa-check"></i>Indicadores procesados</a></li>
+<li class="chapter" data-level="" data-path="indicadores-estimados.html"><a href="indicadores-estimados.html"><i class="fa fa-check"></i>Indicadores estimados</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
@@ -168,8 +168,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a></li>
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias_error.html"><a href="estimacion_municipios_carencias_error.html"><i class="fa fa-check"></i>18_estimacion_municipios_carencias_error.R</a></li>
 <li class="chapter" data-level="" data-path="mapas_carencias.html"><a href="mapas_carencias.html"><i class="fa fa-check"></i>19_Mapas_carencias.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_directa_carencias.html"><a href="estimacion_directa_carencias.html"><i class="fa fa-check"></i>20_estimacion_directa_carencias.R</a></li>
 <li class="divider"></li>
-<li><a Taller de instalación de capacidades en SAE </a></li>
+<li><a Manual de procesamiento. </a></li>
 
 </ul>
 
@@ -301,39 +302,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>Estas librerías y bases de datos son fundamentales para la implementación de la metodología de estimación del Índice de Pobreza Multidimensional (IPM) y otras carencias en los distintos municipios de México.</p>
 </div>
-<div id="indicadores-procesados" class="section level3 unnumbered hasAnchor">
-<h3>Indicadores procesados<a href="index.html#indicadores-procesados" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>En esta sección se presentan los diferentes indicadores utilizados para medir y analizar la situación de pobreza y vulnerabilidad en la población. A continuación, se describen los indicadores procesados:</p>
-<ul>
-<li><p>Población en situación de pobreza multidimensional (I)</p>
-<ul>
-<li>Población en situación de pobreza moderada</li>
-<li>Población en situación de pobreza extrema</li>
-</ul></li>
-<li><p>Población vulnerable por carencias sociales (II)</p></li>
-<li><p>Población vulnerable por ingresos (III)</p></li>
-<li><p>Población no pobre multidimensional y no vulnerable (IV)</p></li>
-</ul>
-<p>Los indicadores de pobreza multidimensional se procesan específicamente para el estado 02 en el archivo <em>13_Estimacion_ent_02.R</em> y para los demás estados en el archivo <em>14_estimacion_municipios_ipm_pobreza.R</em>. Para la estimación del error asociado a estos indicadores, se utiliza el archivo <em>15_estimacion_municipios_ipm_pobreza_error.R</em>.</p>
-<p>A continuación se listan las carencias estimadas:</p>
-<ul>
-<li>Población con al menos una carencia social (tol_ic_1)</li>
-<li>Población con al menos tres carencias sociales (tol_ic_2)</li>
-<li>Carencia por acceso a la seguridad social (ic_segsoc)</li>
-<li>Carencia por acceso a la alimentación nutritiva y de calidad (ic_ali_nc)</li>
-<li>Población con ingreso inferior a la línea de pobreza extrema por ingresos (pobrea_li)</li>
-<li>Población con ingreso inferior a la línea de pobreza por ingresos (pobrea_lp)</li>
-</ul>
-<p>Las carencias mencionadas se procesan utilizando los archivos <em>17_estimacion_municipios_carencias.R</em> y <em>18_estimacion_municipios_carencias_error.R</em>.</p>
-<p>Por otro lado, las carencias observadas en la muestra intercensal y en la muestra ampliada del censo no fueron estimados debido a que fueron observados para los municipios y estos son listados a continuación.</p>
-<ul>
-<li>Rezago educativo</li>
-<li>Carencia por acceso a los servicios de salud</li>
-<li>Carencia por calidad y espacios de la vivienda</li>
-<li>Carencia por acceso a los servicios básicos en la vivienda</li>
-</ul>
-
-</div>
 </div>
 <div class="footnotes">
 <hr />
@@ -348,7 +316,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 
-<a href="union_bases.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="indicadores-estimados.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -390,7 +358,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.pdf", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.epub", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.mobi"],
+"download": ["Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.pdf", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.epub", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.mobi"],
 "search": {
 "engine": "fuse",
 "options": null

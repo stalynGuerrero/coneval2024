@@ -48,6 +48,8 @@ memory.limit(250000000)
 
 #### Definición de Variables y Obtención de Archivos{-}
 
+Para llevar a cabo la validación y procesamiento de datos del censo 2020, se define un conjunto de variables que serán validadas. Estas variables incluyen indicadores clave como rezago educativo (`ic_rezedu`), acceso a servicios de salud (`ic_asalud`), seguridad social (`ic_segsoc`), calidad de la vivienda (`ic_cv`), servicios básicos en la vivienda (`ic_sbv`), acceso a alimentación nutritiva y de calidad (`ic_ali_nc`), y el índice de pobreza multidimensional (`ictpc`).
+
 
 ``` r
 validar_var <- c(
@@ -60,8 +62,11 @@ validar_var <- c(
   "ictpc"
 )
 ```
-Se define un conjunto de variables que serán validadas.
 
+Posteriormente, se obtienen listas de archivos con extensión `.dta`, que corresponden a diferentes conjuntos de datos del censo 2020. Estos archivos se organizan en tres categorías principales:
+
+1. **Archivos de muestra del censo 2020 por estado**: Se buscan archivos en la ruta `../input/2020/muestra_ampliada/SegSocial/SegSoc/` que contengan información de seguridad social.
+  
 
 ``` r
 file_muestra_censo_2020_estado <- list.files(
@@ -69,18 +74,32 @@ file_muestra_censo_2020_estado <- list.files(
   full.names = TRUE,
   pattern = "dta$"
 )
+```
+
+2. **Archivos complementarios de muestra del censo 2020 por estado**: Se buscan archivos adicionales en la ruta `../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/` que contienen datos complementarios de seguridad social.
+
+
+``` r
 file_muestra_censo_2020_estado_complemento <- list.files(
   "../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/",
   full.names = TRUE,
   pattern = "dta$"
 )
+```
+
+3. **Archivos de cuestionario ampliado del censo 2020 por estado**: Se buscan archivos en la ruta `../input/2020/muestra_ampliada/IndicadoresCenso/` que incluyen indicadores generales del censo.
+
+
+``` r
 muestra_cuestionario_ampliado_censo_2020_estado <- list.files(
   "../input/2020/muestra_ampliada/IndicadoresCenso/",
   full.names = TRUE,
   pattern = "dta$"
 )
 ```
-Se obtienen listas de archivos `.dta` correspondientes a diferentes conjuntos de datos del censo 2020.
+
+Estas listas de archivos permiten acceder y gestionar de manera eficiente los datos necesarios para el análisis y validación de los indicadores de pobreza y carencias sociales del censo 2020.
+
 
 #### Lectura y Combinación de Datos del Censo{-}
 

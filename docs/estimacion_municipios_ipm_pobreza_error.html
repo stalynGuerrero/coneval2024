@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Taller de instalación de capacidades en SAE</a></li>
+<li><a href="./">Manual de procesamiento.</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introducción</a>
@@ -146,7 +146,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-proyecto"><i class="fa fa-check"></i>Estructura del Proyecto</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#librerias-de-r-y-otros-insumos"><i class="fa fa-check"></i>Librerias de <em>R</em> y otros insumos</a></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#bases-de-datos-utilizadas"><i class="fa fa-check"></i>Bases de Datos Utilizadas</a></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html#indicadores-procesados"><i class="fa fa-check"></i>Indicadores procesados</a></li>
+<li class="chapter" data-level="" data-path="indicadores-estimados.html"><a href="indicadores-estimados.html"><i class="fa fa-check"></i>Indicadores estimados</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
 <li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
@@ -168,8 +168,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a></li>
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias_error.html"><a href="estimacion_municipios_carencias_error.html"><i class="fa fa-check"></i>18_estimacion_municipios_carencias_error.R</a></li>
 <li class="chapter" data-level="" data-path="mapas_carencias.html"><a href="mapas_carencias.html"><i class="fa fa-check"></i>19_Mapas_carencias.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_directa_carencias.html"><a href="estimacion_directa_carencias.html"><i class="fa fa-check"></i>20_estimacion_directa_carencias.R</a></li>
 <li class="divider"></li>
-<li><a Taller de instalación de capacidades en SAE </a></li>
+<li><a Manual de procesamiento. </a></li>
 
 </ul>
 
@@ -198,231 +199,231 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="preparación-del-entorno" class="section level4 unnumbered hasAnchor">
 <h4>Preparación del Entorno<a href="estimacion_municipios_ipm_pobreza_error.html#preparación-del-entorno" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Limpia el entorno y carga las bibliotecas necesarias para el análisis.</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb100-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb100-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb100-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb100-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb100-3" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb100-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb100-4" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
-<span id="cb100-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb100-5" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb102-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb102-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-3" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb102-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-4" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb102-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-5" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span></code></pre></div>
 </div>
 <div id="lectura-de-datos-3" class="section level4 unnumbered hasAnchor">
 <h4>Lectura de Datos<a href="estimacion_municipios_ipm_pobreza_error.html#lectura-de-datos-3" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Carga y prepara los datos necesarios: <code>muestra_ampliada</code>, <code>encuesta_enigh</code>, y <code>LB</code>.</p>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-1" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
-<span id="cb101-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-2" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb101-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ingreso =</span> ictpc)</span>
-<span id="cb101-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-4" tabindex="-1"></a></span>
-<span id="cb101-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-5" tabindex="-1"></a>LB <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(</span>
-<span id="cb101-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-6" tabindex="-1"></a>    <span class="st">&quot;input/2020/Lineas_Bienestar.csv&quot;</span>,</span>
-<span id="cb101-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-7" tabindex="-1"></a>    <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb101-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-8" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
-<span id="cb101-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-9" tabindex="-1"></a>    <span class="at">dec =</span> <span class="st">&quot;,&quot;</span></span>
-<span id="cb101-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb101-10" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">as.character</span>(area))</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-1" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
+<span id="cb103-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-2" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb103-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ingreso =</span> ictpc)</span>
+<span id="cb103-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-4" tabindex="-1"></a></span>
+<span id="cb103-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-5" tabindex="-1"></a>LB <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(</span>
+<span id="cb103-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-6" tabindex="-1"></a>    <span class="st">&quot;input/2020/Lineas_Bienestar.csv&quot;</span>,</span>
+<span id="cb103-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-7" tabindex="-1"></a>    <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb103-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-8" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
+<span id="cb103-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-9" tabindex="-1"></a>    <span class="at">dec =</span> <span class="st">&quot;,&quot;</span></span>
+<span id="cb103-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-10" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">as.character</span>(area))</span></code></pre></div>
 </div>
 <div id="cálculo-del-ipm-en-la-encuesta-1" class="section level4 unnumbered hasAnchor">
 <h4>Cálculo del IPM en la Encuesta<a href="estimacion_municipios_ipm_pobreza_error.html#cálculo-del-ipm-en-la-encuesta-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Calcula el IPM y las variables asociadas en <code>encuesta_enigh</code>.</p>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-1" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span></span>
-<span id="cb102-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-2" tabindex="-1"></a>  encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB)  <span class="sc">%&gt;%</span> </span>
-<span id="cb102-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb102-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-4" tabindex="-1"></a>    <span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span>  ic_sbv <span class="sc">+</span> ic_rezedu,</span>
-<span id="cb102-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-5" tabindex="-1"></a>    <span class="at">ipm   =</span> <span class="fu">case_when</span>(</span>
-<span id="cb102-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-6" tabindex="-1"></a>      ingreso <span class="sc">&lt;</span> lp  <span class="sc">&amp;</span>  tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;I&quot;</span>,</span>
-<span id="cb102-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-7" tabindex="-1"></a>      ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;II&quot;</span>,</span>
-<span id="cb102-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-8" tabindex="-1"></a>      ingreso <span class="sc">&lt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;III&quot;</span>,</span>
-<span id="cb102-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-9" tabindex="-1"></a>      ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;IV&quot;</span></span>
-<span id="cb102-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-10" tabindex="-1"></a>    ),</span>
-<span id="cb102-11"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-11" tabindex="-1"></a>    <span class="at">pobre_moderada =</span> <span class="fu">ifelse</span>(<span class="fu">c</span>(ingreso <span class="sc">&gt;</span> li <span class="sc">&amp;</span> ingreso <span class="sc">&lt;</span> lp) <span class="sc">&amp;</span></span>
-<span id="cb102-12"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-12" tabindex="-1"></a>                              tol_ic <span class="sc">&gt;</span> <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb102-13"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-13" tabindex="-1"></a>    <span class="at">pobre_extrema =</span> <span class="fu">ifelse</span>(ipm <span class="sc">==</span> <span class="st">&quot;I&quot;</span> <span class="sc">&amp;</span> pobre_moderada <span class="sc">==</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb102-14"><a href="estimacion_municipios_ipm_pobreza_error.html#cb102-14" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-1" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span></span>
+<span id="cb104-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-2" tabindex="-1"></a>  encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB)  <span class="sc">%&gt;%</span> </span>
+<span id="cb104-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb104-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-4" tabindex="-1"></a>    <span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span>  ic_sbv <span class="sc">+</span> ic_rezedu,</span>
+<span id="cb104-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-5" tabindex="-1"></a>    <span class="at">ipm   =</span> <span class="fu">case_when</span>(</span>
+<span id="cb104-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-6" tabindex="-1"></a>      ingreso <span class="sc">&lt;</span> lp  <span class="sc">&amp;</span>  tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;I&quot;</span>,</span>
+<span id="cb104-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-7" tabindex="-1"></a>      ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;II&quot;</span>,</span>
+<span id="cb104-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-8" tabindex="-1"></a>      ingreso <span class="sc">&lt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;III&quot;</span>,</span>
+<span id="cb104-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-9" tabindex="-1"></a>      ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;IV&quot;</span></span>
+<span id="cb104-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-10" tabindex="-1"></a>    ),</span>
+<span id="cb104-11"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-11" tabindex="-1"></a>    <span class="at">pobre_moderada =</span> <span class="fu">ifelse</span>(<span class="fu">c</span>(ingreso <span class="sc">&gt;</span> li <span class="sc">&amp;</span> ingreso <span class="sc">&lt;</span> lp) <span class="sc">&amp;</span></span>
+<span id="cb104-12"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-12" tabindex="-1"></a>                              tol_ic <span class="sc">&gt;</span> <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb104-13"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-13" tabindex="-1"></a>    <span class="at">pobre_extrema =</span> <span class="fu">ifelse</span>(ipm <span class="sc">==</span> <span class="st">&quot;I&quot;</span> <span class="sc">&amp;</span> pobre_moderada <span class="sc">==</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb104-14"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-14" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="resumen-de-datos-por-municipio" class="section level4 unnumbered hasAnchor">
 <h4>Resumen de Datos por Municipio<a href="estimacion_municipios_ipm_pobreza_error.html#resumen-de-datos-por-municipio" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Suma el número de personas por municipio en <code>muestra_ampliada</code>.</p>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-1" tabindex="-1"></a>N_mpio <span class="ot">&lt;-</span> muestra_ampliada <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ent, cve_mun) <span class="sc">%&gt;%</span></span>
-<span id="cb103-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb103-2" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N_pers_mpio =</span> <span class="fu">sum</span>(factor))</span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-1" tabindex="-1"></a>N_mpio <span class="ot">&lt;-</span> muestra_ampliada <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ent, cve_mun) <span class="sc">%&gt;%</span></span>
+<span id="cb105-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-2" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">N_pers_mpio =</span> <span class="fu">sum</span>(factor))</span></code></pre></div>
 </div>
 <div id="lectura-de-archivos-de-iteraciones-y-cálculo-de-estadísticas" class="section level4 unnumbered hasAnchor">
 <h4>Lectura de Archivos de Iteraciones y Cálculo de Estadísticas<a href="estimacion_municipios_ipm_pobreza_error.html#lectura-de-archivos-de-iteraciones-y-cálculo-de-estadísticas" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Lee los archivos generados en iteraciones y filtra aquellos con resultados.</p>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-1" tabindex="-1"></a>list_estiacion <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">&quot;../output/2020/iteraciones/mpio_calib/&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb104-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-2" tabindex="-1"></a></span>
-<span id="cb104-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-3" tabindex="-1"></a>list_estiacion <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(list_estiacion,</span>
-<span id="cb104-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-4" tabindex="-1"></a><span class="at">iter =</span> list_estiacion <span class="sc">%&gt;%</span> <span class="fu">map_dbl</span>(<span class="sc">~</span><span class="fu">list.files</span>(.x) <span class="sc">%&gt;%</span> <span class="fu">length</span>())</span>
-<span id="cb104-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb104-5" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(iter <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-1" tabindex="-1"></a>list_estiacion <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">&quot;../output/2020/iteraciones/mpio_calib/&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb106-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-2" tabindex="-1"></a></span>
+<span id="cb106-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-3" tabindex="-1"></a>list_estiacion <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(list_estiacion,</span>
+<span id="cb106-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-4" tabindex="-1"></a><span class="at">iter =</span> list_estiacion <span class="sc">%&gt;%</span> <span class="fu">map_dbl</span>(<span class="sc">~</span><span class="fu">list.files</span>(.x) <span class="sc">%&gt;%</span> <span class="fu">length</span>())</span>
+<span id="cb106-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-5" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(iter <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div>
 </div>
 <div id="proceso-iterativo-para-cada-estado" class="section level4 unnumbered hasAnchor">
 <h4>Proceso Iterativo para Cada estado<a href="estimacion_municipios_ipm_pobreza_error.html#proceso-iterativo-para-cada-estado" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Para cada estado, se calculan las estimaciones promedio, la varianza, y otros indicadores. Los resultados se guardan en una lista.</p>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-1" tabindex="-1"></a>resul_ent_ipm <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb105-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-2" tabindex="-1"></a></span>
-<span id="cb105-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-3" tabindex="-1"></a><span class="cf">for</span>(ii_ent <span class="cf">in</span> list_estiacion<span class="sc">$</span>list_estiacion){</span>
-<span id="cb105-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-4" tabindex="-1"></a>  </span>
-<span id="cb105-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-5" tabindex="-1"></a>  archivos <span class="ot">&lt;-</span> <span class="fu">list.files</span>(ii_ent, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb105-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-6" tabindex="-1"></a>  datos <span class="ot">&lt;-</span> <span class="fu">map_df</span>(archivos, <span class="sc">~</span> <span class="fu">readRDS</span>(.x)<span class="sc">$</span>estima_calib)</span>
-<span id="cb105-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-7" tabindex="-1"></a></span>
-<span id="cb105-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-8" tabindex="-1"></a>  dat_estima <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> </span>
-<span id="cb105-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-9" tabindex="-1"></a>    <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), mean) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
-<span id="cb105-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-10" tabindex="-1"></a></span>
-<span id="cb105-11"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-11" tabindex="-1"></a>  dat_n <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">tally</span>()</span>
-<span id="cb105-12"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-12" tabindex="-1"></a>  dat_B <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> </span>
-<span id="cb105-13"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-13" tabindex="-1"></a>    <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), var) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
-<span id="cb105-14"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-14" tabindex="-1"></a></span>
-<span id="cb105-15"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-15" tabindex="-1"></a>  dat_Ubar <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> </span>
-<span id="cb105-16"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-16" tabindex="-1"></a>    <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), mean) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
-<span id="cb105-17"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-17" tabindex="-1"></a></span>
-<span id="cb105-18"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-18" tabindex="-1"></a>  <span class="fu">names</span>(dat_Ubar) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;_var&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(dat_Ubar)) </span>
-<span id="cb105-19"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-19" tabindex="-1"></a></span>
-<span id="cb105-20"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-20" tabindex="-1"></a>  dat_var <span class="ot">&lt;-</span> dat_B <span class="sc">%&gt;%</span> </span>
-<span id="cb105-21"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-21" tabindex="-1"></a>    <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Indicador&quot;</span>, <span class="at">value =</span> <span class="st">&quot;B&quot;</span>, <span class="sc">-</span>cve_mun) <span class="sc">%&gt;%</span></span>
-<span id="cb105-22"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-22" tabindex="-1"></a>    <span class="fu">inner_join</span>(</span>
-<span id="cb105-23"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-23" tabindex="-1"></a>      dat_Ubar <span class="sc">%&gt;%</span> <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Indicador&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Ubar&quot;</span>, <span class="sc">-</span>cve_mun)</span>
-<span id="cb105-24"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-24" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(dat_n)</span>
-<span id="cb105-25"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-25" tabindex="-1"></a></span>
-<span id="cb105-26"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-26" tabindex="-1"></a>  var_est <span class="ot">&lt;-</span>  dat_var <span class="sc">%&gt;%</span> </span>
-<span id="cb105-27"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-27" tabindex="-1"></a>    <span class="fu">transmute</span>(cve_mun, Indicador,</span>
-<span id="cb105-28"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-28" tabindex="-1"></a>              <span class="at">var =</span> Ubar <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span><span class="dv">1</span><span class="sc">/</span>n)<span class="sc">*</span>B,</span>
-<span id="cb105-29"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-29" tabindex="-1"></a>              <span class="at">ee =</span> <span class="fu">sqrt</span>(var)) <span class="sc">%&gt;%</span> </span>
-<span id="cb105-30"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-30" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(</span>
-<span id="cb105-31"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-31" tabindex="-1"></a>      <span class="at">data =</span> .,</span>
-<span id="cb105-32"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-32" tabindex="-1"></a>      <span class="at">id_cols =</span> <span class="st">&quot;cve_mun&quot;</span>,</span>
-<span id="cb105-33"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-33" tabindex="-1"></a>      <span class="at">names_from =</span> <span class="st">&quot;Indicador&quot;</span>,</span>
-<span id="cb105-34"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-34" tabindex="-1"></a>      <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;var&quot;</span>, <span class="st">&quot;ee&quot;</span>), <span class="at">values_fill =</span> <span class="dv">0</span></span>
-<span id="cb105-35"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-35" tabindex="-1"></a>    ) </span>
-<span id="cb105-36"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-36" tabindex="-1"></a></span>
-<span id="cb105-37"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-37" tabindex="-1"></a>  dat_var <span class="ot">&lt;-</span> <span class="fu">pivot_wider</span>(</span>
-<span id="cb105-38"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-38" tabindex="-1"></a>    <span class="at">data =</span> dat_var,</span>
-<span id="cb105-39"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-39" tabindex="-1"></a>    <span class="at">id_cols =</span> <span class="st">&quot;cve_mun&quot;</span>,</span>
-<span id="cb105-40"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-40" tabindex="-1"></a>    <span class="at">names_from =</span> <span class="st">&quot;Indicador&quot;</span>,</span>
-<span id="cb105-41"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-41" tabindex="-1"></a>    <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;B&quot;</span>, <span class="st">&quot;Ubar&quot;</span>), <span class="at">values_fill =</span> <span class="dv">0</span></span>
-<span id="cb105-42"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-42" tabindex="-1"></a>  ) </span>
-<span id="cb105-43"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-43" tabindex="-1"></a></span>
-<span id="cb105-44"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-44" tabindex="-1"></a>  resul_ent_ipm[[ii_ent]] <span class="ot">&lt;-</span> dat_n <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(dat_estima) <span class="sc">%&gt;%</span></span>
-<span id="cb105-45"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-45" tabindex="-1"></a>    <span class="fu">inner_join</span>(dat_var) <span class="sc">%&gt;%</span></span>
-<span id="cb105-46"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-46" tabindex="-1"></a>    <span class="fu">inner_join</span>(var_est)</span>
-<span id="cb105-47"><a href="estimacion_municipios_ipm_pobreza_error.html#cb105-47" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-1" tabindex="-1"></a>resul_ent_ipm <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb107-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-2" tabindex="-1"></a></span>
+<span id="cb107-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-3" tabindex="-1"></a><span class="cf">for</span>(ii_ent <span class="cf">in</span> list_estiacion<span class="sc">$</span>list_estiacion){</span>
+<span id="cb107-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-4" tabindex="-1"></a>  </span>
+<span id="cb107-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-5" tabindex="-1"></a>  archivos <span class="ot">&lt;-</span> <span class="fu">list.files</span>(ii_ent, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb107-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-6" tabindex="-1"></a>  datos <span class="ot">&lt;-</span> <span class="fu">map_df</span>(archivos, <span class="sc">~</span> <span class="fu">readRDS</span>(.x)<span class="sc">$</span>estima_calib)</span>
+<span id="cb107-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-7" tabindex="-1"></a></span>
+<span id="cb107-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-8" tabindex="-1"></a>  dat_estima <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> </span>
+<span id="cb107-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-9" tabindex="-1"></a>    <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), mean) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
+<span id="cb107-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-10" tabindex="-1"></a></span>
+<span id="cb107-11"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-11" tabindex="-1"></a>  dat_n <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">tally</span>()</span>
+<span id="cb107-12"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-12" tabindex="-1"></a>  dat_B <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> </span>
+<span id="cb107-13"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-13" tabindex="-1"></a>    <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), var) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
+<span id="cb107-14"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-14" tabindex="-1"></a></span>
+<span id="cb107-15"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-15" tabindex="-1"></a>  dat_Ubar <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> </span>
+<span id="cb107-16"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-16" tabindex="-1"></a>    <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), mean) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
+<span id="cb107-17"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-17" tabindex="-1"></a></span>
+<span id="cb107-18"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-18" tabindex="-1"></a>  <span class="fu">names</span>(dat_Ubar) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;_var&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(dat_Ubar)) </span>
+<span id="cb107-19"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-19" tabindex="-1"></a></span>
+<span id="cb107-20"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-20" tabindex="-1"></a>  dat_var <span class="ot">&lt;-</span> dat_B <span class="sc">%&gt;%</span> </span>
+<span id="cb107-21"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-21" tabindex="-1"></a>    <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Indicador&quot;</span>, <span class="at">value =</span> <span class="st">&quot;B&quot;</span>, <span class="sc">-</span>cve_mun) <span class="sc">%&gt;%</span></span>
+<span id="cb107-22"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-22" tabindex="-1"></a>    <span class="fu">inner_join</span>(</span>
+<span id="cb107-23"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-23" tabindex="-1"></a>      dat_Ubar <span class="sc">%&gt;%</span> <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Indicador&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Ubar&quot;</span>, <span class="sc">-</span>cve_mun)</span>
+<span id="cb107-24"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-24" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(dat_n)</span>
+<span id="cb107-25"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-25" tabindex="-1"></a></span>
+<span id="cb107-26"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-26" tabindex="-1"></a>  var_est <span class="ot">&lt;-</span>  dat_var <span class="sc">%&gt;%</span> </span>
+<span id="cb107-27"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-27" tabindex="-1"></a>    <span class="fu">transmute</span>(cve_mun, Indicador,</span>
+<span id="cb107-28"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-28" tabindex="-1"></a>              <span class="at">var =</span> Ubar <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span><span class="dv">1</span><span class="sc">/</span>n)<span class="sc">*</span>B,</span>
+<span id="cb107-29"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-29" tabindex="-1"></a>              <span class="at">ee =</span> <span class="fu">sqrt</span>(var)) <span class="sc">%&gt;%</span> </span>
+<span id="cb107-30"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-30" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(</span>
+<span id="cb107-31"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-31" tabindex="-1"></a>      <span class="at">data =</span> .,</span>
+<span id="cb107-32"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-32" tabindex="-1"></a>      <span class="at">id_cols =</span> <span class="st">&quot;cve_mun&quot;</span>,</span>
+<span id="cb107-33"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-33" tabindex="-1"></a>      <span class="at">names_from =</span> <span class="st">&quot;Indicador&quot;</span>,</span>
+<span id="cb107-34"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-34" tabindex="-1"></a>      <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;var&quot;</span>, <span class="st">&quot;ee&quot;</span>), <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb107-35"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-35" tabindex="-1"></a>    ) </span>
+<span id="cb107-36"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-36" tabindex="-1"></a></span>
+<span id="cb107-37"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-37" tabindex="-1"></a>  dat_var <span class="ot">&lt;-</span> <span class="fu">pivot_wider</span>(</span>
+<span id="cb107-38"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-38" tabindex="-1"></a>    <span class="at">data =</span> dat_var,</span>
+<span id="cb107-39"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-39" tabindex="-1"></a>    <span class="at">id_cols =</span> <span class="st">&quot;cve_mun&quot;</span>,</span>
+<span id="cb107-40"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-40" tabindex="-1"></a>    <span class="at">names_from =</span> <span class="st">&quot;Indicador&quot;</span>,</span>
+<span id="cb107-41"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-41" tabindex="-1"></a>    <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;B&quot;</span>, <span class="st">&quot;Ubar&quot;</span>), <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb107-42"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-42" tabindex="-1"></a>  ) </span>
+<span id="cb107-43"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-43" tabindex="-1"></a></span>
+<span id="cb107-44"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-44" tabindex="-1"></a>  resul_ent_ipm[[ii_ent]] <span class="ot">&lt;-</span> dat_n <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(dat_estima) <span class="sc">%&gt;%</span></span>
+<span id="cb107-45"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-45" tabindex="-1"></a>    <span class="fu">inner_join</span>(dat_var) <span class="sc">%&gt;%</span></span>
+<span id="cb107-46"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-46" tabindex="-1"></a>    <span class="fu">inner_join</span>(var_est)</span>
+<span id="cb107-47"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-47" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="guardar-resultados-y-crear-archivos-excel" class="section level4 unnumbered hasAnchor">
 <h4>Guardar Resultados y Crear Archivos Excel<a href="estimacion_municipios_ipm_pobreza_error.html#guardar-resultados-y-crear-archivos-excel" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Combina los resultados de todas las estadoes, los guarda en un archivo RDS y en un archivo Excel. También calcula las estimaciones estatales y las guarda en un archivo Excel separado.</p>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-1" tabindex="-1"></a>temp <span class="ot">&lt;-</span> resul_ent_ipm <span class="sc">%&gt;%</span> <span class="fu">bind_rows</span>()</span>
-<span id="cb106-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-2" tabindex="-1"></a></span>
-<span id="cb106-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-3" tabindex="-1"></a>temp <span class="sc">%&lt;&gt;%</span> <span class="fu">inner_join</span>(N_mpio) <span class="sc">%&gt;%</span> </span>
-<span id="cb106-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-4" tabindex="-1"></a>  <span class="fu">select</span>(ent, cve_mun, N_pers_mpio, est_ipm_I, </span>
-<span id="cb106-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-5" tabindex="-1"></a>         est_pob_mod, est_pob_ext, est_ipm_II<span class="sc">:</span>est_ipm_IV,</span>
-<span id="cb106-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-6" tabindex="-1"></a>         <span class="at">ee_ipm_I =</span> ee_est_ipm_I,</span>
-<span id="cb106-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-7" tabindex="-1"></a>         <span class="at">ee_pob_mod =</span> ee_est_pob_mod,</span>
-<span id="cb106-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-8" tabindex="-1"></a>         <span class="at">ee_pob_ext =</span> ee_est_pob_ext,</span>
-<span id="cb106-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-9" tabindex="-1"></a>         <span class="at">ee_ipm_II =</span> ee_est_ipm_II,</span>
-<span id="cb106-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-10" tabindex="-1"></a>         <span class="at">ee_ipm_III =</span> ee_est_ipm_III,</span>
-<span id="cb106-11"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-11" tabindex="-1"></a>         <span class="at">ee_ipm_IV =</span> ee_est_ipm_IV)</span>
-<span id="cb106-12"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-12" tabindex="-1"></a></span>
-<span id="cb106-13"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-13" tabindex="-1"></a>temp <span class="sc">%&gt;%</span> </span>
-<span id="cb106-14"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-14" tabindex="-1"></a>  <span class="fu">saveRDS</span>(<span class="st">&quot;../output/Entregas/2020/result_mpios.RDS&quot;</span>)</span>
-<span id="cb106-15"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-15" tabindex="-1"></a></span>
-<span id="cb106-16"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-16" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(temp,</span>
-<span id="cb106-17"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-17" tabindex="-1"></a>                     <span class="fu">paste0</span>(</span>
-<span id="cb106-18"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-18" tabindex="-1"></a>                       <span class="st">&quot;../output/Entregas/2020/estimacion_numicipal_&quot;</span>,</span>
-<span id="cb106-19"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-19" tabindex="-1"></a>                       <span class="fu">Sys.Date</span>() ,</span>
-<span id="cb106-20"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-20" tabindex="-1"></a>                       <span class="st">&quot;.xlsx&quot;</span></span>
-<span id="cb106-21"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-21" tabindex="-1"></a>                     ))</span>
-<span id="cb106-22"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-22" tabindex="-1"></a></span>
-<span id="cb106-23"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-23" tabindex="-1"></a>temp2 <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
-<span id="cb106-24"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-24" tabindex="-1"></a>  <span class="fu">select</span>(ent, est_ipm_I<span class="sc">:</span>est_ipm_IV, N_pers_mpio) <span class="sc">%&gt;%</span></span>
-<span id="cb106-25"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-25" tabindex="-1"></a>  <span class="fu">group_by</span>(ent) <span class="sc">%&gt;%</span></span>
-<span id="cb106-26"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-26" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">&quot;est_&quot;</span>),</span>
-<span id="cb106-27"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-27" tabindex="-1"></a>                   <span class="sc">~</span> <span class="fu">sum</span>(.x <span class="sc">*</span> N_pers_mpio) <span class="sc">/</span> <span class="fu">sum</span>(N_pers_mpio)))</span>
-<span id="cb106-28"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-28" tabindex="-1"></a></span>
-<span id="cb106-29"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-29" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(temp2,</span>
-<span id="cb106-30"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-30" tabindex="-1"></a>                     <span class="fu">paste0</span>(</span>
-<span id="cb106-31"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-31" tabindex="-1"></a>                       <span class="st">&quot;../output/Entregas/2020/estimacion_estado_&quot;</span>,</span>
-<span id="cb106-32"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-32" tabindex="-1"></a>                       <span class="fu">Sys.Date</span>() ,</span>
-<span id="cb106-33"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-33" tabindex="-1"></a>                       <span class="st">&quot;.xlsx&quot;</span></span>
-<span id="cb106-34"><a href="estimacion_municipios_ipm_pobreza_error.html#cb106-34" tabindex="-1"></a>                     <span class="st">&quot;))</span></span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-1" tabindex="-1"></a>temp <span class="ot">&lt;-</span> resul_ent_ipm <span class="sc">%&gt;%</span> <span class="fu">bind_rows</span>()</span>
+<span id="cb108-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-2" tabindex="-1"></a></span>
+<span id="cb108-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-3" tabindex="-1"></a>temp <span class="sc">%&lt;&gt;%</span> <span class="fu">inner_join</span>(N_mpio) <span class="sc">%&gt;%</span> </span>
+<span id="cb108-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-4" tabindex="-1"></a>  <span class="fu">select</span>(ent, cve_mun, N_pers_mpio, est_ipm_I, </span>
+<span id="cb108-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-5" tabindex="-1"></a>         est_pob_mod, est_pob_ext, est_ipm_II<span class="sc">:</span>est_ipm_IV,</span>
+<span id="cb108-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-6" tabindex="-1"></a>         <span class="at">ee_ipm_I =</span> ee_est_ipm_I,</span>
+<span id="cb108-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-7" tabindex="-1"></a>         <span class="at">ee_pob_mod =</span> ee_est_pob_mod,</span>
+<span id="cb108-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-8" tabindex="-1"></a>         <span class="at">ee_pob_ext =</span> ee_est_pob_ext,</span>
+<span id="cb108-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-9" tabindex="-1"></a>         <span class="at">ee_ipm_II =</span> ee_est_ipm_II,</span>
+<span id="cb108-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-10" tabindex="-1"></a>         <span class="at">ee_ipm_III =</span> ee_est_ipm_III,</span>
+<span id="cb108-11"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-11" tabindex="-1"></a>         <span class="at">ee_ipm_IV =</span> ee_est_ipm_IV)</span>
+<span id="cb108-12"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-12" tabindex="-1"></a></span>
+<span id="cb108-13"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-13" tabindex="-1"></a>temp <span class="sc">%&gt;%</span> </span>
+<span id="cb108-14"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-14" tabindex="-1"></a>  <span class="fu">saveRDS</span>(<span class="st">&quot;../output/Entregas/2020/result_mpios.RDS&quot;</span>)</span>
+<span id="cb108-15"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-15" tabindex="-1"></a></span>
+<span id="cb108-16"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-16" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(temp,</span>
+<span id="cb108-17"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-17" tabindex="-1"></a>                     <span class="fu">paste0</span>(</span>
+<span id="cb108-18"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-18" tabindex="-1"></a>                       <span class="st">&quot;../output/Entregas/2020/estimacion_numicipal_&quot;</span>,</span>
+<span id="cb108-19"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-19" tabindex="-1"></a>                       <span class="fu">Sys.Date</span>() ,</span>
+<span id="cb108-20"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-20" tabindex="-1"></a>                       <span class="st">&quot;.xlsx&quot;</span></span>
+<span id="cb108-21"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-21" tabindex="-1"></a>                     ))</span>
+<span id="cb108-22"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-22" tabindex="-1"></a></span>
+<span id="cb108-23"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-23" tabindex="-1"></a>temp2 <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
+<span id="cb108-24"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-24" tabindex="-1"></a>  <span class="fu">select</span>(ent, est_ipm_I<span class="sc">:</span>est_ipm_IV, N_pers_mpio) <span class="sc">%&gt;%</span></span>
+<span id="cb108-25"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-25" tabindex="-1"></a>  <span class="fu">group_by</span>(ent) <span class="sc">%&gt;%</span></span>
+<span id="cb108-26"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-26" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">&quot;est_&quot;</span>),</span>
+<span id="cb108-27"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-27" tabindex="-1"></a>                   <span class="sc">~</span> <span class="fu">sum</span>(.x <span class="sc">*</span> N_pers_mpio) <span class="sc">/</span> <span class="fu">sum</span>(N_pers_mpio)))</span>
+<span id="cb108-28"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-28" tabindex="-1"></a></span>
+<span id="cb108-29"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-29" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(temp2,</span>
+<span id="cb108-30"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-30" tabindex="-1"></a>                     <span class="fu">paste0</span>(</span>
+<span id="cb108-31"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-31" tabindex="-1"></a>                       <span class="st">&quot;../output/Entregas/2020/estimacion_estado_&quot;</span>,</span>
+<span id="cb108-32"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-32" tabindex="-1"></a>                       <span class="fu">Sys.Date</span>() ,</span>
+<span id="cb108-33"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-33" tabindex="-1"></a>                       <span class="st">&quot;.xlsx&quot;</span></span>
+<span id="cb108-34"><a href="estimacion_municipios_ipm_pobreza_error.html#cb108-34" tabindex="-1"></a>                     <span class="st">&quot;))</span></span></code></pre></div>
 </div>
 <div id="generación-de-gráficos" class="section level4 unnumbered hasAnchor">
 <h4>Generación de Gráficos<a href="estimacion_municipios_ipm_pobreza_error.html#generación-de-gráficos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Genera gráficos para cada tipo de IPM y los guarda en archivos PNG.</p>
-<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-1" tabindex="-1"></a>diseno <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb107-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-2" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(</span>
-<span id="cb107-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-3" tabindex="-1"></a>    <span class="at">ids =</span> upm,</span>
-<span id="cb107-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-4" tabindex="-1"></a>    <span class="at">weights =</span> fep,</span>
-<span id="cb107-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-5" tabindex="-1"></a>    <span class="at">nest =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb107-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-6" tabindex="-1"></a>    <span class="at">strata =</span> estrato</span>
-<span id="cb107-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-7" tabindex="-1"></a>  )</span>
-<span id="cb107-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-8" tabindex="-1"></a></span>
-<span id="cb107-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-9" tabindex="-1"></a>estimad_dir <span class="ot">&lt;-</span> diseno <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ent, ipm) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-10" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">direct =</span> <span class="fu">survey_mean</span>(<span class="at">vartype =</span> <span class="st">&quot;ci&quot;</span> ))</span>
-<span id="cb107-11"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-11" tabindex="-1"></a></span>
-<span id="cb107-12"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-12" tabindex="-1"></a>estimad_dir_ipm <span class="ot">&lt;-</span> <span class="fu">pivot_wider</span>(</span>
-<span id="cb107-13"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-13" tabindex="-1"></a>  <span class="at">data =</span> estimad_dir,</span>
-<span id="cb107-14"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-14" tabindex="-1"></a>  <span class="at">id_cols =</span> <span class="st">&quot;ent&quot;</span>,</span>
-<span id="cb107-15"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-15" tabindex="-1"></a>  <span class="at">names_from =</span> <span class="st">&quot;ipm&quot;</span>,</span>
-<span id="cb107-16"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-16" tabindex="-1"></a>  <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;direct&quot;</span>, <span class="st">&quot;direct_low&quot;</span>, <span class="st">&quot;direct_upp&quot;</span>)</span>
-<span id="cb107-17"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-17" tabindex="-1"></a>) </span>
-<span id="cb107-18"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-18" tabindex="-1"></a></span>
-<span id="cb107-19"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-19" tabindex="-1"></a>estimad_dir <span class="ot">&lt;-</span> diseno <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ent) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-20"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-20" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">direct_mod =</span> <span class="fu">survey_mean</span>(pobre_moderada, <span class="at">vartype =</span> <span class="st">&quot;ci&quot;</span>),</span>
-<span id="cb107-21"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-21" tabindex="-1"></a>            <span class="at">direct_ext =</span> <span class="fu">survey_mean</span>(pobre_extrema, <span class="at">vartype =</span> <span class="st">&quot;ci&quot;</span>))</span>
-<span id="cb107-22"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-22" tabindex="-1"></a></span>
-<span id="cb107-23"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-23" tabindex="-1"></a>estimad_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">inner_join</span>(estimad_dir_ipm)</span>
-<span id="cb107-24"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-24" tabindex="-1"></a></span>
-<span id="cb107-25"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-25" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;I&quot;</span>, <span class="st">&quot;II&quot;</span>, <span class="st">&quot;III&quot;</span>, <span class="st">&quot;IV&quot;</span>, <span class="st">&quot;mod&quot;</span>, <span class="st">&quot;ext&quot;</span>)</span>
-<span id="cb107-26"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-26" tabindex="-1"></a>ii_ipm  <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb107-27"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-27" tabindex="-1"></a><span class="cf">for</span> (ii_ipm <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>){</span>
-<span id="cb107-28"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-28" tabindex="-1"></a>    ii_ipm <span class="ot">&lt;-</span> ind[ii_ipm]</span>
-<span id="cb107-29"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-29" tabindex="-1"></a>    paso <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;(_|</span><span class="sc">\\</span><span class="st">b)&quot;</span>, ii_ipm, <span class="st">&quot;(_|</span><span class="sc">\\</span><span class="st">b)&quot;</span>)</span>
-<span id="cb107-30"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-30" tabindex="-1"></a>    dat_plot <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(estimad_dir, temp2) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-31"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-31" tabindex="-1"></a>      <span class="fu">select</span>(ent, <span class="fu">matches</span>(paso))</span>
-<span id="cb107-32"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-32" tabindex="-1"></a>  </span>
-<span id="cb107-33"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-33" tabindex="-1"></a>    dat_lim  <span class="ot">&lt;-</span> dat_plot <span class="sc">%&gt;%</span> <span class="fu">select</span>(ent, <span class="fu">matches</span>(<span class="st">&quot;upp|low&quot;</span>))</span>
-<span id="cb107-34"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-34" tabindex="-1"></a>   </span>
-<span id="cb107-35"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-35" tabindex="-1"></a>    <span class="fu">names</span>(dat_lim) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;Lim_Inf&quot;</span>, <span class="st">&quot;Lim_Sup&quot;</span>)</span>
-<span id="cb107-36"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-36" tabindex="-1"></a>   </span>
-<span id="cb107-37"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-37" tabindex="-1"></a>    dat_plot <span class="sc">%&lt;&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">matches</span>(<span class="st">&quot;upp|low&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-38"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-38" tabindex="-1"></a>      <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Origen&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Prop&quot;</span>, <span class="sc">-</span>ent) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-39"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-39" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">Origen =</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="at">pattern =</span> <span class="st">&quot;direct&quot;</span>, <span class="at">x =</span> Origen), </span>
-<span id="cb107-40"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-40" tabindex="-1"></a>                             <span class="st">&quot;ENIGH&quot;</span>, <span class="st">&quot;Estimación CEPAL&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-41"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-41" tabindex="-1"></a>      <span class="fu">inner_join</span>(dat_lim)</span>
-<span id="cb107-42"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-42" tabindex="-1"></a>   </span>
-<span id="cb107-43"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-43" tabindex="-1"></a>    gg_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> dat_plot, <span class="fu">aes</span>(<span class="at">x =</span> ent, <span class="at">y =</span> Prop, <span class="at">color =</span> Origen)) <span class="sc">+</span></span>
-<span id="cb107-44"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-44" tabindex="-1"></a>      <span class="fu">labs</span>(</span>
-<span id="cb107-45"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-45" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb107-46"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-46" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">&quot;Estimación&quot;</span>,</span>
-<span id="cb107-47"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-47" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb107-48"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-48" tabindex="-1"></a>        <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Estimación de la pobreza multidimensional 2020 - Tipo &quot;</span>, ii_ipm )</span>
-<span id="cb107-49"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-49" tabindex="-1"></a>      )<span class="sc">+</span> <span class="fu">theme_bw</span>(<span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb107-50"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-50" tabindex="-1"></a>      <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb107-51"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-51" tabindex="-1"></a>      <span class="fu">theme</span>(legend.position</span>
-<span id="cb107-52"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-52" tabindex="-1"></a></span>
-<span id="cb107-53"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-53" tabindex="-1"></a> <span class="ot">=</span> <span class="st">&quot;bottom&quot;</span>,</span>
-<span id="cb107-54"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-54" tabindex="-1"></a>            <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb107-55"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-55" tabindex="-1"></a>      <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">scale =</span> <span class="dv">100</span>))</span>
-<span id="cb107-56"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-56" tabindex="-1"></a>   </span>
-<span id="cb107-57"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-57" tabindex="-1"></a>    gg_plot <span class="ot">&lt;-</span>  gg_plot <span class="sc">+</span></span>
-<span id="cb107-58"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-58" tabindex="-1"></a>      <span class="fu">geom_errorbar</span>(<span class="at">data =</span> dat_plot <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Origen   <span class="sc">==</span> <span class="st">&quot;ENIGH&quot;</span>),</span>
-<span id="cb107-59"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-59" tabindex="-1"></a>                    <span class="fu">aes</span>(<span class="at">ymin =</span> Lim_Inf, <span class="at">ymax =</span> Lim_Sup, <span class="at">x =</span> ent),</span>
-<span id="cb107-60"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-60" tabindex="-1"></a>                    <span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb107-61"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-61" tabindex="-1"></a>      <span class="fu">scale_color_manual</span>(</span>
-<span id="cb107-62"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-62" tabindex="-1"></a>         <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">&quot;ENIGH&quot;</span>, <span class="st">&quot;Estimación CEPAL&quot;</span>),</span>
-<span id="cb107-63"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-63" tabindex="-1"></a>         <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue3&quot;</span>)</span>
-<span id="cb107-64"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-64" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb107-65"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-65" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
-<span id="cb107-66"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-66" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
-<span id="cb107-67"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-67" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
-<span id="cb107-68"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-68" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
-<span id="cb107-69"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-69" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(</span>
-<span id="cb107-70"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-70" tabindex="-1"></a>          <span class="at">angle =</span> <span class="dv">90</span>,</span>
-<span id="cb107-71"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-71" tabindex="-1"></a>          <span class="at">size =</span> <span class="dv">8</span>,</span>
-<span id="cb107-72"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-72" tabindex="-1"></a>          <span class="at">vjust =</span> <span class="fl">0.3</span></span>
-<span id="cb107-73"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-73" tabindex="-1"></a>        ),</span>
-<span id="cb107-74"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-74" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
-<span id="cb107-75"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-75" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>)</span>
-<span id="cb107-76"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-76" tabindex="-1"></a>      )</span>
-<span id="cb107-77"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-77" tabindex="-1"></a>   </span>
-<span id="cb107-78"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-78" tabindex="-1"></a>    <span class="fu">ggsave</span>(<span class="at">plot =</span> gg_plot, <span class="at">width =</span> <span class="dv">16</span>, <span class="at">height =</span> <span class="dv">9</span>,</span>
-<span id="cb107-79"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-79" tabindex="-1"></a>           <span class="at">filename =</span> <span class="fu">paste0</span>(<span class="st">&quot;../output/Entregas/2020/plot_uni/ipm_&quot;</span>, ii_ipm, <span class="st">&quot;.png&quot;</span>))</span>
-<span id="cb107-80"><a href="estimacion_municipios_ipm_pobreza_error.html#cb107-80" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-1" tabindex="-1"></a>diseno <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb109-2"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-2" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(</span>
+<span id="cb109-3"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-3" tabindex="-1"></a>    <span class="at">ids =</span> upm,</span>
+<span id="cb109-4"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-4" tabindex="-1"></a>    <span class="at">weights =</span> fep,</span>
+<span id="cb109-5"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-5" tabindex="-1"></a>    <span class="at">nest =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb109-6"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-6" tabindex="-1"></a>    <span class="at">strata =</span> estrato</span>
+<span id="cb109-7"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-7" tabindex="-1"></a>  )</span>
+<span id="cb109-8"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-8" tabindex="-1"></a></span>
+<span id="cb109-9"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-9" tabindex="-1"></a>estimad_dir <span class="ot">&lt;-</span> diseno <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ent, ipm) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-10"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-10" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">direct =</span> <span class="fu">survey_mean</span>(<span class="at">vartype =</span> <span class="st">&quot;ci&quot;</span> ))</span>
+<span id="cb109-11"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-11" tabindex="-1"></a></span>
+<span id="cb109-12"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-12" tabindex="-1"></a>estimad_dir_ipm <span class="ot">&lt;-</span> <span class="fu">pivot_wider</span>(</span>
+<span id="cb109-13"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-13" tabindex="-1"></a>  <span class="at">data =</span> estimad_dir,</span>
+<span id="cb109-14"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-14" tabindex="-1"></a>  <span class="at">id_cols =</span> <span class="st">&quot;ent&quot;</span>,</span>
+<span id="cb109-15"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-15" tabindex="-1"></a>  <span class="at">names_from =</span> <span class="st">&quot;ipm&quot;</span>,</span>
+<span id="cb109-16"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-16" tabindex="-1"></a>  <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;direct&quot;</span>, <span class="st">&quot;direct_low&quot;</span>, <span class="st">&quot;direct_upp&quot;</span>)</span>
+<span id="cb109-17"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-17" tabindex="-1"></a>) </span>
+<span id="cb109-18"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-18" tabindex="-1"></a></span>
+<span id="cb109-19"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-19" tabindex="-1"></a>estimad_dir <span class="ot">&lt;-</span> diseno <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ent) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-20"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-20" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">direct_mod =</span> <span class="fu">survey_mean</span>(pobre_moderada, <span class="at">vartype =</span> <span class="st">&quot;ci&quot;</span>),</span>
+<span id="cb109-21"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-21" tabindex="-1"></a>            <span class="at">direct_ext =</span> <span class="fu">survey_mean</span>(pobre_extrema, <span class="at">vartype =</span> <span class="st">&quot;ci&quot;</span>))</span>
+<span id="cb109-22"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-22" tabindex="-1"></a></span>
+<span id="cb109-23"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-23" tabindex="-1"></a>estimad_dir <span class="sc">%&lt;&gt;%</span> <span class="fu">inner_join</span>(estimad_dir_ipm)</span>
+<span id="cb109-24"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-24" tabindex="-1"></a></span>
+<span id="cb109-25"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-25" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;I&quot;</span>, <span class="st">&quot;II&quot;</span>, <span class="st">&quot;III&quot;</span>, <span class="st">&quot;IV&quot;</span>, <span class="st">&quot;mod&quot;</span>, <span class="st">&quot;ext&quot;</span>)</span>
+<span id="cb109-26"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-26" tabindex="-1"></a>ii_ipm  <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb109-27"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-27" tabindex="-1"></a><span class="cf">for</span> (ii_ipm <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>){</span>
+<span id="cb109-28"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-28" tabindex="-1"></a>    ii_ipm <span class="ot">&lt;-</span> ind[ii_ipm]</span>
+<span id="cb109-29"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-29" tabindex="-1"></a>    paso <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;(_|</span><span class="sc">\\</span><span class="st">b)&quot;</span>, ii_ipm, <span class="st">&quot;(_|</span><span class="sc">\\</span><span class="st">b)&quot;</span>)</span>
+<span id="cb109-30"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-30" tabindex="-1"></a>    dat_plot <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(estimad_dir, temp2) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-31"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-31" tabindex="-1"></a>      <span class="fu">select</span>(ent, <span class="fu">matches</span>(paso))</span>
+<span id="cb109-32"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-32" tabindex="-1"></a>  </span>
+<span id="cb109-33"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-33" tabindex="-1"></a>    dat_lim  <span class="ot">&lt;-</span> dat_plot <span class="sc">%&gt;%</span> <span class="fu">select</span>(ent, <span class="fu">matches</span>(<span class="st">&quot;upp|low&quot;</span>))</span>
+<span id="cb109-34"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-34" tabindex="-1"></a>   </span>
+<span id="cb109-35"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-35" tabindex="-1"></a>    <span class="fu">names</span>(dat_lim) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,<span class="st">&quot;Lim_Inf&quot;</span>, <span class="st">&quot;Lim_Sup&quot;</span>)</span>
+<span id="cb109-36"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-36" tabindex="-1"></a>   </span>
+<span id="cb109-37"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-37" tabindex="-1"></a>    dat_plot <span class="sc">%&lt;&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">matches</span>(<span class="st">&quot;upp|low&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-38"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-38" tabindex="-1"></a>      <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Origen&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Prop&quot;</span>, <span class="sc">-</span>ent) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-39"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-39" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">Origen =</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="at">pattern =</span> <span class="st">&quot;direct&quot;</span>, <span class="at">x =</span> Origen), </span>
+<span id="cb109-40"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-40" tabindex="-1"></a>                             <span class="st">&quot;ENIGH&quot;</span>, <span class="st">&quot;Estimación CEPAL&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-41"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-41" tabindex="-1"></a>      <span class="fu">inner_join</span>(dat_lim)</span>
+<span id="cb109-42"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-42" tabindex="-1"></a>   </span>
+<span id="cb109-43"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-43" tabindex="-1"></a>    gg_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> dat_plot, <span class="fu">aes</span>(<span class="at">x =</span> ent, <span class="at">y =</span> Prop, <span class="at">color =</span> Origen)) <span class="sc">+</span></span>
+<span id="cb109-44"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-44" tabindex="-1"></a>      <span class="fu">labs</span>(</span>
+<span id="cb109-45"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-45" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb109-46"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-46" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">&quot;Estimación&quot;</span>,</span>
+<span id="cb109-47"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-47" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb109-48"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-48" tabindex="-1"></a>        <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Estimación de la pobreza multidimensional 2020 - Tipo &quot;</span>, ii_ipm )</span>
+<span id="cb109-49"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-49" tabindex="-1"></a>      )<span class="sc">+</span> <span class="fu">theme_bw</span>(<span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb109-50"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-50" tabindex="-1"></a>      <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb109-51"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-51" tabindex="-1"></a>      <span class="fu">theme</span>(legend.position</span>
+<span id="cb109-52"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-52" tabindex="-1"></a></span>
+<span id="cb109-53"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-53" tabindex="-1"></a> <span class="ot">=</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb109-54"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-54" tabindex="-1"></a>            <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb109-55"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-55" tabindex="-1"></a>      <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">scale =</span> <span class="dv">100</span>))</span>
+<span id="cb109-56"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-56" tabindex="-1"></a>   </span>
+<span id="cb109-57"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-57" tabindex="-1"></a>    gg_plot <span class="ot">&lt;-</span>  gg_plot <span class="sc">+</span></span>
+<span id="cb109-58"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-58" tabindex="-1"></a>      <span class="fu">geom_errorbar</span>(<span class="at">data =</span> dat_plot <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Origen   <span class="sc">==</span> <span class="st">&quot;ENIGH&quot;</span>),</span>
+<span id="cb109-59"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-59" tabindex="-1"></a>                    <span class="fu">aes</span>(<span class="at">ymin =</span> Lim_Inf, <span class="at">ymax =</span> Lim_Sup, <span class="at">x =</span> ent),</span>
+<span id="cb109-60"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-60" tabindex="-1"></a>                    <span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb109-61"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-61" tabindex="-1"></a>      <span class="fu">scale_color_manual</span>(</span>
+<span id="cb109-62"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-62" tabindex="-1"></a>         <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">&quot;ENIGH&quot;</span>, <span class="st">&quot;Estimación CEPAL&quot;</span>),</span>
+<span id="cb109-63"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-63" tabindex="-1"></a>         <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue3&quot;</span>)</span>
+<span id="cb109-64"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-64" tabindex="-1"></a>      ) <span class="sc">+</span></span>
+<span id="cb109-65"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-65" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
+<span id="cb109-66"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-66" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb109-67"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-67" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb109-68"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-68" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb109-69"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-69" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(</span>
+<span id="cb109-70"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-70" tabindex="-1"></a>          <span class="at">angle =</span> <span class="dv">90</span>,</span>
+<span id="cb109-71"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-71" tabindex="-1"></a>          <span class="at">size =</span> <span class="dv">8</span>,</span>
+<span id="cb109-72"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-72" tabindex="-1"></a>          <span class="at">vjust =</span> <span class="fl">0.3</span></span>
+<span id="cb109-73"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-73" tabindex="-1"></a>        ),</span>
+<span id="cb109-74"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-74" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
+<span id="cb109-75"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-75" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>)</span>
+<span id="cb109-76"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-76" tabindex="-1"></a>      )</span>
+<span id="cb109-77"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-77" tabindex="-1"></a>   </span>
+<span id="cb109-78"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-78" tabindex="-1"></a>    <span class="fu">ggsave</span>(<span class="at">plot =</span> gg_plot, <span class="at">width =</span> <span class="dv">16</span>, <span class="at">height =</span> <span class="dv">9</span>,</span>
+<span id="cb109-79"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-79" tabindex="-1"></a>           <span class="at">filename =</span> <span class="fu">paste0</span>(<span class="st">&quot;../output/Entregas/2020/plot_uni/ipm_&quot;</span>, ii_ipm, <span class="st">&quot;.png&quot;</span>))</span>
+<span id="cb109-80"><a href="estimacion_municipios_ipm_pobreza_error.html#cb109-80" tabindex="-1"></a>}</span></code></pre></div>
 
 </div>
 </div>
@@ -474,7 +475,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.pdf", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.epub", "Fortalecimiento de capacidades en Técnicas de Estimación en Áreas Pequeñas con enfoque Bayesiano para la desagregación de datos.mobi"],
+"download": ["Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.pdf", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.epub", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.mobi"],
 "search": {
 "engine": "fuse",
 "options": null

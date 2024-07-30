@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>20_estimacion_directa_carencias.R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020</title>
+  <meta name="description" content="Manual de procesamiento." />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="20_estimacion_directa_carencias.R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Manual de procesamiento." />
+  <meta name="github-repo" content="psirusteam/coneval" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="20_estimacion_directa_carencias.R | Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020" />
+  
+  <meta name="twitter:description" content="Manual de procesamiento." />
+  
+
+<meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
+
+
+<meta name="date" content="2024-07-30" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="mapas_carencias.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Manual de procesamiento.</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introducción</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#respositodio-de-códigos"><i class="fa fa-check"></i>Respositodio de códigos</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-proyecto"><i class="fa fa-check"></i>Estructura del Proyecto</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#librerias-de-r-y-otros-insumos"><i class="fa fa-check"></i>Librerias de <em>R</em> y otros insumos</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#bases-de-datos-utilizadas"><i class="fa fa-check"></i>Bases de Datos Utilizadas</a></li>
+<li class="chapter" data-level="" data-path="indicadores-estimados.html"><a href="indicadores-estimados.html"><i class="fa fa-check"></i>Indicadores estimados</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="union_bases.html"><a href="union_bases.html"><i class="fa fa-check"></i>00_union_bases.R</a></li>
+<li class="chapter" data-level="" data-path="descarga_satelitales.html"><a href="descarga_satelitales.html"><i class="fa fa-check"></i>01_Descarga_satelitales.R</a></li>
+<li class="chapter" data-level="" data-path="union_predictores.html"><a href="union_predictores.html"><i class="fa fa-check"></i>02_Union_predictores.R</a></li>
+<li class="chapter" data-level="" data-path="estandarizar_muestra_cuestionario_ampliado.html"><a href="estandarizar_muestra_cuestionario_ampliado.html"><i class="fa fa-check"></i>03_Estandarizar_muestra_cuestionario_ampliado.R</a></li>
+<li class="chapter" data-level="" data-path="armonizar_encuesta.html"><a href="armonizar_encuesta.html"><i class="fa fa-check"></i>04_Armonizar_encuesta.R</a></li>
+<li class="chapter" data-level="" data-path="validacion_encuestas.html"><a href="validacion_encuestas.html"><i class="fa fa-check"></i>05_Validacion_encuestas.R</a></li>
+<li class="chapter" data-level="" data-path="modelo_unidad_ictpc.html"><a href="modelo_unidad_ictpc.html"><i class="fa fa-check"></i>06_Modelo_unidad_ictpc.R</a></li>
+<li class="chapter" data-level="" data-path="modelo_unidad_py_ic_ali_nc.html"><a href="modelo_unidad_py_ic_ali_nc.html"><i class="fa fa-check"></i>07_Modelo_unidad_py_ic_ali_nc.R</a></li>
+<li class="chapter" data-level="" data-path="modelo_unidad_py_ic_segsoc.html"><a href="modelo_unidad_py_ic_segsoc.html"><i class="fa fa-check"></i>08_Modelo_unidad_py_ic_segsoc</a></li>
+<li class="chapter" data-level="" data-path="postbenchmarking_ictpc.html"><a href="postbenchmarking_ictpc.html"><i class="fa fa-check"></i>09_PostBenchmarking_ictpc.R</a></li>
+<li class="chapter" data-level="" data-path="postbenchmarking_ic_ali_nc.html"><a href="postbenchmarking_ic_ali_nc.html"><i class="fa fa-check"></i>10_PostBenchmarking_ic_ali_nc.R</a></li>
+<li class="chapter" data-level="" data-path="postbenchmarking_ic_segsoc.html"><a href="postbenchmarking_ic_segsoc.html"><i class="fa fa-check"></i>11_PostBenchmarking_ic_segsoc.r</a></li>
+<li class="chapter" data-level="" data-path="imputacion_censal.html"><a href="imputacion_censal.html"><i class="fa fa-check"></i>12_Imputacion_censal.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_ent_02.html"><a href="estimacion_ent_02.html"><i class="fa fa-check"></i>13_Estimacion_ent_02.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_municipios_ipm_pobreza.html"><a href="estimacion_municipios_ipm_pobreza.html"><i class="fa fa-check"></i>14_estimacion_municipios_ipm_pobreza.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_municipios_ipm_pobreza_error.html"><a href="estimacion_municipios_ipm_pobreza_error.html"><i class="fa fa-check"></i>15_estimacion_municipios_ipm_pobreza_error.R</a></li>
+<li class="chapter" data-level="" data-path="mapas.html"><a href="mapas.html"><i class="fa fa-check"></i>16_Mapas.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_municipios_carencias_error.html"><a href="estimacion_municipios_carencias_error.html"><i class="fa fa-check"></i>18_estimacion_municipios_carencias_error.R</a></li>
+<li class="chapter" data-level="" data-path="mapas_carencias.html"><a href="mapas_carencias.html"><i class="fa fa-check"></i>19_Mapas_carencias.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_directa_carencias.html"><a href="estimacion_directa_carencias.html"><i class="fa fa-check"></i>20_estimacion_directa_carencias.R</a></li>
+<li class="divider"></li>
+<li><a Manual de procesamiento. </a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="estimacion_directa_carencias.r" class="section level1 unnumbered hasAnchor">
+<h1>20_estimacion_directa_carencias.R<a href="estimacion_directa_carencias.html#estimacion_directa_carencias.r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="descripción-general-del-código" class="section level5 unnumbered hasAnchor">
+<h5>Descripción General del Código<a href="estimacion_directa_carencias.html#descripción-general-del-código" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>Este código está diseñado para procesar y analizar datos de encuestas con el objetivo de generar estimaciones de carencia para diferentes entidades dentro de un país. A continuación, se detalla cada sección del código:</p>
+</div>
+<div id="preparación-del-entorno-1" class="section level5 unnumbered hasAnchor">
+<h5>Preparación del Entorno<a href="estimacion_directa_carencias.html#preparación-del-entorno-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>Al inicio, el código limpia el entorno de trabajo de R mediante el siguiente bloque de código:</p>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="estimacion_directa_carencias.html#cb126-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div>
+<p>Esto elimina todos los objetos existentes en el espacio de trabajo, asegurando que el análisis se realice en un entorno limpio y sin interferencias de datos anteriores.</p>
+</div>
+<div id="carga-de-bibliotecas" class="section level5 unnumbered hasAnchor">
+<h5>Carga de Bibliotecas<a href="estimacion_directa_carencias.html#carga-de-bibliotecas" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>Se cargan varias bibliotecas necesarias para el análisis de datos mediante el bloque de código:</p>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="estimacion_directa_carencias.html#cb127-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb127-2"><a href="estimacion_directa_carencias.html#cb127-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb127-3"><a href="estimacion_directa_carencias.html#cb127-3" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb127-4"><a href="estimacion_directa_carencias.html#cb127-4" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb127-5"><a href="estimacion_directa_carencias.html#cb127-5" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb127-6"><a href="estimacion_directa_carencias.html#cb127-6" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
+<span id="cb127-7"><a href="estimacion_directa_carencias.html#cb127-7" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb127-8"><a href="estimacion_directa_carencias.html#cb127-8" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb127-9"><a href="estimacion_directa_carencias.html#cb127-9" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb127-10"><a href="estimacion_directa_carencias.html#cb127-10" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span></code></pre></div>
+<p>Estas bibliotecas proporcionan herramientas para la manipulación de datos, manejo de archivos, técnicas de muestreo y análisis de encuestas.</p>
+</div>
+<div id="lectura-y-preparación-de-datos" class="section level5 unnumbered hasAnchor">
+<h5>Lectura y Preparación de Datos<a href="estimacion_directa_carencias.html#lectura-y-preparación-de-datos" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>Se lee un archivo de datos en formato RDS que contiene la encuesta ampliada y se prepara la encuesta intercensal con el siguiente código:</p>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="estimacion_directa_carencias.html#cb128-1" tabindex="-1"></a>encuesta_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;output/2020/encuesta_ampliada.rds&quot;</span>)</span>
+<span id="cb128-2"><a href="estimacion_directa_carencias.html#cb128-2" tabindex="-1"></a></span>
+<span id="cb128-3"><a href="estimacion_directa_carencias.html#cb128-3" tabindex="-1"></a>encuesta_ampliada <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb128-4"><a href="estimacion_directa_carencias.html#cb128-4" tabindex="-1"></a>  <span class="at">ic_asalud =</span> <span class="fu">ifelse</span>(ic_asalud <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb128-5"><a href="estimacion_directa_carencias.html#cb128-5" tabindex="-1"></a>  <span class="at">ic_cv =</span> <span class="fu">ifelse</span>(ic_cv <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb128-6"><a href="estimacion_directa_carencias.html#cb128-6" tabindex="-1"></a>  <span class="at">ic_sbv =</span> <span class="fu">ifelse</span>(ic_sbv <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb128-7"><a href="estimacion_directa_carencias.html#cb128-7" tabindex="-1"></a>  <span class="at">ic_rezedu =</span> <span class="fu">ifelse</span>(ic_rezedu <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb128-8"><a href="estimacion_directa_carencias.html#cb128-8" tabindex="-1"></a>) </span></code></pre></div>
+<p>Aquí, se ajustan ciertos indicadores para que solo tomen valores binarios (0 o 1).</p>
+</div>
+<div id="creación-de-directorios-y-definición-de-variables" class="section level5 unnumbered hasAnchor">
+<h5>Creación de Directorios y Definición de Variables<a href="estimacion_directa_carencias.html#creación-de-directorios-y-definición-de-variables" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>Se crea un directorio para almacenar los resultados de estimación y se define un vector con códigos de entidades:</p>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="estimacion_directa_carencias.html#cb129-1" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;output/2020/estimacion_dir&quot;</span>)</span>
+<span id="cb129-2"><a href="estimacion_directa_carencias.html#cb129-2" tabindex="-1"></a></span>
+<span id="cb129-3"><a href="estimacion_directa_carencias.html#cb129-3" tabindex="-1"></a><span class="fu">c</span>(<span class="st">&quot;03&quot;</span>, <span class="st">&quot;06&quot;</span>, <span class="st">&quot;23&quot;</span>, <span class="st">&quot;04&quot;</span>, <span class="st">&quot;01&quot;</span>, <span class="st">&quot;22&quot;</span>, <span class="st">&quot;27&quot;</span>, <span class="st">&quot;25&quot;</span>, <span class="st">&quot;18&quot;</span>,</span>
+<span id="cb129-4"><a href="estimacion_directa_carencias.html#cb129-4" tabindex="-1"></a>  <span class="st">&quot;05&quot;</span>, <span class="st">&quot;17&quot;</span>, <span class="st">&quot;28&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="st">&quot;26&quot;</span>, <span class="st">&quot;09&quot;</span>, <span class="st">&quot;32&quot;</span>, <span class="st">&quot;08&quot;</span>, <span class="st">&quot;19&quot;</span>, <span class="st">&quot;29&quot;</span>, </span>
+<span id="cb129-5"><a href="estimacion_directa_carencias.html#cb129-5" tabindex="-1"></a>  <span class="st">&quot;24&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;31&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;16&quot;</span>, <span class="st">&quot;12&quot;</span>, <span class="st">&quot;14&quot;</span>, <span class="st">&quot;15&quot;</span>, <span class="st">&quot;07&quot;</span>, <span class="st">&quot;21&quot;</span>, </span>
+<span id="cb129-6"><a href="estimacion_directa_carencias.html#cb129-6" tabindex="-1"></a>  <span class="st">&quot;30&quot;</span>,  <span class="st">&quot;20&quot;</span> ,<span class="st">&quot;02&quot;</span>)</span></code></pre></div>
+</div>
+<div id="análisis-y-estimación" class="section level5 unnumbered hasAnchor">
+<h5>Análisis y Estimación<a href="estimacion_directa_carencias.html#análisis-y-estimación" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>Se realiza un bucle <code>for</code> que itera sobre cada código de entidad con el siguiente bloque de código:</p>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="estimacion_directa_carencias.html#cb130-1" tabindex="-1"></a><span class="cf">for</span>(ii_ent <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&quot;03&quot;</span>, <span class="st">&quot;06&quot;</span>, <span class="st">&quot;23&quot;</span>, <span class="st">&quot;04&quot;</span>, <span class="st">&quot;01&quot;</span>, <span class="st">&quot;22&quot;</span>, <span class="st">&quot;27&quot;</span>, <span class="st">&quot;25&quot;</span>, <span class="st">&quot;18&quot;</span>,</span>
+<span id="cb130-2"><a href="estimacion_directa_carencias.html#cb130-2" tabindex="-1"></a>  <span class="st">&quot;05&quot;</span>, <span class="st">&quot;17&quot;</span>, <span class="st">&quot;28&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="st">&quot;26&quot;</span>, <span class="st">&quot;09&quot;</span>, <span class="st">&quot;32&quot;</span>, <span class="st">&quot;08&quot;</span>, <span class="st">&quot;19&quot;</span>, <span class="st">&quot;29&quot;</span>, </span>
+<span id="cb130-3"><a href="estimacion_directa_carencias.html#cb130-3" tabindex="-1"></a>  <span class="st">&quot;24&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;31&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;16&quot;</span>, <span class="st">&quot;12&quot;</span>, <span class="st">&quot;14&quot;</span>, <span class="st">&quot;15&quot;</span>, <span class="st">&quot;07&quot;</span>, <span class="st">&quot;21&quot;</span>, </span>
+<span id="cb130-4"><a href="estimacion_directa_carencias.html#cb130-4" tabindex="-1"></a>  <span class="st">&quot;30&quot;</span>,  <span class="st">&quot;20&quot;</span> ,<span class="st">&quot;02&quot;</span> )){</span>
+<span id="cb130-5"><a href="estimacion_directa_carencias.html#cb130-5" tabindex="-1"></a>  </span>
+<span id="cb130-6"><a href="estimacion_directa_carencias.html#cb130-6" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;################################################################################################################</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb130-7"><a href="estimacion_directa_carencias.html#cb130-7" tabindex="-1"></a>  inicio <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb130-8"><a href="estimacion_directa_carencias.html#cb130-8" tabindex="-1"></a>  <span class="fu">print</span>(inicio)</span>
+<span id="cb130-9"><a href="estimacion_directa_carencias.html#cb130-9" tabindex="-1"></a>  </span>
+<span id="cb130-10"><a href="estimacion_directa_carencias.html#cb130-10" tabindex="-1"></a>  muestra_post <span class="ot">=</span> encuesta_ampliada <span class="sc">%&gt;%</span> <span class="fu">filter</span>(ent <span class="sc">==</span> ii_ent)</span>
+<span id="cb130-11"><a href="estimacion_directa_carencias.html#cb130-11" tabindex="-1"></a>  </span>
+<span id="cb130-12"><a href="estimacion_directa_carencias.html#cb130-12" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st"> Estado = &quot;</span>, ii_ent,<span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb130-13"><a href="estimacion_directa_carencias.html#cb130-13" tabindex="-1"></a></span>
+<span id="cb130-14"><a href="estimacion_directa_carencias.html#cb130-14" tabindex="-1"></a>  diseno_post <span class="ot">&lt;-</span>  muestra_post <span class="sc">%&gt;%</span> </span>
+<span id="cb130-15"><a href="estimacion_directa_carencias.html#cb130-15" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">fep =</span> factor) <span class="sc">%&gt;%</span></span>
+<span id="cb130-16"><a href="estimacion_directa_carencias.html#cb130-16" tabindex="-1"></a>    <span class="fu">as_survey_design</span>(</span>
+<span id="cb130-17"><a href="estimacion_directa_carencias.html#cb130-17" tabindex="-1"></a>      <span class="at">ids =</span> upm,</span>
+<span id="cb130-18"><a href="estimacion_directa_carencias.html#cb130-18" tabindex="-1"></a>      <span class="at">weights =</span> fep,</span>
+<span id="cb130-19"><a href="estimacion_directa_carencias.html#cb130-19" tabindex="-1"></a>      <span class="at">nest =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb130-20"><a href="estimacion_directa_carencias.html#cb130-20" tabindex="-1"></a>      <span class="co"># strata = estrato</span></span>
+<span id="cb130-21"><a href="estimacion_directa_carencias.html#cb130-21" tabindex="-1"></a>    )</span>
+<span id="cb130-22"><a href="estimacion_directa_carencias.html#cb130-22" tabindex="-1"></a>  </span>
+<span id="cb130-23"><a href="estimacion_directa_carencias.html#cb130-23" tabindex="-1"></a>  estima_carencia <span class="ot">&lt;-</span>  diseno_post <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> </span>
+<span id="cb130-24"><a href="estimacion_directa_carencias.html#cb130-24" tabindex="-1"></a>    <span class="fu">summarise_at</span>(<span class="at">.vars =</span> yks, <span class="at">.funs =</span> <span class="fu">list</span>(</span>
+<span id="cb130-25"><a href="estimacion_directa_carencias.html#cb130-25" tabindex="-1"></a>      <span class="sc">~</span> <span class="fu">survey_mean</span>(., <span class="at">vartype =</span><span class="st">&quot;var&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb130-26"><a href="estimacion_directa_carencias.html#cb130-26" tabindex="-1"></a>    )</span>
+<span id="cb130-27"><a href="estimacion_directa_carencias.html#cb130-27" tabindex="-1"></a>  </span>
+<span id="cb130-28"><a href="estimacion_directa_carencias.html#cb130-28" tabindex="-1"></a>  <span class="fu">saveRDS</span>(estima_carencia,</span>
+<span id="cb130-29"><a href="estimacion_directa_carencias.html#cb130-29" tabindex="-1"></a>          <span class="at">file =</span> <span class="fu">paste0</span>( <span class="st">&quot;output/2020/estimacion_dir/estado_&quot;</span>,</span>
+<span id="cb130-30"><a href="estimacion_directa_carencias.html#cb130-30" tabindex="-1"></a>                         ii_ent,<span class="st">&quot;.rds&quot;</span>))</span>
+<span id="cb130-31"><a href="estimacion_directa_carencias.html#cb130-31" tabindex="-1"></a>  <span class="fu">gc</span>(<span class="cn">TRUE</span>)</span>
+<span id="cb130-32"><a href="estimacion_directa_carencias.html#cb130-32" tabindex="-1"></a>  fin <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb130-33"><a href="estimacion_directa_carencias.html#cb130-33" tabindex="-1"></a>  tiempo_total <span class="ot">&lt;-</span> <span class="fu">difftime</span>(fin, inicio, <span class="at">units =</span> <span class="st">&quot;mins&quot;</span>)</span>
+<span id="cb130-34"><a href="estimacion_directa_carencias.html#cb130-34" tabindex="-1"></a>  <span class="fu">print</span>(tiempo_total)</span>
+<span id="cb130-35"><a href="estimacion_directa_carencias.html#cb130-35" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;################################################################################################################</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb130-36"><a href="estimacion_directa_carencias.html#cb130-36" tabindex="-1"></a>}</span></code></pre></div>
+
+</div>
+</div>
+
+
+
+
+
+
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="mapas_carencias.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/psirusteam/2023MEXsae/20_estimacion_directa_carencias.qmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.pdf", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.epub", "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020.mobi"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+},
+"tconfig": null
+});
+});
+</script>
+
+</body>
+
+</html>
