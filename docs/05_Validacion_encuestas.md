@@ -9,7 +9,9 @@ El análisis procede realizando comparaciones entre los datos censales y los dat
 
 #### Limpieza del Entorno y Carga de Bibliotecas{-}
 
-Se limpia el entorno de R y se cargan las bibliotecas necesarias para la manipulación de datos y la creación de gráficos.
+Se realiza una limpieza del entorno en R para eliminar todos los objetos y liberar memoria, asegurando que no haya interferencias de variables o datos previos en el análisis actual. Posteriormente, se cargan las bibliotecas necesarias para la manipulación de datos y la creación de gráficos. Entre las bibliotecas cargadas se encuentran `tidyverse` para la manipulación y visualización de datos, `reshape2` para la reorganización de datos, `stringr` para el manejo de cadenas de texto, `ggalt` para gráficos avanzados, `gridExtra` para la disposición de múltiples gráficos, `scales` para la adaptación de escalas en los gráficos, `formatR` para el formateo de código, y `patchwork` para combinar múltiples gráficos.
+
+Se establece un tema predeterminado para los gráficos mediante `bayesplot::theme_default()` para mantener una presentación visual consistente. Además, se carga un archivo de script adicional, `Plot_validacion.R`, que contiene funciones personalizadas para la validación de gráficos, permitiendo así una integración eficiente y consistente de las herramientas gráficas necesarias para el análisis.
 
 
 ``` r
@@ -35,7 +37,7 @@ source(file = "../source/Plot_validacion.R", encoding = "UTF-8")
 
 #### Lectura de Datos {-}
 
-Se leen las bases de datos necesarias para el análisis.
+Se leen las bases de datos necesarias para el análisis. La primera base de datos, `encuesta_sta`, se carga desde el archivo `../input/2020/enigh/encuesta_sta.rds`, y la segunda, `muestra_ampliada`, se carga desde el archivo `../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds`. Estos conjuntos de datos proporcionan la información requerida para las siguientes etapas del análisis.
 
 
 ``` r
@@ -45,9 +47,15 @@ muestra_ampliada <- readRDS("../input/2020/muestra_ampliada/muestra_cuestionario
 
 #### Comparación de Variables {-}
 
-Se comparan las distribuciones de diferentes variables entre los datos censales y los de la encuesta utilizando la función `Plot_Compare`.
+Se comparan las distribuciones de diferentes variables entre los datos censales y los de la encuesta mediante la función `Plot_Compare`. 
 
-#### Comparación de Edad, Sexo y Nivel Educativo {-}
+Para analizar la variable **edad**, se crea el gráfico `age_plot`, que compara las distribuciones de edad en los datos censales y en los de la encuesta. 
+
+Se genera el gráfico `sex_plot` para comparar las distribuciones de **sexo** entre ambas fuentes de datos. 
+
+El gráfico `escolar_plot` se utiliza para comparar el **nivel educativo** en los datos censales con los datos de la encuesta. 
+
+Finalmente, el gráfico `depto_plot` compara las distribuciones de **entidad** entre los datos censales y de la encuesta. Estos gráficos permiten evaluar las diferencias en las características de la población entre las dos fuentes de datos.
 
 
 ``` r
@@ -84,6 +92,14 @@ Se crean gráficos comparativos para edad, sexo, nivel educativo y estados. Esto
 
 #### Comparación de Lengua Indígena y Discapacidad {-}
 
+Para comparar las variables de **lengua indígena** y **discapacidad** entre los datos censales y los datos de la encuesta, se utilizan dos gráficos generados mediante la función `Plot_Compare`.
+
+El gráfico `hlengua` muestra la comparación de la distribución de la variable **lengua indígena** en los datos censales frente a los datos de la encuesta. 
+
+Por otro lado, el gráfico `plot_discapacidad` compara la distribución de la variable **discapacidad** entre ambos conjuntos de datos. 
+
+Ambos gráficos se visualizan conjuntamente usando el operador `|`, permitiendo una comparación lado a lado de estas dos variables.
+
 
 ``` r
 hlengua <- Plot_Compare(dat_censo = muestra_ampliada,
@@ -99,9 +115,11 @@ plot_discapacidad <- Plot_Compare(dat_censo = muestra_ampliada,
 
 #### Efectos de Interacción {-}
 
-Se analizan los efectos de interacción entre diferentes variables utilizando la función `plot_interaction`.
+Para analizar los efectos de interacción entre diferentes variables en los datos de la encuesta, se utiliza la función plot_interaction. A continuación, se presentan dos análisis específicos:
 
 #### Interacción Edad x Sexo {-}
+
+Se examina cómo varía el porcentaje de personas en situación de pobreza en función de la combinación de las variables **edad** y **sexo**. El gráfico `p_sex_age` ilustra esta interacción, mostrando cómo la pobreza se distribuye entre diferentes grupos etarios y de sexo.
 
 
 ``` r
@@ -115,6 +133,7 @@ p_sex_age <-
 ```
 
 #### Interacción Nivel Educativo x Sexo {-}
+Se investiga la relación entre **nivel educativo** y **sexo** en cuanto a su influencia en la pobreza. El gráfico `p_sex_escolar` representa esta interacción, proporcionando una visión de cómo el nivel educativo combinado con el sexo afecta las tasas de pobreza.
 
 
 ``` r
@@ -127,6 +146,8 @@ p_sex_escolar <-
 
 #### Interacción Estado x Sexo {-}
 
+Este análisis explora cómo varía la pobreza en función del **estado** y el **sexo**. El gráfico `p_sex_depto` muestra la distribución de la pobreza entre diferentes estados y géneros, proporcionando una visión sobre cómo estas variables combinadas influyen en la pobreza.
+
 
 ``` r
 #### State x SEX ###
@@ -136,7 +157,7 @@ p_sex_depto <-
                    by2 = "ent")
 ```
 
-Se combinan los gráficos de interacción utilizando `patchwork`.
+Se combinan los gráficos de interacción de **Edad x Sexo** y **Nivel Educativo x Sexo** utilizando la funcionalidad `patchwork`. Esto permite una visualización conjunta para comparar fácilmente las interacciones entre las diferentes combinaciones de variables.
 
 
 ``` r
@@ -145,6 +166,8 @@ Se combinan los gráficos de interacción utilizando `patchwork`.
 ```
 
 #### Interacción Nivel Educativo x Edad {-}
+
+Se analiza cómo el **nivel educativo** y la **edad** interactúan en relación con la pobreza. El gráfico `p_escolar_edad` muestra cómo varía el nivel educativo entre diferentes grupos etarios y se ajusta el tema para colocar la leyenda en la parte inferior.
 
 
 ``` r
@@ -157,6 +180,8 @@ p_escolar_edad <-
 ```
 
 #### Interacción Estado x Edad {-}
+
+Se investiga la interacción entre el **estado** y la **edad** en cuanto a la pobreza. El gráfico `p_depto_edad` muestra la relación entre estos factores y se ajusta el tema para que la leyenda esté en la parte inferior.
 
 
 ``` r
@@ -171,6 +196,7 @@ p_escolar_edad / p_depto_edad
 ```
 
 #### Interacción Nivel Educativo x Estado {-}
+Se examina la relación entre el **nivel educativo** y el **estado** en términos de pobreza. El gráfico `p_depto_escolar` proporciona una visión de cómo el nivel educativo varía entre diferentes estados.
 
 
 ``` r
@@ -184,9 +210,33 @@ p_depto_escolar <-
 p_depto_escolar
 ```
 
-#### Repetición del Análisis para Diferentes Indicadores de Pobreza {-}
+#### Repetición del Análisis para ic_segsoc e ic_ali_nc {-}
 
-El análisis de interacción se repite para diferentes indicadores de pobreza (`ic_segsoc` e `ic_ali_nc`), utilizando el mismo procedimiento descrito anteriormente.
+Para realizar un análisis detallado de diferentes carencias, se repite el procedimiento de interacción para cada indicador específico. Este enfoque permite comparar cómo las interacciones entre variables afectan distintos aspectos de la pobreza. A continuación se presenta la descripción del análisis:
+
+
+**Interacción Edad x Sexo:**
+Se analiza la interacción entre **edad** y **sexo** en relación con el indicador de pobreza `ic_segsoc`. El gráfico `p_sex_age` muestra cómo varía la pobreza, medida por `ic_segsoc`, en función de la combinación de edad y sexo.
+
+**Interacción Nivel Educativo x Sexo:**
+Se examina cómo el **nivel educativo** interactúa con el **sexo** en relación con el indicador `ic_segsoc`. El gráfico `p_sex_escolar` proporciona una visión de la pobreza según el nivel educativo entre diferentes géneros.
+
+**Interacción Estado x Sexo:**
+El gráfico `p_sex_depto` muestra la pobreza medida por `ic_segsoc` en función del **estado** y el **sexo**, ayudando a entender cómo varía la pobreza entre diferentes estados y géneros.
+
+**Combinación de Gráficos de Interacción:**
+Se combinan los gráficos de interacción de **Edad x Sexo**, **Nivel Educativo x Sexo**, y **Estado x Sexo** usando `patchwork`, para una visualización consolidada de cómo estas combinaciones afectan el indicador `ic_segsoc`.
+
+**Interacción Nivel Educativo x Edad:**
+El gráfico `p_escolar_edad` muestra cómo el **nivel educativo** y la **edad** interactúan en relación con el indicador `ic_segsoc`. Se ajusta la leyenda para que esté en la parte inferior, facilitando la interpretación.
+
+**Interacción Estado x Edad:**
+Se explora la relación entre **edad** y **estado** en función del indicador `ic_segsoc`. El gráfico `p_depto_edad` ilustra cómo varía la pobreza entre diferentes edades y estados.
+
+**Interacción Nivel Educativo x Estado:**
+Finalmente, el gráfico `p_depto_escolar` muestra cómo el **nivel educativo** y el **estado** interactúan en relación con `ic_segsoc`, proporcionando una visión de la pobreza según el nivel educativo en distintos estados.
+
+#### Resultados para ic_segsoc  {-}
 
 
 ``` r
@@ -237,7 +287,12 @@ p_depto_escolar <-
   theme(legend.position = "bottom") + labs(colour = "nivel_edu")
 
 p_depto_escolar
+```
 
+#### Resultados para ic_ali_nc {-}
+
+
+``` r
 #### AGE x SEX ###
 encuesta_sta$pobreza <- encuesta_sta$ic_ali_nc
 #--- Percentage of people in poverty by AGE x SEX ---#
@@ -286,7 +341,5 @@ p_depto_escolar <-
 
 p_depto_escolar
 ```
-
-Este análisis detallado permite verificar la consistencia de los datos de la encuesta en comparación con los datos censales y entender mejor las interacciones entre diferentes variables demográficas y socioeconómicas.
 
 

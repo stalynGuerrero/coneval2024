@@ -198,349 +198,349 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Finalmente, el script también visualiza y guarda los errores de estimación asociados con cada tipo de pobreza, utilizando el mismo procedimiento para crear mapas temáticos con los errores de estimación. La visualización de estos errores ayuda a evaluar la precisión de las estimaciones y a identificar áreas con alta incertidumbre. Este proceso proporciona una manera efectiva de comunicar visualmente la distribución de la pobreza y los errores asociados a través de mapas detallados y estéticamente ajustados.</p>
 <div id="configuración-y-carga-de-librerías" class="section level4 unnumbered hasAnchor">
 <h4>Configuración y carga de librerías<a href="mapas.html#configuración-y-carga-de-librerías" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="mapas.html#cb121-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
-<span id="cb121-2"><a href="mapas.html#cb121-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb121-3"><a href="mapas.html#cb121-3" tabindex="-1"></a><span class="fu">gc</span>()</span>
-<span id="cb121-4"><a href="mapas.html#cb121-4" tabindex="-1"></a></span>
-<span id="cb121-5"><a href="mapas.html#cb121-5" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb121-6"><a href="mapas.html#cb121-6" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
-<span id="cb121-7"><a href="mapas.html#cb121-7" tabindex="-1"></a><span class="do">#################</span></span>
-<span id="cb121-8"><a href="mapas.html#cb121-8" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb121-9"><a href="mapas.html#cb121-9" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb121-10"><a href="mapas.html#cb121-10" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb121-11"><a href="mapas.html#cb121-11" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb121-12"><a href="mapas.html#cb121-12" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
-<span id="cb121-13"><a href="mapas.html#cb121-13" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
-<span id="cb121-14"><a href="mapas.html#cb121-14" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
-<span id="cb121-15"><a href="mapas.html#cb121-15" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb121-16"><a href="mapas.html#cb121-16" tabindex="-1"></a>select <span class="ot">&lt;-</span> dplyr<span class="sc">::</span>select</span>
-<span id="cb121-17"><a href="mapas.html#cb121-17" tabindex="-1"></a></span>
-<span id="cb121-18"><a href="mapas.html#cb121-18" tabindex="-1"></a><span class="do">###------------ Definiendo el límite de la memoria RAM a emplear ------------</span><span class="al">###</span></span>
-<span id="cb121-19"><a href="mapas.html#cb121-19" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">250000000</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="mapas.html#cb129-1" tabindex="-1"></a><span class="do">### Cleaning R environment </span><span class="al">###</span></span>
+<span id="cb129-2"><a href="mapas.html#cb129-2" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb129-3"><a href="mapas.html#cb129-3" tabindex="-1"></a><span class="fu">gc</span>()</span>
+<span id="cb129-4"><a href="mapas.html#cb129-4" tabindex="-1"></a></span>
+<span id="cb129-5"><a href="mapas.html#cb129-5" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb129-6"><a href="mapas.html#cb129-6" tabindex="-1"></a><span class="do">### Libraries </span><span class="al">###</span></span>
+<span id="cb129-7"><a href="mapas.html#cb129-7" tabindex="-1"></a><span class="do">#################</span></span>
+<span id="cb129-8"><a href="mapas.html#cb129-8" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb129-9"><a href="mapas.html#cb129-9" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb129-10"><a href="mapas.html#cb129-10" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb129-11"><a href="mapas.html#cb129-11" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb129-12"><a href="mapas.html#cb129-12" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb129-13"><a href="mapas.html#cb129-13" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb129-14"><a href="mapas.html#cb129-14" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb129-15"><a href="mapas.html#cb129-15" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb129-16"><a href="mapas.html#cb129-16" tabindex="-1"></a>select <span class="ot">&lt;-</span> dplyr<span class="sc">::</span>select</span>
+<span id="cb129-17"><a href="mapas.html#cb129-17" tabindex="-1"></a></span>
+<span id="cb129-18"><a href="mapas.html#cb129-18" tabindex="-1"></a><span class="do">###------------ Definiendo el límite de la memoria RAM a emplear ------------</span><span class="al">###</span></span>
+<span id="cb129-19"><a href="mapas.html#cb129-19" tabindex="-1"></a><span class="fu">memory.limit</span>(<span class="dv">250000000</span>)</span></code></pre></div>
 </div>
 <div id="carga-de-datos-y-creación-de-mapas-de-ipm" class="section level4 unnumbered hasAnchor">
 <h4>Carga de datos y creación de mapas de IPM<a href="mapas.html#carga-de-datos-y-creación-de-mapas-de-ipm" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="mapas.html#cb122-1" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb122-2"><a href="mapas.html#cb122-2" tabindex="-1"></a><span class="do">###----------------------------- Loading datasets ---------------------------</span><span class="al">###</span></span>
-<span id="cb122-3"><a href="mapas.html#cb122-3" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb122-4"><a href="mapas.html#cb122-4" tabindex="-1"></a>ipm_mpios <span class="ot">&lt;-</span> </span>
-<span id="cb122-5"><a href="mapas.html#cb122-5" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../output/Entregas/2020/result_mpios.RDS&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb122-6"><a href="mapas.html#cb122-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">est_pob_ext =</span> <span class="fu">ifelse</span>(est_pob_ext <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="dv">0</span>, est_pob_ext))</span>
-<span id="cb122-7"><a href="mapas.html#cb122-7" tabindex="-1"></a></span>
-<span id="cb122-8"><a href="mapas.html#cb122-8" tabindex="-1"></a>ShapeDAM <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;../shapefile/2020/MEX_2020.shp&quot;</span>)</span>
-<span id="cb122-9"><a href="mapas.html#cb122-9" tabindex="-1"></a>ShapeDAM <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">cve_mun =</span> CVEGEO,</span>
-<span id="cb122-10"><a href="mapas.html#cb122-10" tabindex="-1"></a>                     <span class="at">ent =</span> <span class="fu">substr</span>(cve_mun, <span class="dv">1</span>, <span class="dv">2</span>),</span>
-<span id="cb122-11"><a href="mapas.html#cb122-11" tabindex="-1"></a>                     <span class="at">CVEGEO =</span> <span class="cn">NULL</span>) </span>
-<span id="cb122-12"><a href="mapas.html#cb122-12" tabindex="-1"></a></span>
-<span id="cb122-13"><a href="mapas.html#cb122-13" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">80</span>, <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
-<span id="cb122-14"><a href="mapas.html#cb122-14" tabindex="-1"></a></span>
-<span id="cb122-15"><a href="mapas.html#cb122-15" tabindex="-1"></a>P1_mpio_norte <span class="ot">&lt;-</span></span>
-<span id="cb122-16"><a href="mapas.html#cb122-16" tabindex="-1"></a>  <span class="fu">tm_shape</span>(ShapeDAM <span class="sc">%&gt;%</span></span>
-<span id="cb122-17"><a href="mapas.html#cb122-17" tabindex="-1"></a>             <span class="fu">inner_join</span>(ipm_mpios, <span class="at">by =</span> <span class="st">&quot;cve_mun&quot;</span>))</span>
-<span id="cb122-18"><a href="mapas.html#cb122-18" tabindex="-1"></a></span>
-<span id="cb122-19"><a href="mapas.html#cb122-19" tabindex="-1"></a>Mapa_I <span class="ot">&lt;-</span></span>
-<span id="cb122-20"><a href="mapas.html#cb122-20" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb122-21"><a href="mapas.html#cb122-21" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb122-22"><a href="mapas.html#cb122-22" tabindex="-1"></a>    <span class="st">&quot;est_ipm_I&quot;</span>,</span>
-<span id="cb122-23"><a href="mapas.html#cb122-23" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo I&quot;</span>,</span>
-<span id="cb122-24"><a href="mapas.html#cb122-24" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb122-25"><a href="mapas.html#cb122-25" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb122-26"><a href="mapas.html#cb122-26" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb122-27"><a href="mapas.html#cb122-27" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb122-28"><a href="mapas.html#cb122-28" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb122-29"><a href="mapas.html#cb122-29" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb122-30"><a href="mapas.html#cb122-30" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb122-31"><a href="mapas.html#cb122-31" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb122-32"><a href="mapas.html#cb122-32" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb122-33"><a href="mapas.html#cb122-33" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb122-34"><a href="mapas.html#cb122-34" tabindex="-1"></a></span>
-<span id="cb122-35"><a href="mapas.html#cb122-35" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb122-36"><a href="mapas.html#cb122-36" tabindex="-1"></a>  Mapa_I,</span>
-<span id="cb122-37"><a href="mapas.html#cb122-37" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_I.png&quot;</span>,</span>
-<span id="cb122-38"><a href="mapas.html#cb122-38" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb122-39"><a href="mapas.html#cb122-39" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb122-40"><a href="mapas.html#cb122-40" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb122-41"><a href="mapas.html#cb122-41" tabindex="-1"></a>)</span>
-<span id="cb122-42"><a href="mapas.html#cb122-42" tabindex="-1"></a></span>
-<span id="cb122-43"><a href="mapas.html#cb122-43" tabindex="-1"></a>Mapa_II <span class="ot">&lt;-</span></span>
-<span id="cb122-44"><a href="mapas.html#cb122-44" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb122-45"><a href="mapas.html#cb122-45" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb122-46"><a href="mapas.html#cb122-46" tabindex="-1"></a>    <span class="st">&quot;est_ipm_II&quot;</span>,</span>
-<span id="cb122-47"><a href="mapas.html#cb122-47" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo II&quot;</span>,</span>
-<span id="cb122-48"><a href="mapas.html#cb122-48" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb122-49"><a href="mapas.html#cb122-49" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb122-50"><a href="mapas.html#cb122-50" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb122-51"><a href="mapas.html#cb122-51" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb122-52"><a href="mapas.html#cb122-52" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb122-53"><a href="mapas.html#cb122-53" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb122-54"><a href="mapas.html#cb122-54" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb122-55"><a href="mapas.html#cb122-55" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb122-56"><a href="mapas.html#cb122-56" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb122-57"><a href="mapas.html#cb122-57" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb122-58"><a href="mapas.html#cb122-58" tabindex="-1"></a></span>
-<span id="cb122-59"><a href="mapas.html#cb122-59" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb122-60"><a href="mapas.html#cb122-60" tabindex="-1"></a>  Mapa_II,</span>
-<span id="cb122-61"><a href="mapas.html#cb122-61" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_II.png&quot;</span>,</span>
-<span id="cb122-62"><a href="mapas.html#cb122-62" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb122-63"><a href="mapas.html#cb122-63" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb122-64"><a href="mapas.html#cb122-64" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb122-65"><a href="mapas.html#cb122-65" tabindex="-1"></a>)</span>
-<span id="cb122-66"><a href="mapas.html#cb122-66" tabindex="-1"></a></span>
-<span id="cb122-67"><a href="mapas.html#cb122-67" tabindex="-1"></a>Mapa_III <span class="ot">&lt;-</span></span>
-<span id="cb122-68"><a href="mapas.html#cb122-68" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb122-69"><a href="mapas.html#cb122-69" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb122-70"><a href="mapas.html#cb122-70" tabindex="-1"></a>    <span class="st">&quot;est_ipm_III&quot;</span>,</span>
-<span id="cb122-71"><a href="mapas.html#cb122-71" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo III&quot;</span>,</span>
-<span id="cb122-72"><a href="mapas.html#cb122-72" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb122-73"><a href="mapas.html#cb122-73" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb122-74"><a href="mapas.html#cb122-74" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb122-75"><a href="mapas.html#cb122-75" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb122-76"><a href="mapas.html#cb122-76" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb122-77"><a href="mapas.html#cb122-77" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb122-78"><a href="mapas.html#cb122-78" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb122-79"><a href="mapas.html#cb122-79" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb122-80"><a href="mapas.html#cb122-80" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb122-81"><a href="mapas.html#cb122-81" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb122-82"><a href="mapas.html#cb122-82" tabindex="-1"></a></span>
-<span id="cb122-83"><a href="mapas.html#cb122-83" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb122-84"><a href="mapas.html#cb122-84" tabindex="-1"></a>  Mapa_III,</span>
-<span id="cb122-85"><a href="mapas.html#cb122-85" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_III.png&quot;</span>,</span>
-<span id="cb122-86"><a href="mapas.html#cb122-86" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb122-87"><a href="mapas.html#cb122-87" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb122-88"><a href="mapas.html#cb122-88" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb122-89"><a href="mapas.html#cb122-89" tabindex="-1"></a>)</span>
-<span id="cb122-90"><a href="mapas.html#cb122-90" tabindex="-1"></a></span>
-<span id="cb122-91"><a href="mapas.html#cb122-91" tabindex="-1"></a>Mapa_IV <span class="ot">&lt;-</span></span>
-<span id="cb122-92"><a href="mapas.html#cb122-92" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb122-93"><a href="mapas.html#cb122-93" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb122-94"><a href="mapas.html#cb122-94" tabindex="-1"></a>    <span class="st">&quot;est_ipm_IV&quot;</span>,</span>
-<span id="cb122-95"><a href="mapas.html#cb122-95" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo IV&quot;</span>,</span>
-<span id="cb122-96"><a href="mapas.html#cb122-96" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb122-97"><a href="mapas.html#cb122-97" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb122-98"><a href="mapas.html#cb122-98" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb122-99"><a href="mapas.html#cb122-99" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb122-100"><a href="mapas.html#cb122-100" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb122-101"><a href="mapas.html#cb122-101" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb122-102"><a href="mapas.html#cb122-102" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb122-103"><a href="mapas.html#cb122-103" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb122-104"><a href="mapas.html#cb122-104" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb122-105"><a href="mapas.html#cb122-105" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb122-106"><a href="mapas.html#cb122-106" tabindex="-1"></a></span>
-<span id="cb122-107"><a href="mapas.html#cb122-107" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb122-108"><a href="mapas.html#cb122-108" tabindex="-1"></a>  Mapa_IV,</span>
-<span id="cb122-109"><a href="mapas.html#cb122-109" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_IV.png&quot;</span>,</span>
-<span id="cb122-110"><a href="mapas.html#cb122-110" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb122-111"><a href="mapas.html#cb122-111" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb122-112"><a href="mapas.html#cb122-112" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb122-113"><a href="mapas.html#cb122-113" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="mapas.html#cb130-1" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb130-2"><a href="mapas.html#cb130-2" tabindex="-1"></a><span class="do">###----------------------------- Loading datasets ---------------------------</span><span class="al">###</span></span>
+<span id="cb130-3"><a href="mapas.html#cb130-3" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb130-4"><a href="mapas.html#cb130-4" tabindex="-1"></a>ipm_mpios <span class="ot">&lt;-</span> </span>
+<span id="cb130-5"><a href="mapas.html#cb130-5" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../output/Entregas/2020/result_mpios.RDS&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb130-6"><a href="mapas.html#cb130-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">est_pob_ext =</span> <span class="fu">ifelse</span>(est_pob_ext <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="dv">0</span>, est_pob_ext))</span>
+<span id="cb130-7"><a href="mapas.html#cb130-7" tabindex="-1"></a></span>
+<span id="cb130-8"><a href="mapas.html#cb130-8" tabindex="-1"></a>ShapeDAM <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;../shapefile/2020/MEX_2020.shp&quot;</span>)</span>
+<span id="cb130-9"><a href="mapas.html#cb130-9" tabindex="-1"></a>ShapeDAM <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">cve_mun =</span> CVEGEO,</span>
+<span id="cb130-10"><a href="mapas.html#cb130-10" tabindex="-1"></a>                     <span class="at">ent =</span> <span class="fu">substr</span>(cve_mun, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb130-11"><a href="mapas.html#cb130-11" tabindex="-1"></a>                     <span class="at">CVEGEO =</span> <span class="cn">NULL</span>) </span>
+<span id="cb130-12"><a href="mapas.html#cb130-12" tabindex="-1"></a></span>
+<span id="cb130-13"><a href="mapas.html#cb130-13" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">80</span>, <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
+<span id="cb130-14"><a href="mapas.html#cb130-14" tabindex="-1"></a></span>
+<span id="cb130-15"><a href="mapas.html#cb130-15" tabindex="-1"></a>P1_mpio_norte <span class="ot">&lt;-</span></span>
+<span id="cb130-16"><a href="mapas.html#cb130-16" tabindex="-1"></a>  <span class="fu">tm_shape</span>(ShapeDAM <span class="sc">%&gt;%</span></span>
+<span id="cb130-17"><a href="mapas.html#cb130-17" tabindex="-1"></a>             <span class="fu">inner_join</span>(ipm_mpios, <span class="at">by =</span> <span class="st">&quot;cve_mun&quot;</span>))</span>
+<span id="cb130-18"><a href="mapas.html#cb130-18" tabindex="-1"></a></span>
+<span id="cb130-19"><a href="mapas.html#cb130-19" tabindex="-1"></a>Mapa_I <span class="ot">&lt;-</span></span>
+<span id="cb130-20"><a href="mapas.html#cb130-20" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb130-21"><a href="mapas.html#cb130-21" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb130-22"><a href="mapas.html#cb130-22" tabindex="-1"></a>    <span class="st">&quot;est_ipm_I&quot;</span>,</span>
+<span id="cb130-23"><a href="mapas.html#cb130-23" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo I&quot;</span>,</span>
+<span id="cb130-24"><a href="mapas.html#cb130-24" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb130-25"><a href="mapas.html#cb130-25" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb130-26"><a href="mapas.html#cb130-26" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb130-27"><a href="mapas.html#cb130-27" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb130-28"><a href="mapas.html#cb130-28" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb130-29"><a href="mapas.html#cb130-29" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb130-30"><a href="mapas.html#cb130-30" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb130-31"><a href="mapas.html#cb130-31" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb130-32"><a href="mapas.html#cb130-32" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb130-33"><a href="mapas.html#cb130-33" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb130-34"><a href="mapas.html#cb130-34" tabindex="-1"></a></span>
+<span id="cb130-35"><a href="mapas.html#cb130-35" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb130-36"><a href="mapas.html#cb130-36" tabindex="-1"></a>  Mapa_I,</span>
+<span id="cb130-37"><a href="mapas.html#cb130-37" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_I.png&quot;</span>,</span>
+<span id="cb130-38"><a href="mapas.html#cb130-38" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb130-39"><a href="mapas.html#cb130-39" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb130-40"><a href="mapas.html#cb130-40" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb130-41"><a href="mapas.html#cb130-41" tabindex="-1"></a>)</span>
+<span id="cb130-42"><a href="mapas.html#cb130-42" tabindex="-1"></a></span>
+<span id="cb130-43"><a href="mapas.html#cb130-43" tabindex="-1"></a>Mapa_II <span class="ot">&lt;-</span></span>
+<span id="cb130-44"><a href="mapas.html#cb130-44" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb130-45"><a href="mapas.html#cb130-45" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb130-46"><a href="mapas.html#cb130-46" tabindex="-1"></a>    <span class="st">&quot;est_ipm_II&quot;</span>,</span>
+<span id="cb130-47"><a href="mapas.html#cb130-47" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo II&quot;</span>,</span>
+<span id="cb130-48"><a href="mapas.html#cb130-48" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb130-49"><a href="mapas.html#cb130-49" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb130-50"><a href="mapas.html#cb130-50" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb130-51"><a href="mapas.html#cb130-51" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb130-52"><a href="mapas.html#cb130-52" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb130-53"><a href="mapas.html#cb130-53" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb130-54"><a href="mapas.html#cb130-54" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb130-55"><a href="mapas.html#cb130-55" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb130-56"><a href="mapas.html#cb130-56" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb130-57"><a href="mapas.html#cb130-57" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb130-58"><a href="mapas.html#cb130-58" tabindex="-1"></a></span>
+<span id="cb130-59"><a href="mapas.html#cb130-59" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb130-60"><a href="mapas.html#cb130-60" tabindex="-1"></a>  Mapa_II,</span>
+<span id="cb130-61"><a href="mapas.html#cb130-61" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_II.png&quot;</span>,</span>
+<span id="cb130-62"><a href="mapas.html#cb130-62" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb130-63"><a href="mapas.html#cb130-63" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb130-64"><a href="mapas.html#cb130-64" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb130-65"><a href="mapas.html#cb130-65" tabindex="-1"></a>)</span>
+<span id="cb130-66"><a href="mapas.html#cb130-66" tabindex="-1"></a></span>
+<span id="cb130-67"><a href="mapas.html#cb130-67" tabindex="-1"></a>Mapa_III <span class="ot">&lt;-</span></span>
+<span id="cb130-68"><a href="mapas.html#cb130-68" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb130-69"><a href="mapas.html#cb130-69" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb130-70"><a href="mapas.html#cb130-70" tabindex="-1"></a>    <span class="st">&quot;est_ipm_III&quot;</span>,</span>
+<span id="cb130-71"><a href="mapas.html#cb130-71" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo III&quot;</span>,</span>
+<span id="cb130-72"><a href="mapas.html#cb130-72" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb130-73"><a href="mapas.html#cb130-73" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb130-74"><a href="mapas.html#cb130-74" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb130-75"><a href="mapas.html#cb130-75" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb130-76"><a href="mapas.html#cb130-76" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb130-77"><a href="mapas.html#cb130-77" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb130-78"><a href="mapas.html#cb130-78" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb130-79"><a href="mapas.html#cb130-79" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb130-80"><a href="mapas.html#cb130-80" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb130-81"><a href="mapas.html#cb130-81" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb130-82"><a href="mapas.html#cb130-82" tabindex="-1"></a></span>
+<span id="cb130-83"><a href="mapas.html#cb130-83" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb130-84"><a href="mapas.html#cb130-84" tabindex="-1"></a>  Mapa_III,</span>
+<span id="cb130-85"><a href="mapas.html#cb130-85" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_III.png&quot;</span>,</span>
+<span id="cb130-86"><a href="mapas.html#cb130-86" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb130-87"><a href="mapas.html#cb130-87" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb130-88"><a href="mapas.html#cb130-88" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb130-89"><a href="mapas.html#cb130-89" tabindex="-1"></a>)</span>
+<span id="cb130-90"><a href="mapas.html#cb130-90" tabindex="-1"></a></span>
+<span id="cb130-91"><a href="mapas.html#cb130-91" tabindex="-1"></a>Mapa_IV <span class="ot">&lt;-</span></span>
+<span id="cb130-92"><a href="mapas.html#cb130-92" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb130-93"><a href="mapas.html#cb130-93" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb130-94"><a href="mapas.html#cb130-94" tabindex="-1"></a>    <span class="st">&quot;est_ipm_IV&quot;</span>,</span>
+<span id="cb130-95"><a href="mapas.html#cb130-95" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo IV&quot;</span>,</span>
+<span id="cb130-96"><a href="mapas.html#cb130-96" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb130-97"><a href="mapas.html#cb130-97" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb130-98"><a href="mapas.html#cb130-98" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb130-99"><a href="mapas.html#cb130-99" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb130-100"><a href="mapas.html#cb130-100" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb130-101"><a href="mapas.html#cb130-101" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb130-102"><a href="mapas.html#cb130-102" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb130-103"><a href="mapas.html#cb130-103" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb130-104"><a href="mapas.html#cb130-104" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb130-105"><a href="mapas.html#cb130-105" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb130-106"><a href="mapas.html#cb130-106" tabindex="-1"></a></span>
+<span id="cb130-107"><a href="mapas.html#cb130-107" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb130-108"><a href="mapas.html#cb130-108" tabindex="-1"></a>  Mapa_IV,</span>
+<span id="cb130-109"><a href="mapas.html#cb130-109" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_IV.png&quot;</span>,</span>
+<span id="cb130-110"><a href="mapas.html#cb130-110" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb130-111"><a href="mapas.html#cb130-111" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb130-112"><a href="mapas.html#cb130-112" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb130-113"><a href="mapas.html#cb130-113" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="creacióne-pobreza-extrema-y-moderada-y-errores-de-estimació" class="section level4 unnumbered hasAnchor">
 <h4>Crea#cióne pobreza extrema y moderada, y errores de estimació<a href="mapas.html#creacióne-pobreza-extrema-y-moderada-y-errores-de-estimació" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="mapas.html#cb123-1" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">80</span>, <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
-<span id="cb123-2"><a href="mapas.html#cb123-2" tabindex="-1"></a></span>
-<span id="cb123-3"><a href="mapas.html#cb123-3" tabindex="-1"></a><span class="fu">summary</span>(ipm_mpios<span class="sc">$</span>est_pob_ext)</span>
-<span id="cb123-4"><a href="mapas.html#cb123-4" tabindex="-1"></a></span>
-<span id="cb123-5"><a href="mapas.html#cb123-5" tabindex="-1"></a>Mapa_ext <span class="ot">&lt;-</span></span>
-<span id="cb123-6"><a href="mapas.html#cb123-6" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb123-7"><a href="mapas.html#cb123-7" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb123-8"><a href="mapas.html#cb123-8" tabindex="-1"></a>    <span class="st">&quot;est_pob_ext&quot;</span>,</span>
-<span id="cb123-9"><a href="mapas.html#cb123-9" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza extrema&quot;</span>,</span>
-<span id="cb123-10"><a href="mapas.html#cb123-10" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb123-11"><a href="mapas.html#cb123-11" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb123-12"><a href="mapas.html#cb123-12" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb123-13"><a href="mapas.html#cb123-13" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb123-14"><a href="mapas.html#cb123-14" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb123-15"><a href="mapas.html#cb123-15" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb123-16"><a href="mapas.html#cb123-16" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb123-17"><a href="mapas.html#cb123-17" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb123-18"><a href="mapas.html#cb123-18" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb123-19"><a href="mapas.html#cb123-19" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb123-20"><a href="mapas.html#cb123-20" tabindex="-1"></a></span>
-<span id="cb123-21"><a href="mapas.html#cb123-21" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb123-22"><a href="mapas.html#cb123-22" tabindex="-1"></a>  Mapa_ext,</span>
-<span id="cb123-23"><a href="mapas.html#cb123-23" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/pob_ext.png&quot;</span>,</span>
-<span id="cb123-24"><a href="mapas.html#cb123-24" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb123-25"><a href="mapas.html#cb123-25" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb123-26"><a href="mapas.html#cb123-26" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb123-27"><a href="mapas.html#cb123-27" tabindex="-1"></a>)</span>
-<span id="cb123-28"><a href="mapas.html#cb123-28" tabindex="-1"></a></span>
-<span id="cb123-29"><a href="mapas.html#cb123-29" tabindex="-1"></a><span class="co"># cortes &lt;- c(0.00, 0.01, 0.03, 0.05, 0.1, 0.2)</span></span>
-<span id="cb123-30"><a href="mapas.html#cb123-30" tabindex="-1"></a><span class="fu">summary</span>(ipm_mpios<span class="sc">$</span>est_pob_mod)</span>
-<span id="cb123-31"><a href="mapas.html#cb123-31" tabindex="-1"></a></span>
-<span id="cb123-32"><a href="mapas.html#cb123-32" tabindex="-1"></a>Mapa_mod <span class="ot">&lt;-</span></span>
-<span id="cb123-33"><a href="mapas.html#cb123-33" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb123-34"><a href="mapas.html#cb123-34" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb123-35"><a href="mapas.html#cb123-35" tabindex="-1"></a>    <span class="st">&quot;est_pob_mod&quot;</span>,</span>
-<span id="cb123-36"><a href="mapas.html#cb123-36" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza moderada&quot;</span>,</span>
-<span id="cb123-37"><a href="mapas.html#cb123-37" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb123-38"><a href="mapas.html#cb123-38" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb123-39"><a href="mapas.html#cb123-39" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb123-40"><a href="mapas.html#cb123-40" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb123-41"><a href="mapas.html#cb123-41" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb123-42"><a href="mapas.html#cb123-42" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb123-43"><a href="mapas.html#cb123-43" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb123-44"><a href="mapas.html#cb123-44" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb123-45"><a href="mapas.html#cb123-45" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb123-46"><a href="mapas.html#cb123-46" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb123-47"><a href="mapas.html#cb123-47" tabindex="-1"></a></span>
-<span id="cb123-48"><a href="mapas.html#cb123-48" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb123-49"><a href="mapas.html#cb123-49" tabindex="-1"></a>  Mapa_mod,</span>
-<span id="cb123-50"><a href="mapas.html#cb123-50" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/pob_mod.png&quot;</span>,</span>
-<span id="cb123-51"><a href="mapas.html#cb123-51" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb123-52"><a href="mapas.html#cb123-52" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb123-53"><a href="mapas.html#cb123-53" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb123-54"><a href="mapas.html#cb123-54" tabindex="-1"></a>)</span>
-<span id="cb123-55"><a href="mapas.html#cb123-55" tabindex="-1"></a></span>
-<span id="cb123-56"><a href="mapas.html#cb123-56" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb123-57"><a href="mapas.html#cb123-57" tabindex="-1"></a><span class="do">## Errores </span></span>
-<span id="cb123-58"><a href="mapas.html#cb123-58" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb123-59"><a href="mapas.html#cb123-59" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
-<span id="cb123-60"><a href="mapas.html#cb123-60" tabindex="-1"></a></span>
-<span id="cb123-61"><a href="mapas.html#cb123-61" tabindex="-1"></a>Mapa_I_ee <span class="ot">&lt;-</span></span>
-<span id="cb123-62"><a href="mapas.html#cb123-62" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb123-63"><a href="mapas.html#cb123-63" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb123-64"><a href="mapas.html#cb123-64" tabindex="-1"></a>    <span class="st">&quot;ee_ipm_I&quot;</span>,</span>
-<span id="cb123-65"><a href="mapas.html#cb123-65" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo I&quot;</span>,</span>
-<span id="cb123-66"><a href="mapas.html#cb123-66" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb123-67"><a href="mapas.html#cb123-67" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb123-68"><a href="mapas.html#cb123-68" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb123-69"><a href="mapas.html#cb123-69" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb123-70"><a href="mapas.html#cb123-70" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb123-71"><a href="mapas.html#cb123-71" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb123-72"><a href="mapas.html#cb123-72" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb123-73"><a href="mapas.html#cb123-73" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb123-74"><a href="mapas.html#cb123-74" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb123-75"><a href="mapas.html#cb123-75" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb123-76"><a href="mapas.html#cb123-76" tabindex="-1"></a></span>
-<span id="cb123-77"><a href="mapas.html#cb123-77" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb123-78"><a href="mapas.html#cb123-78" tabindex="-1"></a>  Mapa_I_ee,</span>
-<span id="cb123-79"><a href="mapas.html#cb123-79" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_I_ee.png&quot;</span>,</span>
-<span id="cb123-80"><a href="mapas.html#cb123-80" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb123-81"><a href="mapas.html#cb123-81" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb123-82"><a href="mapas.html#cb123-82" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb123-83"><a href="mapas.html#cb123-83" tabindex="-1"></a>)</span>
-<span id="cb123-84"><a href="mapas.html#cb123-84" tabindex="-1"></a></span>
-<span id="cb123-85"><a href="mapas.html#cb123-85" tabindex="-1"></a>Mapa_II_ee <span class="ot">&lt;-</span></span>
-<span id="cb123-86"><a href="mapas.html#cb123-86" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb123-87"><a href="mapas.html#cb123-87" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb123-88"><a href="mapas.html#cb123-88" tabindex="-1"></a>    <span class="st">&quot;ee_ipm_II&quot;</span>,</span>
-<span id="cb123-89"><a href="mapas.html#cb123-89" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo II&quot;</span>,</span>
-<span id="cb123-90"><a href="mapas.html#cb123-90" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb123-91"><a href="mapas.html#cb123-91" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb123-92"><a href="mapas.html#cb123-92" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb123-93"><a href="mapas.html#cb123-93" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb123-94"><a href="mapas.html#cb123-94" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb123-95"><a href="mapas.html#cb123-95" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb123-96"><a href="mapas.html#cb123-96" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb123-97"><a href="mapas.html#cb123-97" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb123-98"><a href="mapas.html#cb123-98" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb123-99"><a href="mapas.html#cb123-99" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb123-100"><a href="mapas.html#cb123-100" tabindex="-1"></a></span>
-<span id="cb123-101"><a href="mapas.html#cb123-101" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb123-102"><a href="mapas.html#cb123-102" tabindex="-1"></a>  Mapa_II_ee,</span>
-<span id="cb123-103"><a href="mapas.html#cb123-103" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_II_ee.png&quot;</span>,</span>
-<span id="cb123-104"><a href="mapas.html#cb123-104" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb123-105"><a href="mapas.html#cb123-105" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb123-106"><a href="mapas.html#cb123-106" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb123-107"><a href="mapas.html#cb123-107" tabindex="-1"></a>)</span>
-<span id="cb123-108"><a href="mapas.html#cb123-108" tabindex="-1"></a></span>
-<span id="cb123-109"><a href="mapas.html#cb123-109" tabindex="-1"></a>Mapa_III_ee <span class="ot">&lt;-</span></span>
-<span id="cb123-110"><a href="mapas.html#cb123-110" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb123-111"><a href="mapas.html#cb123-111" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb123-112"><a href="mapas.html#cb123-112" tabindex="-1"></a>    <span class="st">&quot;ee_ipm_III&quot;</span>,</span>
-<span id="cb123-113"><a href="mapas.html#cb123-113" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo III&quot;</span>,</span>
-<span id="cb123-114"><a href="mapas.html#cb123-114" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb123-115"><a href="mapas.html#cb123-115" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb123-116"><a href="mapas.html#cb123-116" tabindex="-1"></a>  )</span>
-<span id="cb123-117"><a href="mapas.html#cb123-117" tabindex="-1"></a></span>
-<span id="cb123-118"><a href="mapas.html#cb123-118" tabindex="-1"></a> <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb123-119"><a href="mapas.html#cb123-119" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb123-120"><a href="mapas.html#cb123-120" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb123-121"><a href="mapas.html#cb123-121" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb123-122"><a href="mapas.html#cb123-122" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb123-123"><a href="mapas.html#cb123-123" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb123-124"><a href="mapas.html#cb123-124" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb123-125"><a href="mapas.html#cb123-125" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb123-126"><a href="mapas.html#cb123-126" tabindex="-1"></a></span>
-<span id="cb123-127"><a href="mapas.html#cb123-127" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb123-128"><a href="mapas.html#cb123-128" tabindex="-1"></a>  Mapa_III_ee,</span>
-<span id="cb123-129"><a href="mapas.html#cb123-129" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_III_ee.png&quot;</span>,</span>
-<span id="cb123-130"><a href="mapas.html#cb123-130" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb123-131"><a href="mapas.html#cb123-131" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb123-132"><a href="mapas.html#cb123-132" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb123-133"><a href="mapas.html#cb123-133" tabindex="-1"></a>)</span>
-<span id="cb123-134"><a href="mapas.html#cb123-134" tabindex="-1"></a></span>
-<span id="cb123-135"><a href="mapas.html#cb123-135" tabindex="-1"></a>Mapa_IV_ee <span class="ot">&lt;-</span></span>
-<span id="cb123-136"><a href="mapas.html#cb123-136" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb123-137"><a href="mapas.html#cb123-137" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb123-138"><a href="mapas.html#cb123-138" tabindex="-1"></a>    <span class="st">&quot;ee_ipm_IV&quot;</span>,</span>
-<span id="cb123-139"><a href="mapas.html#cb123-139" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo IV&quot;</span>,</span>
-<span id="cb123-140"><a href="mapas.html#cb123-140" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb123-141"><a href="mapas.html#cb123-141" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb123-142"><a href="mapas.html#cb123-142" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb123-143"><a href="mapas.html#cb123-143" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb123-144"><a href="mapas.html#cb123-144" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb123-145"><a href="mapas.html#cb123-145" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb123-146"><a href="mapas.html#cb123-146" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb123-147"><a href="mapas.html#cb123-147" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb123-148"><a href="mapas.html#cb123-148" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb123-149"><a href="mapas.html#cb123-149" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb123-150"><a href="mapas.html#cb123-150" tabindex="-1"></a></span>
-<span id="cb123-151"><a href="mapas.html#cb123-151" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb123-152"><a href="mapas.html#cb123-152" tabindex="-1"></a>  Mapa_IV_ee,</span>
-<span id="cb123-153"><a href="mapas.html#cb123-153" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_IV_ee.png&quot;</span>,</span>
-<span id="cb123-154"><a href="mapas.html#cb123-154" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb123-155"><a href="mapas.html#cb123-155" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb123-156"><a href="mapas.html#cb123-156" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb123-157"><a href="mapas.html#cb123-157" tabindex="-1"></a>)</span>
-<span id="cb123-158"><a href="mapas.html#cb123-158" tabindex="-1"></a></span>
-<span id="cb123-159"><a href="mapas.html#cb123-159" tabindex="-1"></a>Mapa_ext_ee <span class="ot">&lt;-</span></span>
-<span id="cb123-160"><a href="mapas.html#cb123-160" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb123-161"><a href="mapas.html#cb123-161" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb123-162"><a href="mapas.html#cb123-162" tabindex="-1"></a>    <span class="st">&quot;ee_pob_ext&quot;</span>,</span>
-<span id="cb123-163"><a href="mapas.html#cb123-163" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza extrema&quot;</span>,</span>
-<span id="cb123-164"><a href="mapas.html#cb123-164" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb123-165"><a href="mapas.html#cb123-165" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb123-166"><a href="mapas.html#cb123-166" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb123-167"><a href="mapas.html#cb123-167" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb123-168"><a href="mapas.html#cb123-168" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb123-169"><a href="mapas.html#cb123-169" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb123-170"><a href="mapas.html#cb123-170" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb123-171"><a href="mapas.html#cb123-171" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb123-172"><a href="mapas.html#cb123-172" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb123-173"><a href="mapas.html#cb123-173" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb123-174"><a href="mapas.html#cb123-174" tabindex="-1"></a></span>
-<span id="cb123-175"><a href="mapas.html#cb123-175" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb123-176"><a href="mapas.html#cb123-176" tabindex="-1"></a>  Mapa_ext_ee,</span>
-<span id="cb123-177"><a href="mapas.html#cb123-177" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/pob_ext_ee.png&quot;</span>,</span>
-<span id="cb123-178"><a href="mapas.html#cb123-178" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb123-179"><a href="mapas.html#cb123-179" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb123-180"><a href="mapas.html#cb123-180" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb123-181"><a href="mapas.html#cb123-181" tabindex="-1"></a>)</span>
-<span id="cb123-182"><a href="mapas.html#cb123-182" tabindex="-1"></a></span>
-<span id="cb123-183"><a href="mapas.html#cb123-183" tabindex="-1"></a>Mapa_mod_ee <span class="ot">&lt;-</span></span>
-<span id="cb123-184"><a href="mapas.html#cb123-184" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
-<span id="cb123-185"><a href="mapas.html#cb123-185" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
-<span id="cb123-186"><a href="mapas.html#cb123-186" tabindex="-1"></a>    <span class="st">&quot;ee_pob_mod&quot;</span>,</span>
-<span id="cb123-187"><a href="mapas.html#cb123-187" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza moderada&quot;</span>,</span>
-<span id="cb123-188"><a href="mapas.html#cb123-188" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
-<span id="cb123-189"><a href="mapas.html#cb123-189" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb123-190"><a href="mapas.html#cb123-190" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb123-191"><a href="mapas.html#cb123-191" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
-<span id="cb123-192"><a href="mapas.html#cb123-192" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
-<span id="cb123-193"><a href="mapas.html#cb123-193" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
-<span id="cb123-194"><a href="mapas.html#cb123-194" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
-<span id="cb123-195"><a href="mapas.html#cb123-195" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
-<span id="cb123-196"><a href="mapas.html#cb123-196" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
-<span id="cb123-197"><a href="mapas.html#cb123-197" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
-<span id="cb123-198"><a href="mapas.html#cb123-198" tabindex="-1"></a></span>
-<span id="cb123-199"><a href="mapas.html#cb123-199" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
-<span id="cb123-200"><a href="mapas.html#cb123-200" tabindex="-1"></a>  Mapa_mod_ee,</span>
-<span id="cb123-201"><a href="mapas.html#cb123-201" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/pob_mod_ee.png&quot;</span>,</span>
-<span id="cb123-202"><a href="mapas.html#cb123-202" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
-<span id="cb123-203"><a href="mapas.html#cb123-203" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
-<span id="cb123-204"><a href="mapas.html#cb123-204" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
-<span id="cb123-205"><a href="mapas.html#cb123-205" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="mapas.html#cb131-1" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">80</span>, <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
+<span id="cb131-2"><a href="mapas.html#cb131-2" tabindex="-1"></a></span>
+<span id="cb131-3"><a href="mapas.html#cb131-3" tabindex="-1"></a><span class="fu">summary</span>(ipm_mpios<span class="sc">$</span>est_pob_ext)</span>
+<span id="cb131-4"><a href="mapas.html#cb131-4" tabindex="-1"></a></span>
+<span id="cb131-5"><a href="mapas.html#cb131-5" tabindex="-1"></a>Mapa_ext <span class="ot">&lt;-</span></span>
+<span id="cb131-6"><a href="mapas.html#cb131-6" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb131-7"><a href="mapas.html#cb131-7" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb131-8"><a href="mapas.html#cb131-8" tabindex="-1"></a>    <span class="st">&quot;est_pob_ext&quot;</span>,</span>
+<span id="cb131-9"><a href="mapas.html#cb131-9" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza extrema&quot;</span>,</span>
+<span id="cb131-10"><a href="mapas.html#cb131-10" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb131-11"><a href="mapas.html#cb131-11" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb131-12"><a href="mapas.html#cb131-12" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb131-13"><a href="mapas.html#cb131-13" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb131-14"><a href="mapas.html#cb131-14" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb131-15"><a href="mapas.html#cb131-15" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb131-16"><a href="mapas.html#cb131-16" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb131-17"><a href="mapas.html#cb131-17" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb131-18"><a href="mapas.html#cb131-18" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb131-19"><a href="mapas.html#cb131-19" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb131-20"><a href="mapas.html#cb131-20" tabindex="-1"></a></span>
+<span id="cb131-21"><a href="mapas.html#cb131-21" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb131-22"><a href="mapas.html#cb131-22" tabindex="-1"></a>  Mapa_ext,</span>
+<span id="cb131-23"><a href="mapas.html#cb131-23" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/pob_ext.png&quot;</span>,</span>
+<span id="cb131-24"><a href="mapas.html#cb131-24" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb131-25"><a href="mapas.html#cb131-25" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb131-26"><a href="mapas.html#cb131-26" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb131-27"><a href="mapas.html#cb131-27" tabindex="-1"></a>)</span>
+<span id="cb131-28"><a href="mapas.html#cb131-28" tabindex="-1"></a></span>
+<span id="cb131-29"><a href="mapas.html#cb131-29" tabindex="-1"></a><span class="co"># cortes &lt;- c(0.00, 0.01, 0.03, 0.05, 0.1, 0.2)</span></span>
+<span id="cb131-30"><a href="mapas.html#cb131-30" tabindex="-1"></a><span class="fu">summary</span>(ipm_mpios<span class="sc">$</span>est_pob_mod)</span>
+<span id="cb131-31"><a href="mapas.html#cb131-31" tabindex="-1"></a></span>
+<span id="cb131-32"><a href="mapas.html#cb131-32" tabindex="-1"></a>Mapa_mod <span class="ot">&lt;-</span></span>
+<span id="cb131-33"><a href="mapas.html#cb131-33" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb131-34"><a href="mapas.html#cb131-34" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb131-35"><a href="mapas.html#cb131-35" tabindex="-1"></a>    <span class="st">&quot;est_pob_mod&quot;</span>,</span>
+<span id="cb131-36"><a href="mapas.html#cb131-36" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Estimación de la pobreza moderada&quot;</span>,</span>
+<span id="cb131-37"><a href="mapas.html#cb131-37" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb131-38"><a href="mapas.html#cb131-38" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb131-39"><a href="mapas.html#cb131-39" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb131-40"><a href="mapas.html#cb131-40" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb131-41"><a href="mapas.html#cb131-41" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb131-42"><a href="mapas.html#cb131-42" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb131-43"><a href="mapas.html#cb131-43" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb131-44"><a href="mapas.html#cb131-44" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb131-45"><a href="mapas.html#cb131-45" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb131-46"><a href="mapas.html#cb131-46" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb131-47"><a href="mapas.html#cb131-47" tabindex="-1"></a></span>
+<span id="cb131-48"><a href="mapas.html#cb131-48" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb131-49"><a href="mapas.html#cb131-49" tabindex="-1"></a>  Mapa_mod,</span>
+<span id="cb131-50"><a href="mapas.html#cb131-50" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/pob_mod.png&quot;</span>,</span>
+<span id="cb131-51"><a href="mapas.html#cb131-51" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb131-52"><a href="mapas.html#cb131-52" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb131-53"><a href="mapas.html#cb131-53" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb131-54"><a href="mapas.html#cb131-54" tabindex="-1"></a>)</span>
+<span id="cb131-55"><a href="mapas.html#cb131-55" tabindex="-1"></a></span>
+<span id="cb131-56"><a href="mapas.html#cb131-56" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb131-57"><a href="mapas.html#cb131-57" tabindex="-1"></a><span class="do">## Errores </span></span>
+<span id="cb131-58"><a href="mapas.html#cb131-58" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb131-59"><a href="mapas.html#cb131-59" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">100</span> )<span class="sc">/</span><span class="dv">100</span></span>
+<span id="cb131-60"><a href="mapas.html#cb131-60" tabindex="-1"></a></span>
+<span id="cb131-61"><a href="mapas.html#cb131-61" tabindex="-1"></a>Mapa_I_ee <span class="ot">&lt;-</span></span>
+<span id="cb131-62"><a href="mapas.html#cb131-62" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb131-63"><a href="mapas.html#cb131-63" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb131-64"><a href="mapas.html#cb131-64" tabindex="-1"></a>    <span class="st">&quot;ee_ipm_I&quot;</span>,</span>
+<span id="cb131-65"><a href="mapas.html#cb131-65" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo I&quot;</span>,</span>
+<span id="cb131-66"><a href="mapas.html#cb131-66" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb131-67"><a href="mapas.html#cb131-67" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb131-68"><a href="mapas.html#cb131-68" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb131-69"><a href="mapas.html#cb131-69" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb131-70"><a href="mapas.html#cb131-70" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb131-71"><a href="mapas.html#cb131-71" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb131-72"><a href="mapas.html#cb131-72" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb131-73"><a href="mapas.html#cb131-73" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb131-74"><a href="mapas.html#cb131-74" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb131-75"><a href="mapas.html#cb131-75" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb131-76"><a href="mapas.html#cb131-76" tabindex="-1"></a></span>
+<span id="cb131-77"><a href="mapas.html#cb131-77" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb131-78"><a href="mapas.html#cb131-78" tabindex="-1"></a>  Mapa_I_ee,</span>
+<span id="cb131-79"><a href="mapas.html#cb131-79" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_I_ee.png&quot;</span>,</span>
+<span id="cb131-80"><a href="mapas.html#cb131-80" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb131-81"><a href="mapas.html#cb131-81" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb131-82"><a href="mapas.html#cb131-82" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb131-83"><a href="mapas.html#cb131-83" tabindex="-1"></a>)</span>
+<span id="cb131-84"><a href="mapas.html#cb131-84" tabindex="-1"></a></span>
+<span id="cb131-85"><a href="mapas.html#cb131-85" tabindex="-1"></a>Mapa_II_ee <span class="ot">&lt;-</span></span>
+<span id="cb131-86"><a href="mapas.html#cb131-86" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb131-87"><a href="mapas.html#cb131-87" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb131-88"><a href="mapas.html#cb131-88" tabindex="-1"></a>    <span class="st">&quot;ee_ipm_II&quot;</span>,</span>
+<span id="cb131-89"><a href="mapas.html#cb131-89" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo II&quot;</span>,</span>
+<span id="cb131-90"><a href="mapas.html#cb131-90" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb131-91"><a href="mapas.html#cb131-91" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb131-92"><a href="mapas.html#cb131-92" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb131-93"><a href="mapas.html#cb131-93" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb131-94"><a href="mapas.html#cb131-94" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb131-95"><a href="mapas.html#cb131-95" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb131-96"><a href="mapas.html#cb131-96" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb131-97"><a href="mapas.html#cb131-97" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb131-98"><a href="mapas.html#cb131-98" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb131-99"><a href="mapas.html#cb131-99" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb131-100"><a href="mapas.html#cb131-100" tabindex="-1"></a></span>
+<span id="cb131-101"><a href="mapas.html#cb131-101" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb131-102"><a href="mapas.html#cb131-102" tabindex="-1"></a>  Mapa_II_ee,</span>
+<span id="cb131-103"><a href="mapas.html#cb131-103" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_II_ee.png&quot;</span>,</span>
+<span id="cb131-104"><a href="mapas.html#cb131-104" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb131-105"><a href="mapas.html#cb131-105" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb131-106"><a href="mapas.html#cb131-106" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb131-107"><a href="mapas.html#cb131-107" tabindex="-1"></a>)</span>
+<span id="cb131-108"><a href="mapas.html#cb131-108" tabindex="-1"></a></span>
+<span id="cb131-109"><a href="mapas.html#cb131-109" tabindex="-1"></a>Mapa_III_ee <span class="ot">&lt;-</span></span>
+<span id="cb131-110"><a href="mapas.html#cb131-110" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb131-111"><a href="mapas.html#cb131-111" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb131-112"><a href="mapas.html#cb131-112" tabindex="-1"></a>    <span class="st">&quot;ee_ipm_III&quot;</span>,</span>
+<span id="cb131-113"><a href="mapas.html#cb131-113" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo III&quot;</span>,</span>
+<span id="cb131-114"><a href="mapas.html#cb131-114" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb131-115"><a href="mapas.html#cb131-115" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb131-116"><a href="mapas.html#cb131-116" tabindex="-1"></a>  )</span>
+<span id="cb131-117"><a href="mapas.html#cb131-117" tabindex="-1"></a></span>
+<span id="cb131-118"><a href="mapas.html#cb131-118" tabindex="-1"></a> <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb131-119"><a href="mapas.html#cb131-119" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb131-120"><a href="mapas.html#cb131-120" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb131-121"><a href="mapas.html#cb131-121" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb131-122"><a href="mapas.html#cb131-122" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb131-123"><a href="mapas.html#cb131-123" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb131-124"><a href="mapas.html#cb131-124" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb131-125"><a href="mapas.html#cb131-125" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb131-126"><a href="mapas.html#cb131-126" tabindex="-1"></a></span>
+<span id="cb131-127"><a href="mapas.html#cb131-127" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb131-128"><a href="mapas.html#cb131-128" tabindex="-1"></a>  Mapa_III_ee,</span>
+<span id="cb131-129"><a href="mapas.html#cb131-129" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_III_ee.png&quot;</span>,</span>
+<span id="cb131-130"><a href="mapas.html#cb131-130" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb131-131"><a href="mapas.html#cb131-131" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb131-132"><a href="mapas.html#cb131-132" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb131-133"><a href="mapas.html#cb131-133" tabindex="-1"></a>)</span>
+<span id="cb131-134"><a href="mapas.html#cb131-134" tabindex="-1"></a></span>
+<span id="cb131-135"><a href="mapas.html#cb131-135" tabindex="-1"></a>Mapa_IV_ee <span class="ot">&lt;-</span></span>
+<span id="cb131-136"><a href="mapas.html#cb131-136" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb131-137"><a href="mapas.html#cb131-137" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb131-138"><a href="mapas.html#cb131-138" tabindex="-1"></a>    <span class="st">&quot;ee_ipm_IV&quot;</span>,</span>
+<span id="cb131-139"><a href="mapas.html#cb131-139" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza </span><span class="sc">\n</span><span class="st">multidimensional 2020 - Tipo IV&quot;</span>,</span>
+<span id="cb131-140"><a href="mapas.html#cb131-140" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb131-141"><a href="mapas.html#cb131-141" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb131-142"><a href="mapas.html#cb131-142" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb131-143"><a href="mapas.html#cb131-143" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb131-144"><a href="mapas.html#cb131-144" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb131-145"><a href="mapas.html#cb131-145" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb131-146"><a href="mapas.html#cb131-146" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb131-147"><a href="mapas.html#cb131-147" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb131-148"><a href="mapas.html#cb131-148" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb131-149"><a href="mapas.html#cb131-149" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb131-150"><a href="mapas.html#cb131-150" tabindex="-1"></a></span>
+<span id="cb131-151"><a href="mapas.html#cb131-151" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb131-152"><a href="mapas.html#cb131-152" tabindex="-1"></a>  Mapa_IV_ee,</span>
+<span id="cb131-153"><a href="mapas.html#cb131-153" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/IPM_IV_ee.png&quot;</span>,</span>
+<span id="cb131-154"><a href="mapas.html#cb131-154" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb131-155"><a href="mapas.html#cb131-155" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb131-156"><a href="mapas.html#cb131-156" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb131-157"><a href="mapas.html#cb131-157" tabindex="-1"></a>)</span>
+<span id="cb131-158"><a href="mapas.html#cb131-158" tabindex="-1"></a></span>
+<span id="cb131-159"><a href="mapas.html#cb131-159" tabindex="-1"></a>Mapa_ext_ee <span class="ot">&lt;-</span></span>
+<span id="cb131-160"><a href="mapas.html#cb131-160" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb131-161"><a href="mapas.html#cb131-161" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb131-162"><a href="mapas.html#cb131-162" tabindex="-1"></a>    <span class="st">&quot;ee_pob_ext&quot;</span>,</span>
+<span id="cb131-163"><a href="mapas.html#cb131-163" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza extrema&quot;</span>,</span>
+<span id="cb131-164"><a href="mapas.html#cb131-164" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb131-165"><a href="mapas.html#cb131-165" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb131-166"><a href="mapas.html#cb131-166" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb131-167"><a href="mapas.html#cb131-167" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb131-168"><a href="mapas.html#cb131-168" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb131-169"><a href="mapas.html#cb131-169" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb131-170"><a href="mapas.html#cb131-170" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb131-171"><a href="mapas.html#cb131-171" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb131-172"><a href="mapas.html#cb131-172" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb131-173"><a href="mapas.html#cb131-173" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb131-174"><a href="mapas.html#cb131-174" tabindex="-1"></a></span>
+<span id="cb131-175"><a href="mapas.html#cb131-175" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb131-176"><a href="mapas.html#cb131-176" tabindex="-1"></a>  Mapa_ext_ee,</span>
+<span id="cb131-177"><a href="mapas.html#cb131-177" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/pob_ext_ee.png&quot;</span>,</span>
+<span id="cb131-178"><a href="mapas.html#cb131-178" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb131-179"><a href="mapas.html#cb131-179" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb131-180"><a href="mapas.html#cb131-180" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb131-181"><a href="mapas.html#cb131-181" tabindex="-1"></a>)</span>
+<span id="cb131-182"><a href="mapas.html#cb131-182" tabindex="-1"></a></span>
+<span id="cb131-183"><a href="mapas.html#cb131-183" tabindex="-1"></a>Mapa_mod_ee <span class="ot">&lt;-</span></span>
+<span id="cb131-184"><a href="mapas.html#cb131-184" tabindex="-1"></a>  P1_mpio_norte <span class="sc">+</span> <span class="fu">tm_polygons</span>(</span>
+<span id="cb131-185"><a href="mapas.html#cb131-185" tabindex="-1"></a>    <span class="at">breaks  =</span> cortes,</span>
+<span id="cb131-186"><a href="mapas.html#cb131-186" tabindex="-1"></a>    <span class="st">&quot;ee_pob_mod&quot;</span>,</span>
+<span id="cb131-187"><a href="mapas.html#cb131-187" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Error de estimación de la pobreza moderada&quot;</span>,</span>
+<span id="cb131-188"><a href="mapas.html#cb131-188" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;Greens&quot;</span>,</span>
+<span id="cb131-189"><a href="mapas.html#cb131-189" tabindex="-1"></a>    <span class="at">colorNA =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb131-190"><a href="mapas.html#cb131-190" tabindex="-1"></a>  ) <span class="sc">+</span> <span class="fu">tm_layout</span>(<span class="at">legend.show =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb131-191"><a href="mapas.html#cb131-191" tabindex="-1"></a>                <span class="at">legend.text.size =</span>  <span class="fl">1.5</span>, </span>
+<span id="cb131-192"><a href="mapas.html#cb131-192" tabindex="-1"></a>                <span class="at">legend.outside.position =</span> <span class="st">&#39;left&#39;</span>,</span>
+<span id="cb131-193"><a href="mapas.html#cb131-193" tabindex="-1"></a>                <span class="at">legend.hist.width =</span> <span class="dv">1</span>,</span>
+<span id="cb131-194"><a href="mapas.html#cb131-194" tabindex="-1"></a>                <span class="at">legend.hist.height =</span> <span class="dv">3</span>,</span>
+<span id="cb131-195"><a href="mapas.html#cb131-195" tabindex="-1"></a>                <span class="at">legend.stack =</span> <span class="st">&#39;vertical&#39;</span>,</span>
+<span id="cb131-196"><a href="mapas.html#cb131-196" tabindex="-1"></a>                <span class="at">legend.title.fontface =</span> <span class="st">&#39;bold&#39;</span>,</span>
+<span id="cb131-197"><a href="mapas.html#cb131-197" tabindex="-1"></a>                <span class="at">legend.text.fontface =</span> <span class="st">&#39;bold&#39;</span>) </span>
+<span id="cb131-198"><a href="mapas.html#cb131-198" tabindex="-1"></a></span>
+<span id="cb131-199"><a href="mapas.html#cb131-199" tabindex="-1"></a><span class="fu">tmap_save</span>(</span>
+<span id="cb131-200"><a href="mapas.html#cb131-200" tabindex="-1"></a>  Mapa_mod_ee,</span>
+<span id="cb131-201"><a href="mapas.html#cb131-201" tabindex="-1"></a>  <span class="at">filename =</span>  <span class="st">&quot;../output/Entregas/2020/mapas/pob_mod_ee.png&quot;</span>,</span>
+<span id="cb131-202"><a href="mapas.html#cb131-202" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4000</span>,</span>
+<span id="cb131-203"><a href="mapas.html#cb131-203" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">3000</span>,</span>
+<span id="cb131-204"><a href="mapas.html#cb131-204" tabindex="-1"></a>  <span class="at">asp =</span> <span class="dv">0</span></span>
+<span id="cb131-205"><a href="mapas.html#cb131-205" tabindex="-1"></a>)</span></code></pre></div>
 
 </div>
 </div>

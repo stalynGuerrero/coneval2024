@@ -194,113 +194,123 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Para la ejecución del presente análisis, se debe abrir el archivo <strong>11_PostBenchmarking_ic_segsoc.R</strong> disponible en la ruta <em>Rcodes/2020/11_PostBenchmarking_ic_segsoc.R</em>.</p>
 <p>Este script en R se centra en el proceso de benchmarking y validación de un modelo multinivel previamente ajustado para lala carencia en por cobertura de seguridad social. Inicia con la limpieza del entorno de trabajo y la carga de librerías esenciales como <code>scales</code>, <code>patchwork</code>, <code>srvyr</code>, <code>survey</code>, <code>haven</code>, <code>sampling</code> y <code>tidyverse</code>. Luego, se cargan funciones adicionales desde archivos externos para la validación y el benchmarking del modelo.</p>
 <p>El modelo ajustado se lee desde un archivo RDS (<code>fit_mrp_ic_segsoc.rds</code>) y se procede a la etapa de benchmarking utilizando la función benchmarking, aplicando el método logit sobre un conjunto de covariables específicas (<code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code>, <code>hlengua</code>). Los resultados del benchmarking se incorporan al dataframe de post-estratificación y se recalculan las predicciones ponderadas.</p>
-<p>El script también realiza validaciones a nivel nacional y por subgrupos (<code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code>, <code>hlengua</code>, <code>nivel_edu</code>). Para cada subgrupo, se generan gráficos de validación univariada utilizando la función plot_uni_validacion, que compara las estimaciones directas y ajustadas del modelo. Los gráficos resultantes se combinan y se guardan en un archivo JPG, proporcionando una visualización completa del desempeño del modelo. Finalmente, tanto los gráficos de subgrupos como el dataframe de post-estratificación se guardan en archivos RDS para futuros análisis y referencia.</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="postbenchmarking_ic_segsoc.html#cb79-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span><span class="fu">ls</span>())</span>
-<span id="cb79-2"><a href="postbenchmarking_ic_segsoc.html#cb79-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
-<span id="cb79-3"><a href="postbenchmarking_ic_segsoc.html#cb79-3" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb79-4"><a href="postbenchmarking_ic_segsoc.html#cb79-4" tabindex="-1"></a><span class="co"># Loading required libraries ----------------------------------</span></span>
-<span id="cb79-5"><a href="postbenchmarking_ic_segsoc.html#cb79-5" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb79-6"><a href="postbenchmarking_ic_segsoc.html#cb79-6" tabindex="-1"></a></span>
-<span id="cb79-7"><a href="postbenchmarking_ic_segsoc.html#cb79-7" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
-<span id="cb79-8"><a href="postbenchmarking_ic_segsoc.html#cb79-8" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb79-9"><a href="postbenchmarking_ic_segsoc.html#cb79-9" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
-<span id="cb79-10"><a href="postbenchmarking_ic_segsoc.html#cb79-10" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
-<span id="cb79-11"><a href="postbenchmarking_ic_segsoc.html#cb79-11" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb79-12"><a href="postbenchmarking_ic_segsoc.html#cb79-12" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
-<span id="cb79-13"><a href="postbenchmarking_ic_segsoc.html#cb79-13" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb79-14"><a href="postbenchmarking_ic_segsoc.html#cb79-14" tabindex="-1"></a></span>
-<span id="cb79-15"><a href="postbenchmarking_ic_segsoc.html#cb79-15" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb79-16"><a href="postbenchmarking_ic_segsoc.html#cb79-16" tabindex="-1"></a><span class="co"># Lectura de funciones </span></span>
-<span id="cb79-17"><a href="postbenchmarking_ic_segsoc.html#cb79-17" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb79-18"><a href="postbenchmarking_ic_segsoc.html#cb79-18" tabindex="-1"></a></span>
-<span id="cb79-19"><a href="postbenchmarking_ic_segsoc.html#cb79-19" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/Plot_validacion_bench.R&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span>
-<span id="cb79-20"><a href="postbenchmarking_ic_segsoc.html#cb79-20" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/Benchmarking.R&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span>
-<span id="cb79-21"><a href="postbenchmarking_ic_segsoc.html#cb79-21" tabindex="-1"></a></span>
-<span id="cb79-22"><a href="postbenchmarking_ic_segsoc.html#cb79-22" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb79-23"><a href="postbenchmarking_ic_segsoc.html#cb79-23" tabindex="-1"></a><span class="co"># Lectura del modelo </span></span>
-<span id="cb79-24"><a href="postbenchmarking_ic_segsoc.html#cb79-24" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb79-25"><a href="postbenchmarking_ic_segsoc.html#cb79-25" tabindex="-1"></a></span>
-<span id="cb79-26"><a href="postbenchmarking_ic_segsoc.html#cb79-26" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ic_segsoc.rds&quot;</span>)</span></code></pre></div>
+<p>El script también realiza validaciones a nivel nacional y por subgrupos (<code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code>, <code>hlengua</code>, <code>nivel_edu</code>). Para cada subgrupo, se generan gráficos de validación univariada utilizando la función plot_uni_validacion, que compara las estimaciones directas y ajustadas del modelo. Los gráficos resultantes se combinan y se guardan en un archivo JPG, proporcionando una visualización completa del desempeño del modelo. Finalmente, tanto los gráficos de subgrupos como el dataframe de post-estratificación se guardan en archivos RDS para futuros análisis y referencia.
+#### Limpieza del Entorno y Carga de Bibliotecas{-}</p>
+<p>El entorno de R se limpia al eliminar todos los objetos actuales y se limpia la consola para asegurar que el análisis comience desde un estado limpio. A continuación, se cargan las bibliotecas necesarias para el análisis, que incluyen <code>scales</code>, <code>patchwork</code>, <code>srvyr</code>, <code>survey</code>, <code>haven</code>, <code>sampling</code>, y <code>tidyverse</code>. Estas bibliotecas proporcionan herramientas para la manipulación de datos, la creación de gráficos, el análisis de encuestas y la realización de muestreos.</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="postbenchmarking_ic_segsoc.html#cb85-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span><span class="fu">ls</span>())</span>
+<span id="cb85-2"><a href="postbenchmarking_ic_segsoc.html#cb85-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
+<span id="cb85-3"><a href="postbenchmarking_ic_segsoc.html#cb85-3" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb85-4"><a href="postbenchmarking_ic_segsoc.html#cb85-4" tabindex="-1"></a><span class="co"># Loading required libraries ----------------------------------------------</span></span>
+<span id="cb85-5"><a href="postbenchmarking_ic_segsoc.html#cb85-5" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb85-6"><a href="postbenchmarking_ic_segsoc.html#cb85-6" tabindex="-1"></a></span>
+<span id="cb85-7"><a href="postbenchmarking_ic_segsoc.html#cb85-7" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb85-8"><a href="postbenchmarking_ic_segsoc.html#cb85-8" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb85-9"><a href="postbenchmarking_ic_segsoc.html#cb85-9" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
+<span id="cb85-10"><a href="postbenchmarking_ic_segsoc.html#cb85-10" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb85-11"><a href="postbenchmarking_ic_segsoc.html#cb85-11" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb85-12"><a href="postbenchmarking_ic_segsoc.html#cb85-12" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb85-13"><a href="postbenchmarking_ic_segsoc.html#cb85-13" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<div id="lectura-de-funciones-2" class="section level4 unnumbered hasAnchor">
+<h4>Lectura de Funciones<a href="postbenchmarking_ic_segsoc.html#lectura-de-funciones-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se cargan dos archivos de funciones que serán utilizadas en el análisis: <code>Plot_validacion_bench.R</code> y <code>Benchmarking.R</code>. Estos archivos contienen funciones personalizadas para la validación y el análisis comparativo.</p>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="postbenchmarking_ic_segsoc.html#cb86-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/Plot_validacion_bench.R&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span>
+<span id="cb86-2"><a href="postbenchmarking_ic_segsoc.html#cb86-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/Benchmarking.R&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span></code></pre></div>
+</div>
+<div id="lectura-del-modelo-2" class="section level4 unnumbered hasAnchor">
+<h4>Lectura del Modelo<a href="postbenchmarking_ic_segsoc.html#lectura-del-modelo-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se lee el modelo ajustado previamente, guardado en un archivo RDS (<code>fit_mrp_ictpc.rds</code>). Este modelo será utilizado para realizar análisis adicionales o generar nuevas predicciones basadas en los datos de entrada.</p>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="postbenchmarking_ic_segsoc.html#cb87-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ic_segsoc.rds&quot;</span>)</span></code></pre></div>
+</div>
 <div id="proceso-de-benchmarking-2" class="section level4 unnumbered hasAnchor">
 <h4>proceso de benchmarking<a href="postbenchmarking_ic_segsoc.html#proceso-de-benchmarking-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="postbenchmarking_ic_segsoc.html#cb80-1" tabindex="-1"></a>list_bench <span class="ot">&lt;-</span> <span class="fu">benchmarking</span>(<span class="at">modelo =</span> fit,</span>
-<span id="cb80-2"><a href="postbenchmarking_ic_segsoc.html#cb80-2" tabindex="-1"></a>             <span class="at">names_cov =</span>   <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
-<span id="cb80-3"><a href="postbenchmarking_ic_segsoc.html#cb80-3" tabindex="-1"></a>                             <span class="st">&quot;area&quot;</span>,</span>
-<span id="cb80-4"><a href="postbenchmarking_ic_segsoc.html#cb80-4" tabindex="-1"></a>                             <span class="st">&quot;sexo&quot;</span>,</span>
-<span id="cb80-5"><a href="postbenchmarking_ic_segsoc.html#cb80-5" tabindex="-1"></a>                             <span class="st">&quot;edad&quot;</span>,</span>
-<span id="cb80-6"><a href="postbenchmarking_ic_segsoc.html#cb80-6" tabindex="-1"></a>                             <span class="st">&quot;discapacidad&quot;</span>,</span>
-<span id="cb80-7"><a href="postbenchmarking_ic_segsoc.html#cb80-7" tabindex="-1"></a>                             <span class="st">&quot;hlengua&quot;</span>),                      </span>
-<span id="cb80-8"><a href="postbenchmarking_ic_segsoc.html#cb80-8" tabindex="-1"></a>             <span class="at">metodo =</span> <span class="st">&quot;logit&quot;</span>)</span></code></pre></div>
+<p>En esta sección se realiza el proceso de benchmarking utilizando la función <code>benchmarking</code>, aplicada al modelo previamente ajustado. La función evalúa el rendimiento del modelo y compara los resultados basados en las variables seleccionadas. Se especifican las variables que se consideran en el análisis: <code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code>, y <code>hlengua</code>. El método de benchmarking utilizado es <code>logit</code>, que se emplea para analizar el ajuste del modelo en función de estas variables.</p>
+<p>El resultado del proceso de benchmarking se guarda en un archivo RDS (<code>list_bench.rds</code>), que contiene las evaluaciones del modelo. Aunque el código para guardar y cargar este archivo está comentado, se proporciona la estructura para guardar los resultados y posteriormente cargarlos si es necesario.</p>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="postbenchmarking_ic_segsoc.html#cb88-1" tabindex="-1"></a>list_bench <span class="ot">&lt;-</span> <span class="fu">benchmarking</span>(<span class="at">modelo =</span> fit,</span>
+<span id="cb88-2"><a href="postbenchmarking_ic_segsoc.html#cb88-2" tabindex="-1"></a>             <span class="at">names_cov =</span>   <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
+<span id="cb88-3"><a href="postbenchmarking_ic_segsoc.html#cb88-3" tabindex="-1"></a>                             <span class="st">&quot;area&quot;</span>,</span>
+<span id="cb88-4"><a href="postbenchmarking_ic_segsoc.html#cb88-4" tabindex="-1"></a>                             <span class="st">&quot;sexo&quot;</span>,</span>
+<span id="cb88-5"><a href="postbenchmarking_ic_segsoc.html#cb88-5" tabindex="-1"></a>                             <span class="st">&quot;edad&quot;</span>,</span>
+<span id="cb88-6"><a href="postbenchmarking_ic_segsoc.html#cb88-6" tabindex="-1"></a>                             <span class="st">&quot;discapacidad&quot;</span>,</span>
+<span id="cb88-7"><a href="postbenchmarking_ic_segsoc.html#cb88-7" tabindex="-1"></a>                             <span class="st">&quot;hlengua&quot;</span>),                      </span>
+<span id="cb88-8"><a href="postbenchmarking_ic_segsoc.html#cb88-8" tabindex="-1"></a>             <span class="at">metodo =</span> <span class="st">&quot;logit&quot;</span>)</span></code></pre></div>
 </div>
-<div id="validaciones-y-plot-uni-2" class="section level4 unnumbered hasAnchor">
-<h4>Validaciones y plot uni<a href="postbenchmarking_ic_segsoc.html#validaciones-y-plot-uni-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="postbenchmarking_ic_segsoc.html#cb81-1" tabindex="-1"></a>poststrat_df <span class="ot">&lt;-</span> fit<span class="sc">$</span>poststrat_df <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span>  </span>
-<span id="cb81-2"><a href="postbenchmarking_ic_segsoc.html#cb81-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yk_stan_lmer =</span> yk,</span>
-<span id="cb81-3"><a href="postbenchmarking_ic_segsoc.html#cb81-3" tabindex="-1"></a>         <span class="at">gk_bench =</span> list_bench<span class="sc">$</span>gk_bench,</span>
-<span id="cb81-4"><a href="postbenchmarking_ic_segsoc.html#cb81-4" tabindex="-1"></a>         <span class="at">yk_bench =</span> yk <span class="sc">*</span> gk_bench )</span>
-<span id="cb81-5"><a href="postbenchmarking_ic_segsoc.html#cb81-5" tabindex="-1"></a></span>
-<span id="cb81-6"><a href="postbenchmarking_ic_segsoc.html#cb81-6" tabindex="-1"></a>diseno_encuesta <span class="ot">&lt;-</span> fit<span class="sc">$</span>encuesta_mrp <span class="sc">%&gt;%</span> </span>
-<span id="cb81-7"><a href="postbenchmarking_ic_segsoc.html#cb81-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yk_dir =</span> yk) <span class="sc">%&gt;%</span> </span>
-<span id="cb81-8"><a href="postbenchmarking_ic_segsoc.html#cb81-8" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(<span class="at">weights =</span> fep)</span>
-<span id="cb81-9"><a href="postbenchmarking_ic_segsoc.html#cb81-9" tabindex="-1"></a></span>
-<span id="cb81-10"><a href="postbenchmarking_ic_segsoc.html#cb81-10" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">predict</span>(fit<span class="sc">$</span>fit_mrp,<span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb81-11"><a href="postbenchmarking_ic_segsoc.html#cb81-11" tabindex="-1"></a><span class="fu">mean</span>(diseno_encuesta<span class="sc">$</span>variables<span class="sc">$</span>yk)</span>
-<span id="cb81-12"><a href="postbenchmarking_ic_segsoc.html#cb81-12" tabindex="-1"></a></span>
-<span id="cb81-13"><a href="postbenchmarking_ic_segsoc.html#cb81-13" tabindex="-1"></a><span class="do">## validación nacional.</span></span>
-<span id="cb81-14"><a href="postbenchmarking_ic_segsoc.html#cb81-14" tabindex="-1"></a><span class="fu">cbind</span>(</span>
-<span id="cb81-15"><a href="postbenchmarking_ic_segsoc.html#cb81-15" tabindex="-1"></a>  diseno_encuesta <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">Nacional_dir =</span> <span class="fu">survey_mean</span>(yk_dir)) <span class="sc">%&gt;%</span> </span>
-<span id="cb81-16"><a href="postbenchmarking_ic_segsoc.html#cb81-16" tabindex="-1"></a>    <span class="fu">select</span>(Nacional_dir),</span>
-<span id="cb81-17"><a href="postbenchmarking_ic_segsoc.html#cb81-17" tabindex="-1"></a>  poststrat_df <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(</span>
-<span id="cb81-18"><a href="postbenchmarking_ic_segsoc.html#cb81-18" tabindex="-1"></a>    <span class="at">Nacional_stan_lmer =</span> <span class="fu">sum</span>(n <span class="sc">*</span> yk_stan_lmer) <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
-<span id="cb81-19"><a href="postbenchmarking_ic_segsoc.html#cb81-19" tabindex="-1"></a>    <span class="at">Nacional_bench =</span> <span class="fu">sum</span>(n <span class="sc">*</span> yk_bench) <span class="sc">/</span> <span class="fu">sum</span>(n<span class="sc">*</span>gk_bench),</span>
-<span id="cb81-20"><a href="postbenchmarking_ic_segsoc.html#cb81-20" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> <span class="fu">print</span>()</span></code></pre></div>
+<div id="validaciones-benchmarking-2" class="section level4 unnumbered hasAnchor">
+<h4>Validaciones benchmarking<a href="postbenchmarking_ic_segsoc.html#validaciones-benchmarking-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>En esta sección se llevan a cabo validaciones del modelo y se comparan los resultados con los datos de la encuesta. Primero, se prepara un DataFrame <code>poststrat_df</code> que incluye las predicciones del modelo (<code>yk_lmer</code>) y un ajuste de benchmarking (<code>yk_bench</code>). Esto permite comparar las estimaciones del modelo con los datos observados.</p>
+<p>Luego, se crea un objeto de diseño de encuesta <code>diseno_encuesta</code> utilizando la función <code>as_survey_design</code> para aplicar los pesos de encuesta a los datos. Se calculan las medias de las predicciones del modelo y de los datos directos para verificar la consistencia entre ambos.</p>
+<p>Para la validación nacional, se comparan las estimaciones nacionales obtenidas de la encuesta y del modelo. Esto se realiza mediante la comparación de las medias estimadas a nivel nacional del diseño de encuesta (<code>Nacional_dir</code>), el modelo ajustado (<code>Nacional_lmer</code>), y el benchmarking (<code>Nacional_bench</code>). Los resultados se resumen en un <code>cbind</code> para facilitar la comparación.</p>
+<p>Este proceso de validación permite evaluar la precisión del modelo y asegurar que sus estimaciones sean consistentes con los datos observados y con los ajustes de benchmarking.</p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="postbenchmarking_ic_segsoc.html#cb89-1" tabindex="-1"></a>poststrat_df <span class="ot">&lt;-</span> fit<span class="sc">$</span>poststrat_df <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span>  </span>
+<span id="cb89-2"><a href="postbenchmarking_ic_segsoc.html#cb89-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yk_stan_lmer =</span> yk,</span>
+<span id="cb89-3"><a href="postbenchmarking_ic_segsoc.html#cb89-3" tabindex="-1"></a>         <span class="at">gk_bench =</span> list_bench<span class="sc">$</span>gk_bench,</span>
+<span id="cb89-4"><a href="postbenchmarking_ic_segsoc.html#cb89-4" tabindex="-1"></a>         <span class="at">yk_bench =</span> yk <span class="sc">*</span> gk_bench )</span>
+<span id="cb89-5"><a href="postbenchmarking_ic_segsoc.html#cb89-5" tabindex="-1"></a></span>
+<span id="cb89-6"><a href="postbenchmarking_ic_segsoc.html#cb89-6" tabindex="-1"></a>diseno_encuesta <span class="ot">&lt;-</span> fit<span class="sc">$</span>encuesta_mrp <span class="sc">%&gt;%</span> </span>
+<span id="cb89-7"><a href="postbenchmarking_ic_segsoc.html#cb89-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yk_dir =</span> yk) <span class="sc">%&gt;%</span> </span>
+<span id="cb89-8"><a href="postbenchmarking_ic_segsoc.html#cb89-8" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(<span class="at">weights =</span> fep)</span>
+<span id="cb89-9"><a href="postbenchmarking_ic_segsoc.html#cb89-9" tabindex="-1"></a></span>
+<span id="cb89-10"><a href="postbenchmarking_ic_segsoc.html#cb89-10" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">predict</span>(fit<span class="sc">$</span>fit_mrp,<span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb89-11"><a href="postbenchmarking_ic_segsoc.html#cb89-11" tabindex="-1"></a><span class="fu">mean</span>(diseno_encuesta<span class="sc">$</span>variables<span class="sc">$</span>yk)</span>
+<span id="cb89-12"><a href="postbenchmarking_ic_segsoc.html#cb89-12" tabindex="-1"></a></span>
+<span id="cb89-13"><a href="postbenchmarking_ic_segsoc.html#cb89-13" tabindex="-1"></a><span class="do">## validación nacional.</span></span>
+<span id="cb89-14"><a href="postbenchmarking_ic_segsoc.html#cb89-14" tabindex="-1"></a><span class="fu">cbind</span>(</span>
+<span id="cb89-15"><a href="postbenchmarking_ic_segsoc.html#cb89-15" tabindex="-1"></a>  diseno_encuesta <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">Nacional_dir =</span> <span class="fu">survey_mean</span>(yk_dir)) <span class="sc">%&gt;%</span> </span>
+<span id="cb89-16"><a href="postbenchmarking_ic_segsoc.html#cb89-16" tabindex="-1"></a>    <span class="fu">select</span>(Nacional_dir),</span>
+<span id="cb89-17"><a href="postbenchmarking_ic_segsoc.html#cb89-17" tabindex="-1"></a>  poststrat_df <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(</span>
+<span id="cb89-18"><a href="postbenchmarking_ic_segsoc.html#cb89-18" tabindex="-1"></a>    <span class="at">Nacional_stan_lmer =</span> <span class="fu">sum</span>(n <span class="sc">*</span> yk_stan_lmer) <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
+<span id="cb89-19"><a href="postbenchmarking_ic_segsoc.html#cb89-19" tabindex="-1"></a>    <span class="at">Nacional_bench =</span> <span class="fu">sum</span>(n <span class="sc">*</span> yk_bench) <span class="sc">/</span> <span class="fu">sum</span>(n<span class="sc">*</span>gk_bench),</span>
+<span id="cb89-20"><a href="postbenchmarking_ic_segsoc.html#cb89-20" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> <span class="fu">print</span>()</span></code></pre></div>
 </div>
 <div id="validaciones-por-subgrupo-completo-2" class="section level4 unnumbered hasAnchor">
 <h4>Validaciones por subgrupo completo<a href="postbenchmarking_ic_segsoc.html#validaciones-por-subgrupo-completo-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="postbenchmarking_ic_segsoc.html#cb82-1" tabindex="-1"></a>subgrupo <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
-<span id="cb82-2"><a href="postbenchmarking_ic_segsoc.html#cb82-2" tabindex="-1"></a>              <span class="st">&quot;area&quot;</span>,</span>
-<span id="cb82-3"><a href="postbenchmarking_ic_segsoc.html#cb82-3" tabindex="-1"></a>              <span class="st">&quot;sexo&quot;</span>,</span>
-<span id="cb82-4"><a href="postbenchmarking_ic_segsoc.html#cb82-4" tabindex="-1"></a>              <span class="st">&quot;edad&quot;</span>,</span>
-<span id="cb82-5"><a href="postbenchmarking_ic_segsoc.html#cb82-5" tabindex="-1"></a>              <span class="st">&quot;discapacidad&quot;</span>,</span>
-<span id="cb82-6"><a href="postbenchmarking_ic_segsoc.html#cb82-6" tabindex="-1"></a>              <span class="st">&quot;hlengua&quot;</span>,<span class="st">&quot;nivel_edu&quot;</span>)</span>
-<span id="cb82-7"><a href="postbenchmarking_ic_segsoc.html#cb82-7" tabindex="-1"></a></span>
-<span id="cb82-8"><a href="postbenchmarking_ic_segsoc.html#cb82-8" tabindex="-1"></a></span>
-<span id="cb82-9"><a href="postbenchmarking_ic_segsoc.html#cb82-9" tabindex="-1"></a>plot_subgrupo <span class="ot">&lt;-</span> <span class="fu">map</span>(</span>
-<span id="cb82-10"><a href="postbenchmarking_ic_segsoc.html#cb82-10" tabindex="-1"></a>  <span class="at">.x =</span> <span class="fu">setNames</span>(subgrupo, subgrupo),</span>
-<span id="cb82-11"><a href="postbenchmarking_ic_segsoc.html#cb82-11" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">plot_uni_validacion</span>(</span>
-<span id="cb82-12"><a href="postbenchmarking_ic_segsoc.html#cb82-12" tabindex="-1"></a>    <span class="at">sample_diseno =</span> diseno_encuesta,</span>
-<span id="cb82-13"><a href="postbenchmarking_ic_segsoc.html#cb82-13" tabindex="-1"></a>    <span class="at">poststrat =</span> poststrat_df,</span>
-<span id="cb82-14"><a href="postbenchmarking_ic_segsoc.html#cb82-14" tabindex="-1"></a>    <span class="at">by1 =</span> .x</span>
-<span id="cb82-15"><a href="postbenchmarking_ic_segsoc.html#cb82-15" tabindex="-1"></a>  )</span>
-<span id="cb82-16"><a href="postbenchmarking_ic_segsoc.html#cb82-16" tabindex="-1"></a>)</span>
-<span id="cb82-17"><a href="postbenchmarking_ic_segsoc.html#cb82-17" tabindex="-1"></a></span>
-<span id="cb82-18"><a href="postbenchmarking_ic_segsoc.html#cb82-18" tabindex="-1"></a></span>
-<span id="cb82-19"><a href="postbenchmarking_ic_segsoc.html#cb82-19" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>tabla <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(n_sample) ) <span class="sc">%&gt;%</span></span>
-<span id="cb82-20"><a href="postbenchmarking_ic_segsoc.html#cb82-20" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ER =</span> <span class="fu">abs</span>((directo <span class="sc">-</span> stan_lmer)<span class="sc">/</span>directo )<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb82-21"><a href="postbenchmarking_ic_segsoc.html#cb82-21" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(sexo<span class="sc">:</span>directo_upp,stan_lmer, ER)</span>
-<span id="cb82-22"><a href="postbenchmarking_ic_segsoc.html#cb82-22" tabindex="-1"></a></span>
-<span id="cb82-23"><a href="postbenchmarking_ic_segsoc.html#cb82-23" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>ent<span class="sc">$</span>gg_plot</span>
-<span id="cb82-24"><a href="postbenchmarking_ic_segsoc.html#cb82-24" tabindex="-1"></a></span>
-<span id="cb82-25"><a href="postbenchmarking_ic_segsoc.html#cb82-25" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>nivel_edu<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
-<span id="cb82-26"><a href="postbenchmarking_ic_segsoc.html#cb82-26" tabindex="-1"></a>  plot_subgrupo<span class="sc">$</span>edad<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>hlengua<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
-<span id="cb82-27"><a href="postbenchmarking_ic_segsoc.html#cb82-27" tabindex="-1"></a>  plot_subgrupo<span class="sc">$</span>area<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>discapacidad<span class="sc">$</span>gg_plot  </span>
-<span id="cb82-28"><a href="postbenchmarking_ic_segsoc.html#cb82-28" tabindex="-1"></a></span>
-<span id="cb82-29"><a href="postbenchmarking_ic_segsoc.html#cb82-29" tabindex="-1"></a>plot_uni <span class="ot">&lt;-</span> plot_subgrupo<span class="sc">$</span>ent<span class="sc">$</span>gg_plot  <span class="sc">/</span></span>
-<span id="cb82-30"><a href="postbenchmarking_ic_segsoc.html#cb82-30" tabindex="-1"></a>  (</span>
-<span id="cb82-31"><a href="postbenchmarking_ic_segsoc.html#cb82-31" tabindex="-1"></a>    plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>nivel_edu<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
-<span id="cb82-32"><a href="postbenchmarking_ic_segsoc.html#cb82-32" tabindex="-1"></a>      plot_subgrupo<span class="sc">$</span>edad<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>hlengua<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
-<span id="cb82-33"><a href="postbenchmarking_ic_segsoc.html#cb82-33" tabindex="-1"></a>      plot_subgrupo<span class="sc">$</span>area<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>discapacidad<span class="sc">$</span>gg_plot</span>
-<span id="cb82-34"><a href="postbenchmarking_ic_segsoc.html#cb82-34" tabindex="-1"></a>  )</span>
-<span id="cb82-35"><a href="postbenchmarking_ic_segsoc.html#cb82-35" tabindex="-1"></a></span>
-<span id="cb82-36"><a href="postbenchmarking_ic_segsoc.html#cb82-36" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">plot =</span> plot_uni,</span>
-<span id="cb82-37"><a href="postbenchmarking_ic_segsoc.html#cb82-37" tabindex="-1"></a>       <span class="at">filename =</span> <span class="st">&quot;../output/2020/modelos/plot_uni_ic_segsoc.jpg&quot;</span>,</span>
-<span id="cb82-38"><a href="postbenchmarking_ic_segsoc.html#cb82-38" tabindex="-1"></a>       <span class="at">scale =</span> <span class="dv">3</span>)</span>
-<span id="cb82-39"><a href="postbenchmarking_ic_segsoc.html#cb82-39" tabindex="-1"></a></span>
-<span id="cb82-40"><a href="postbenchmarking_ic_segsoc.html#cb82-40" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span>  plot_subgrupo,</span>
-<span id="cb82-41"><a href="postbenchmarking_ic_segsoc.html#cb82-41" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../output/2020/modelos/plot_uni_ic_segsoc.rds&quot;</span>)</span>
-<span id="cb82-42"><a href="postbenchmarking_ic_segsoc.html#cb82-42" tabindex="-1"></a></span>
-<span id="cb82-43"><a href="postbenchmarking_ic_segsoc.html#cb82-43" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span>  poststrat_df,</span>
-<span id="cb82-44"><a href="postbenchmarking_ic_segsoc.html#cb82-44" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../input/2020/muestra_ampliada/poststrat_df_ic_segsoc.rds&quot;</span>)</span></code></pre></div>
+<p>En esta sección, se realiza una validación exhaustiva del modelo ajustado, evaluando su desempeño a nivel de diversos subgrupos. Los subgrupos se definen en el vector <code>subgrupo</code>, que incluye variables como <code>ent</code>, <code>area</code>, <code>sexo</code>, <code>edad</code>, <code>discapacidad</code>, <code>hlengua</code>, y <code>nivel_edu</code>.</p>
+<p>La función <code>plot_uni_validacion</code> se utiliza para generar gráficos y tablas de validación para cada uno de estos subgrupos. Estos gráficos y tablas permiten comparar las estimaciones obtenidas mediante el modelo (<code>stan_lmer</code>) con los datos directos (<code>directo</code>) para cada subgrupo, calculando también el error relativo (ER), que refleja la diferencia porcentual entre las dos estimaciones.</p>
+<p>Para el subgrupo <code>sexo</code>, se genera una tabla que muestra el error relativo calculado para cada categoría dentro del subgrupo, ordenado por el tamaño de la muestra (<code>n_sample</code>). Los gráficos generados para cada subgrupo se combinan en un único gráfico utilizando <code>patchwork</code>. Este gráfico combinado permite una visualización comparativa clara entre todos los subgrupos definidos.</p>
+<p>Finalmente, el gráfico combinado se guarda como una imagen JPG en el directorio de salida, y los objetos <code>plot_subgrupo</code> y <code>poststrat_df</code> se almacenan en archivos RDS. Estos archivos proporcionan una referencia detallada de la validación del modelo a nivel de subgrupo, permitiendo revisiones y análisis adicionales si es necesario.</p>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="postbenchmarking_ic_segsoc.html#cb90-1" tabindex="-1"></a>subgrupo <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>,</span>
+<span id="cb90-2"><a href="postbenchmarking_ic_segsoc.html#cb90-2" tabindex="-1"></a>              <span class="st">&quot;area&quot;</span>,</span>
+<span id="cb90-3"><a href="postbenchmarking_ic_segsoc.html#cb90-3" tabindex="-1"></a>              <span class="st">&quot;sexo&quot;</span>,</span>
+<span id="cb90-4"><a href="postbenchmarking_ic_segsoc.html#cb90-4" tabindex="-1"></a>              <span class="st">&quot;edad&quot;</span>,</span>
+<span id="cb90-5"><a href="postbenchmarking_ic_segsoc.html#cb90-5" tabindex="-1"></a>              <span class="st">&quot;discapacidad&quot;</span>,</span>
+<span id="cb90-6"><a href="postbenchmarking_ic_segsoc.html#cb90-6" tabindex="-1"></a>              <span class="st">&quot;hlengua&quot;</span>,<span class="st">&quot;nivel_edu&quot;</span>)</span>
+<span id="cb90-7"><a href="postbenchmarking_ic_segsoc.html#cb90-7" tabindex="-1"></a></span>
+<span id="cb90-8"><a href="postbenchmarking_ic_segsoc.html#cb90-8" tabindex="-1"></a></span>
+<span id="cb90-9"><a href="postbenchmarking_ic_segsoc.html#cb90-9" tabindex="-1"></a>plot_subgrupo <span class="ot">&lt;-</span> <span class="fu">map</span>(</span>
+<span id="cb90-10"><a href="postbenchmarking_ic_segsoc.html#cb90-10" tabindex="-1"></a>  <span class="at">.x =</span> <span class="fu">setNames</span>(subgrupo, subgrupo),</span>
+<span id="cb90-11"><a href="postbenchmarking_ic_segsoc.html#cb90-11" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">plot_uni_validacion</span>(</span>
+<span id="cb90-12"><a href="postbenchmarking_ic_segsoc.html#cb90-12" tabindex="-1"></a>    <span class="at">sample_diseno =</span> diseno_encuesta,</span>
+<span id="cb90-13"><a href="postbenchmarking_ic_segsoc.html#cb90-13" tabindex="-1"></a>    <span class="at">poststrat =</span> poststrat_df,</span>
+<span id="cb90-14"><a href="postbenchmarking_ic_segsoc.html#cb90-14" tabindex="-1"></a>    <span class="at">by1 =</span> .x</span>
+<span id="cb90-15"><a href="postbenchmarking_ic_segsoc.html#cb90-15" tabindex="-1"></a>  )</span>
+<span id="cb90-16"><a href="postbenchmarking_ic_segsoc.html#cb90-16" tabindex="-1"></a>)</span>
+<span id="cb90-17"><a href="postbenchmarking_ic_segsoc.html#cb90-17" tabindex="-1"></a></span>
+<span id="cb90-18"><a href="postbenchmarking_ic_segsoc.html#cb90-18" tabindex="-1"></a></span>
+<span id="cb90-19"><a href="postbenchmarking_ic_segsoc.html#cb90-19" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>tabla <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(n_sample) ) <span class="sc">%&gt;%</span></span>
+<span id="cb90-20"><a href="postbenchmarking_ic_segsoc.html#cb90-20" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ER =</span> <span class="fu">abs</span>((directo <span class="sc">-</span> stan_lmer)<span class="sc">/</span>directo )<span class="sc">*</span><span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb90-21"><a href="postbenchmarking_ic_segsoc.html#cb90-21" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(sexo<span class="sc">:</span>directo_upp,stan_lmer, ER)</span>
+<span id="cb90-22"><a href="postbenchmarking_ic_segsoc.html#cb90-22" tabindex="-1"></a></span>
+<span id="cb90-23"><a href="postbenchmarking_ic_segsoc.html#cb90-23" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>ent<span class="sc">$</span>gg_plot</span>
+<span id="cb90-24"><a href="postbenchmarking_ic_segsoc.html#cb90-24" tabindex="-1"></a></span>
+<span id="cb90-25"><a href="postbenchmarking_ic_segsoc.html#cb90-25" tabindex="-1"></a>plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>nivel_edu<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
+<span id="cb90-26"><a href="postbenchmarking_ic_segsoc.html#cb90-26" tabindex="-1"></a>  plot_subgrupo<span class="sc">$</span>edad<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>hlengua<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
+<span id="cb90-27"><a href="postbenchmarking_ic_segsoc.html#cb90-27" tabindex="-1"></a>  plot_subgrupo<span class="sc">$</span>area<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>discapacidad<span class="sc">$</span>gg_plot  </span>
+<span id="cb90-28"><a href="postbenchmarking_ic_segsoc.html#cb90-28" tabindex="-1"></a></span>
+<span id="cb90-29"><a href="postbenchmarking_ic_segsoc.html#cb90-29" tabindex="-1"></a>plot_uni <span class="ot">&lt;-</span> plot_subgrupo<span class="sc">$</span>ent<span class="sc">$</span>gg_plot  <span class="sc">/</span></span>
+<span id="cb90-30"><a href="postbenchmarking_ic_segsoc.html#cb90-30" tabindex="-1"></a>  (</span>
+<span id="cb90-31"><a href="postbenchmarking_ic_segsoc.html#cb90-31" tabindex="-1"></a>    plot_subgrupo<span class="sc">$</span>sexo<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>nivel_edu<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
+<span id="cb90-32"><a href="postbenchmarking_ic_segsoc.html#cb90-32" tabindex="-1"></a>      plot_subgrupo<span class="sc">$</span>edad<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>hlengua<span class="sc">$</span>gg_plot <span class="sc">+</span></span>
+<span id="cb90-33"><a href="postbenchmarking_ic_segsoc.html#cb90-33" tabindex="-1"></a>      plot_subgrupo<span class="sc">$</span>area<span class="sc">$</span>gg_plot <span class="sc">+</span> plot_subgrupo<span class="sc">$</span>discapacidad<span class="sc">$</span>gg_plot</span>
+<span id="cb90-34"><a href="postbenchmarking_ic_segsoc.html#cb90-34" tabindex="-1"></a>  )</span>
+<span id="cb90-35"><a href="postbenchmarking_ic_segsoc.html#cb90-35" tabindex="-1"></a></span>
+<span id="cb90-36"><a href="postbenchmarking_ic_segsoc.html#cb90-36" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">plot =</span> plot_uni,</span>
+<span id="cb90-37"><a href="postbenchmarking_ic_segsoc.html#cb90-37" tabindex="-1"></a>       <span class="at">filename =</span> <span class="st">&quot;../output/2020/modelos/plot_uni_ic_segsoc.jpg&quot;</span>,</span>
+<span id="cb90-38"><a href="postbenchmarking_ic_segsoc.html#cb90-38" tabindex="-1"></a>       <span class="at">scale =</span> <span class="dv">3</span>)</span>
+<span id="cb90-39"><a href="postbenchmarking_ic_segsoc.html#cb90-39" tabindex="-1"></a></span>
+<span id="cb90-40"><a href="postbenchmarking_ic_segsoc.html#cb90-40" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span>  plot_subgrupo,</span>
+<span id="cb90-41"><a href="postbenchmarking_ic_segsoc.html#cb90-41" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../output/2020/modelos/plot_uni_ic_segsoc.rds&quot;</span>)</span>
+<span id="cb90-42"><a href="postbenchmarking_ic_segsoc.html#cb90-42" tabindex="-1"></a></span>
+<span id="cb90-43"><a href="postbenchmarking_ic_segsoc.html#cb90-43" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="at">object =</span>  poststrat_df,</span>
+<span id="cb90-44"><a href="postbenchmarking_ic_segsoc.html#cb90-44" tabindex="-1"></a>        <span class="at">file =</span> <span class="st">&quot;../input/2020/muestra_ampliada/poststrat_df_ic_segsoc.rds&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

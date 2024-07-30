@@ -194,125 +194,168 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Para la ejecución del presente análisis, se debe abrir el archivo <strong>12_Imputacion_censal.R</strong> disponible en la ruta <strong>Rcodes/2020/12_Imputacion_censal.R</strong>.</p>
 <p>Este script en R se centra en el análisis y la predicción de datos utilizando modelos estadísticos ajustados a encuestas y censos. Primero, se limpia el entorno de trabajo y se cargan diversas librerías necesarias para el análisis. Luego, se leen modelos previamente ajustados (<code>fit_ingreso</code>, <code>fit_alimento</code>, <code>fit_salud</code>) y datos de encuestas y líneas de bienestar. Se realiza una combinación de datos entre las encuestas y predictores de nivel estatal, y se calculan predicciones basadas en estos modelos. Los resultados de estas predicciones se almacenan en un archivo RDS para su posterior análisis.</p>
 <p>El script también incluye un paso para ajustar y validar los datos de la encuesta ampliada mediante simulaciones de variables predictoras y el cálculo de medidas de desviación estándar residual. Posteriormente, se lleva a cabo un proceso iterativo para generar nuevas predicciones y comparar estas predicciones con las originales. Finalmente, el script prepara los datos para un análisis posterior al actualizar las variables con valores simulados basados en las predicciones y desviaciones calculadas. Este proceso permite validar y ajustar los modelos utilizados, asegurando la precisión de las predicciones en la encuesta ampliada.</p>
-<div id="limpieza-del-entorno-y-carga-de-bibliotecas-6" class="section level4 unnumbered hasAnchor">
-<h4>Limpieza del Entorno y Carga de Bibliotecas<a href="imputacion_censal.html#limpieza-del-entorno-y-carga-de-bibliotecas-6" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="imputacion_censal.html#cb83-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb83-2"><a href="imputacion_censal.html#cb83-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb83-3"><a href="imputacion_censal.html#cb83-3" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb83-4"><a href="imputacion_censal.html#cb83-4" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
-<span id="cb83-5"><a href="imputacion_censal.html#cb83-5" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
-<span id="cb83-6"><a href="imputacion_censal.html#cb83-6" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb83-7"><a href="imputacion_censal.html#cb83-7" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
-<span id="cb83-8"><a href="imputacion_censal.html#cb83-8" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
-<span id="cb83-9"><a href="imputacion_censal.html#cb83-9" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb83-10"><a href="imputacion_censal.html#cb83-10" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
-<span id="cb83-11"><a href="imputacion_censal.html#cb83-11" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
-<span id="cb83-12"><a href="imputacion_censal.html#cb83-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
-<span id="cb83-13"><a href="imputacion_censal.html#cb83-13" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/benchmarking_indicador.R&quot;</span>)</span></code></pre></div>
+<div id="limpieza-del-entorno-y-carga-de-bibliotecas-8" class="section level4 unnumbered hasAnchor">
+<h4>Limpieza del Entorno y Carga de Bibliotecas<a href="imputacion_censal.html#limpieza-del-entorno-y-carga-de-bibliotecas-8" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Primero, se limpia el entorno de trabajo para evitar cualquier interferencia de datos o variables residuales. Esto se hace utilizando <code>rm(list = ls())</code>, que elimina todos los objetos del espacio de trabajo en R. Esta acción asegura que el análisis se realice en un entorno limpio y libre de residuos de sesiones anteriores.</p>
+<p>Luego, se cargan las bibliotecas necesarias para el análisis. Se utiliza <strong><code>tidyverse</code></strong> para la manipulación y visualización de datos, que incluye paquetes como <code>ggplot2</code>, <code>dplyr</code>, y <code>tidyr</code>. <strong><code>data.table</code></strong> se usa para la manipulación eficiente de grandes conjuntos de datos. La biblioteca <strong><code>openxlsx</code></strong> permite leer y escribir archivos de Excel, mientras que <strong><code>magrittr</code></strong> proporciona el operador <code>%&gt;%</code> para encadenar operaciones de manera fluida. Se carga <strong><code>haven</code></strong> para importar datos desde formatos de Stata, SPSS y SAS, y <strong><code>labelled</code></strong> para manejar variables con etiquetas, lo que facilita la interpretación de datos etiquetados. <strong><code>sampling</code></strong> es útil para procedimientos de muestreo y selección de muestras, mientras que <strong><code>lme4</code></strong> se utiliza para ajustar modelos lineales y no lineales mixtos. Finalmente, <strong><code>survey</code></strong> y <strong><code>srvyr</code></strong> son empleadas para el análisis de datos de encuestas complejas y para manipular estos datos en el contexto de <code>dplyr</code>.</p>
+<p>Para asegurar que la consola esté limpia y el entorno de trabajo esté listo para el análisis, se utiliza <code>cat("\f")</code>, que borra cualquier salida previa en la consola.</p>
+<p>Finalmente, se cargan funciones personalizadas desde un archivo de script R utilizando <code>source("../source/benchmarking_indicador.R")</code>. Este paso garantiza que las funciones necesarias para el análisis de indicadores de benchmarking estén disponibles y listas para su uso.</p>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="imputacion_censal.html#cb91-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb91-2"><a href="imputacion_censal.html#cb91-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb91-3"><a href="imputacion_censal.html#cb91-3" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb91-4"><a href="imputacion_censal.html#cb91-4" tabindex="-1"></a><span class="fu">library</span>(openxlsx)</span>
+<span id="cb91-5"><a href="imputacion_censal.html#cb91-5" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb91-6"><a href="imputacion_censal.html#cb91-6" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb91-7"><a href="imputacion_censal.html#cb91-7" tabindex="-1"></a><span class="fu">library</span>(labelled)</span>
+<span id="cb91-8"><a href="imputacion_censal.html#cb91-8" tabindex="-1"></a><span class="fu">library</span>(sampling)</span>
+<span id="cb91-9"><a href="imputacion_censal.html#cb91-9" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb91-10"><a href="imputacion_censal.html#cb91-10" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb91-11"><a href="imputacion_censal.html#cb91-11" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
+<span id="cb91-12"><a href="imputacion_censal.html#cb91-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\f</span><span class="st">&quot;</span>)</span>
+<span id="cb91-13"><a href="imputacion_censal.html#cb91-13" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../source/benchmarking_indicador.R&quot;</span>)</span></code></pre></div>
 </div>
 <div id="carga-de-modelos-y-datos" class="section level4 unnumbered hasAnchor">
 <h4>Carga de Modelos y Datos<a href="imputacion_censal.html#carga-de-modelos-y-datos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se leen los modelos ajustados previamente para ingresos, alimentación, y salud.</p>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="imputacion_censal.html#cb84-1" tabindex="-1"></a>fit_ingreso <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span>
-<span id="cb84-2"><a href="imputacion_censal.html#cb84-2" tabindex="-1"></a>fit_alimento <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ic_ali_nc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span>
-<span id="cb84-3"><a href="imputacion_censal.html#cb84-3" tabindex="-1"></a>fit_salud <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ic_segsoc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span></code></pre></div>
-<p>Se cargan los datos de la encuesta, la línea de bienestar, y los predictores a nivel estatal. También se lee una muestra ampliada del censo.</p>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="imputacion_censal.html#cb85-1" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb85-2"><a href="imputacion_censal.html#cb85-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ingreso =</span> ictpc)</span>
-<span id="cb85-3"><a href="imputacion_censal.html#cb85-3" tabindex="-1"></a></span>
-<span id="cb85-4"><a href="imputacion_censal.html#cb85-4" tabindex="-1"></a><span class="co"># lineas de bienestar </span></span>
-<span id="cb85-5"><a href="imputacion_censal.html#cb85-5" tabindex="-1"></a></span>
-<span id="cb85-6"><a href="imputacion_censal.html#cb85-6" tabindex="-1"></a>LB <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(</span>
-<span id="cb85-7"><a href="imputacion_censal.html#cb85-7" tabindex="-1"></a>  <span class="st">&quot;input/2020/Lineas_Bienestar.csv&quot;</span>,</span>
-<span id="cb85-8"><a href="imputacion_censal.html#cb85-8" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb85-9"><a href="imputacion_censal.html#cb85-9" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
-<span id="cb85-10"><a href="imputacion_censal.html#cb85-10" tabindex="-1"></a>  <span class="at">dec =</span> <span class="st">&quot;,&quot;</span></span>
-<span id="cb85-11"><a href="imputacion_censal.html#cb85-11" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">as.character</span>(area))</span>
-<span id="cb85-12"><a href="imputacion_censal.html#cb85-12" tabindex="-1"></a></span>
-<span id="cb85-13"><a href="imputacion_censal.html#cb85-13" tabindex="-1"></a>statelevel_predictors <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
-<span id="cb85-14"><a href="imputacion_censal.html#cb85-14" tabindex="-1"></a></span>
-<span id="cb85-15"><a href="imputacion_censal.html#cb85-15" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb85-16"><a href="imputacion_censal.html#cb85-16" tabindex="-1"></a><span class="co"># Lectura del muestras intercensal o  muestra_ampliada del censo</span></span>
-<span id="cb85-17"><a href="imputacion_censal.html#cb85-17" tabindex="-1"></a><span class="do">###############################################################</span></span>
-<span id="cb85-18"><a href="imputacion_censal.html#cb85-18" tabindex="-1"></a></span>
-<span id="cb85-19"><a href="imputacion_censal.html#cb85-19" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
-<span id="cb85-20"><a href="imputacion_censal.html#cb85-20" tabindex="-1"></a>col_names_muestra <span class="ot">&lt;-</span> <span class="fu">names</span>(muestra_ampliada)</span>
-<span id="cb85-21"><a href="imputacion_censal.html#cb85-21" tabindex="-1"></a></span>
-<span id="cb85-22"><a href="imputacion_censal.html#cb85-22" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span>  <span class="fu">inner_join</span>(muestra_ampliada, statelevel_predictors)</span>
-<span id="cb85-23"><a href="imputacion_censal.html#cb85-23" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> muestra_ampliada <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB)</span></code></pre></div>
+<p>En la sección se procede a leer los modelos ajustados previamente para los indicadores de ingresos, alimentación y salud. Esta etapa es crucial para el análisis posterior, ya que permite acceder a los modelos ya entrenados y preparados para realizar validaciones o nuevos cálculos.</p>
+<p>Primero, se cargan los modelos ajustados para el indicador de ingresos. El archivo <code>fit_mrp_ictpc.rds</code> contiene el modelo para el Índice de Condiciones de Vida (ICTPC), y se extrae el objeto <code>fit_mrp</code> del archivo usando <code>readRDS</code>.</p>
+<p>Luego, se realiza una operación similar para el modelo de alimentación. El archivo <code>fit_mrp_ic_ali_nc.rds</code> incluye el modelo correspondiente al Índice de Condiciones de Alimentación y Nutrición (IC-ALI-NC). De nuevo, se extrae el objeto <code>fit_mrp</code> del archivo cargado.</p>
+<p>Finalmente, se carga el modelo para el indicador de seguridad social, que se encuentra en el archivo <code>fit_mrp_ic_segsoc.rds</code>. Se sigue el mismo proceso de extracción del objeto <code>fit_mrp</code>.</p>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="imputacion_censal.html#cb92-1" tabindex="-1"></a>fit_ingreso <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ictpc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span>
+<span id="cb92-2"><a href="imputacion_censal.html#cb92-2" tabindex="-1"></a>fit_alimento <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ic_ali_nc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span>
+<span id="cb92-3"><a href="imputacion_censal.html#cb92-3" tabindex="-1"></a>fit_salud <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/modelos/fit_mrp_ic_segsoc.rds&quot;</span>)<span class="sc">$</span>fit_mrp</span></code></pre></div>
+</div>
+<div id="carga-de-datos-3" class="section level4 unnumbered hasAnchor">
+<h4>Carga de Datos<a href="imputacion_censal.html#carga-de-datos-3" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>En esta sección, se cargan los datos esenciales necesarios para el análisis de bienestar y pobreza. Primero, se lee la encuesta <code>ENIGH</code> del archivo <code>encuesta_sta.rds</code>, la cual se actualiza con una columna adicional llamada <code>ingreso</code>, que se define a partir del índice de condiciones de vida (ICTPC).</p>
+<p>A continuación, se importan las líneas de bienestar desde un archivo CSV llamado <code>Lineas_Bienestar.csv</code>. Este archivo contiene información relevante sobre las líneas de bienestar, y los datos se procesan para asegurarse de que la columna <code>area</code> sea de tipo carácter.</p>
+<p>Se procede a cargar los predictores a nivel estatal desde el archivo <code>statelevel_predictors_df.rds</code>, que incluye variables a nivel de estado que se usarán en el análisis.</p>
+<p>Finalmente, se lee una muestra ampliada del censo desde el archivo <code>encuesta_ampliada.rds</code>. Este conjunto de datos se une con los predictores estatales y las líneas de bienestar para enriquecer el dataset y asegurar que toda la información relevante esté disponible para el análisis.</p>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="imputacion_censal.html#cb93-1" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb93-2"><a href="imputacion_censal.html#cb93-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ingreso =</span> ictpc)</span>
+<span id="cb93-3"><a href="imputacion_censal.html#cb93-3" tabindex="-1"></a></span>
+<span id="cb93-4"><a href="imputacion_censal.html#cb93-4" tabindex="-1"></a><span class="co"># lineas de bienestar </span></span>
+<span id="cb93-5"><a href="imputacion_censal.html#cb93-5" tabindex="-1"></a></span>
+<span id="cb93-6"><a href="imputacion_censal.html#cb93-6" tabindex="-1"></a>LB <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(</span>
+<span id="cb93-7"><a href="imputacion_censal.html#cb93-7" tabindex="-1"></a>  <span class="st">&quot;input/2020/Lineas_Bienestar.csv&quot;</span>,</span>
+<span id="cb93-8"><a href="imputacion_censal.html#cb93-8" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb93-9"><a href="imputacion_censal.html#cb93-9" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
+<span id="cb93-10"><a href="imputacion_censal.html#cb93-10" tabindex="-1"></a>  <span class="at">dec =</span> <span class="st">&quot;,&quot;</span></span>
+<span id="cb93-11"><a href="imputacion_censal.html#cb93-11" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">as.character</span>(area))</span>
+<span id="cb93-12"><a href="imputacion_censal.html#cb93-12" tabindex="-1"></a></span>
+<span id="cb93-13"><a href="imputacion_censal.html#cb93-13" tabindex="-1"></a>statelevel_predictors <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/predictores/statelevel_predictors_df.rds&quot;</span>)</span>
+<span id="cb93-14"><a href="imputacion_censal.html#cb93-14" tabindex="-1"></a></span>
+<span id="cb93-15"><a href="imputacion_censal.html#cb93-15" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb93-16"><a href="imputacion_censal.html#cb93-16" tabindex="-1"></a><span class="co"># Lectura del muestras intercensal o  muestra_ampliada del censo</span></span>
+<span id="cb93-17"><a href="imputacion_censal.html#cb93-17" tabindex="-1"></a><span class="do">###############################################################</span></span>
+<span id="cb93-18"><a href="imputacion_censal.html#cb93-18" tabindex="-1"></a></span>
+<span id="cb93-19"><a href="imputacion_censal.html#cb93-19" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
+<span id="cb93-20"><a href="imputacion_censal.html#cb93-20" tabindex="-1"></a>col_names_muestra <span class="ot">&lt;-</span> <span class="fu">names</span>(muestra_ampliada)</span>
+<span id="cb93-21"><a href="imputacion_censal.html#cb93-21" tabindex="-1"></a></span>
+<span id="cb93-22"><a href="imputacion_censal.html#cb93-22" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span>  <span class="fu">inner_join</span>(muestra_ampliada, statelevel_predictors)</span>
+<span id="cb93-23"><a href="imputacion_censal.html#cb93-23" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> muestra_ampliada <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB)</span></code></pre></div>
 </div>
 <div id="predicción-y-evaluación" class="section level4 unnumbered hasAnchor">
 <h4>Predicción y Evaluación<a href="imputacion_censal.html#predicción-y-evaluación" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se realizan predicciones utilizando los modelos ajustados sobre la muestra ampliada.</p>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="imputacion_censal.html#cb86-1" tabindex="-1"></a>pred_ingreso <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_ingreso, </span>
-<span id="cb86-2"><a href="imputacion_censal.html#cb86-2" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
-<span id="cb86-3"><a href="imputacion_censal.html#cb86-3" tabindex="-1"></a>                        <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb86-4"><a href="imputacion_censal.html#cb86-4" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb86-5"><a href="imputacion_censal.html#cb86-5" tabindex="-1"></a></span>
-<span id="cb86-6"><a href="imputacion_censal.html#cb86-6" tabindex="-1"></a>pred_ic_ali_nc <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_alimento, </span>
-<span id="cb86-7"><a href="imputacion_censal.html#cb86-7" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
-<span id="cb86-8"><a href="imputacion_censal.html#cb86-8" tabindex="-1"></a>                        <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb86-9"><a href="imputacion_censal.html#cb86-9" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb86-10"><a href="imputacion_censal.html#cb86-10" tabindex="-1"></a></span>
-<span id="cb86-11"><a href="imputacion_censal.html#cb86-11" tabindex="-1"></a>pred_segsoc <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_salud, </span>
-<span id="cb86-12"><a href="imputacion_censal.html#cb86-12" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
-<span id="cb86-13"><a href="imputacion_censal.html#cb86-13" tabindex="-1"></a>                       <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb86-14"><a href="imputacion_censal.html#cb86-14" tabindex="-1"></a>                       <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
-<p>Se calcula la desviación estándar residual para ajustar el modelo de ingreso.</p>
-<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="imputacion_censal.html#cb87-1" tabindex="-1"></a>paso <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_ingreso =</span> pred_ingreso) <span class="sc">%&gt;%</span></span>
-<span id="cb87-2"><a href="imputacion_censal.html#cb87-2" tabindex="-1"></a>  survey<span class="sc">::</span><span class="fu">svydesign</span>(</span>
-<span id="cb87-3"><a href="imputacion_censal.html#cb87-3" tabindex="-1"></a>    <span class="at">id =</span>  <span class="sc">~</span> upm ,</span>
-<span id="cb87-4"><a href="imputacion_censal.html#cb87-4" tabindex="-1"></a>    <span class="at">strata =</span> <span class="sc">~</span> estrato ,</span>
-<span id="cb87-5"><a href="imputacion_censal.html#cb87-5" tabindex="-1"></a>    <span class="at">data =</span> .,</span>
-<span id="cb87-6"><a href="imputacion_censal.html#cb87-6" tabindex="-1"></a>    <span class="at">weights =</span> <span class="sc">~</span> fep</span>
-<span id="cb87-7"><a href="imputacion_censal.html#cb87-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb87-8"><a href="imputacion_censal.html#cb87-8" tabindex="-1"></a>  <span class="fu">as_survey_design</span>()</span>
-<span id="cb87-9"><a href="imputacion_censal.html#cb87-9" tabindex="-1"></a></span>
-<span id="cb87-10"><a href="imputacion_censal.html#cb87-10" tabindex="-1"></a>sd_1 <span class="ot">&lt;-</span> paso <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span></span>
-<span id="cb87-11"><a href="imputacion_censal.html#cb87-11" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">media_obs =</span> <span class="fu">survey_mean</span>(ingreso),</span>
-<span id="cb87-12"><a href="imputacion_censal.html#cb87-12" tabindex="-1"></a>            <span class="at">media_pred =</span> <span class="fu">survey_mean</span>(pred_ingreso)) <span class="sc">%&gt;%</span></span>
-<span id="cb87-13"><a href="imputacion_censal.html#cb87-13" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">media_sd =</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(<span class="fu">c</span>(</span>
-<span id="cb87-14"><a href="imputacion_censal.html#cb87-14" tabindex="-1"></a>    media_obs <span class="sc">-</span> media_pred</span>
-<span id="cb87-15"><a href="imputacion_censal.html#cb87-15" tabindex="-1"></a>  ) <span class="sc">^</span> <span class="dv">2</span>)))</span>
-<span id="cb87-16"><a href="imputacion_censal.html#cb87-16" tabindex="-1"></a></span>
-<span id="cb87-17"><a href="imputacion_censal.html#cb87-17" tabindex="-1"></a>desv_estandar_residual <span class="ot">&lt;-</span></span>
-<span id="cb87-18"><a href="imputacion_censal.html#cb87-18" tabindex="-1"></a>  <span class="fu">min</span>(<span class="fu">c</span>(<span class="fu">as.numeric</span>(sd_1), <span class="fu">sigma</span>(fit_ingreso)))</span></code></pre></div>
-<p>Se calcula el Índice de Pobreza Multidimensional (IPM) utilizando las predicciones de los modelos y los datos originales.</p>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="imputacion_censal.html#cb88-1" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB) <span class="sc">%&gt;%</span> </span>
-<span id="cb88-2"><a href="imputacion_censal.html#cb88-2" tabindex="-1"></a>   <span class="fu">mutate</span>(</span>
-<span id="cb88-3"><a href="imputacion_censal.html#cb88-3" tabindex="-1"></a>   <span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span>  ic_sbv <span class="sc">+</span> ic_rezedu,</span>
-<span id="cb88-4"><a href="imputacion_censal.html#cb88-4" tabindex="-1"></a>   <span class="at">ipm   =</span> <span class="fu">case_when</span>(</span>
-<span id="cb88-5"><a href="imputacion_censal.html#cb88-5" tabindex="-1"></a>     <span class="co"># Población en situación de pobreza.</span></span>
-<span id="cb88-6"><a href="imputacion_censal.html#cb88-6" tabindex="-1"></a>     ingreso <span class="sc">&lt;</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;I&quot;</span>,</span>
-<span id="cb88-7"><a href="imputacion_censal.html#cb88-7" tabindex="-1"></a>     <span class="co"># Población vulnerable por carencias sociales.</span></span>
-<span id="cb88-8"><a href="imputacion_censal.html#cb88-8" tabindex="-1"></a>     ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;II&quot;</span>,</span>
-<span id="cb88-9"><a href="imputacion_censal.html#cb88-9" tabindex="-1"></a>     <span class="co"># Poblacion vulnerable por ingresos.</span></span>
-<span id="cb88-10"><a href="imputacion_censal.html#cb88-10" tabindex="-1"></a>     ingreso <span class="sc">&lt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;III&quot;</span>,</span>
-<span id="cb88-11"><a href="imputacion_censal.html#cb88-11" tabindex="-1"></a>     <span class="co"># Población no pobre multidimensional y no vulnerable.</span></span>
-<span id="cb88-12"><a href="imputacion_censal.html#cb88-12" tabindex="-1"></a>     ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;IV&quot;</span></span>
-<span id="cb88-13"><a href="imputacion_censal.html#cb88-13" tabindex="-1"></a>     )</span>
-<span id="cb88-14"><a href="imputacion_censal.html#cb88-14" tabindex="-1"></a>   )</span></code></pre></div>
-<p>Se realiza una predicción final sobre la muestra ampliada y se guarda el resultado.</p>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="imputacion_censal.html#cb89-1" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="fu">list</span>(<span class="at">pred_ingreso =</span> pred_ingreso, </span>
-<span id="cb89-2"><a href="imputacion_censal.html#cb89-2" tabindex="-1"></a>          <span class="at">pred_ic_ali_nc =</span> pred_ic_ali_nc, </span>
-<span id="cb89-3"><a href="imputacion_censal.html#cb89-3" tabindex="-1"></a>          <span class="at">pred_segsoc =</span> pred_segsoc, </span>
-<span id="cb89-4"><a href="imputacion_censal.html#cb89-4" tabindex="-1"></a>          <span class="at">desv_estandar_residual =</span> desv_estandar_residual),</span>
-<span id="cb89-5"><a href="imputacion_censal.html#cb89-5" tabindex="-1"></a>     <span class="at">file =</span>  <span class="st">&quot;../output/2020/modelos/predicciones.rds&quot;</span>)</span></code></pre></div>
-<p>Se ajustan los valores en la muestra ampliada utilizando las predicciones y se valida la precisión de las predicciones.</p>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="imputacion_censal.html#cb90-1" tabindex="-1"></a>muestra_ampliada_pred <span class="ot">&lt;-</span></span>
-<span id="cb90-2"><a href="imputacion_censal.html#cb90-2" tabindex="-1"></a>  muestra_ampliada <span class="sc">%&gt;%</span> </span>
-<span id="cb90-3"><a href="imputacion_censal.html#cb90-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(col_names_muestra), li, lp) <span class="sc">%&gt;%</span></span>
-<span id="cb90-4"><a href="imputacion_censal.html#cb90-4" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb90-5"><a href="imputacion_censal.html#cb90-5" tabindex="-1"></a>    <span class="at">ic_segsoc =</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> pred_segsoc),</span>
-<span id="cb90-6"><a href="imputacion_censal.html#cb90-6" tabindex="-1"></a>    <span class="at">ic_ali_nc =</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> pred_ic_ali_nc),</span>
-<span id="cb90-7"><a href="imputacion_censal.html#cb90-7" tabindex="-1"></a>    <span class="at">ingreso =</span> pred_ingreso <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean =</span> <span class="dv">0</span>, desv_estandar_residual),</span>
-<span id="cb90-8"><a href="imputacion_censal.html#cb90-8" tabindex="-1"></a>    <span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span></span>
-<span id="cb90-9"><a href="imputacion_censal.html#cb90-9" tabindex="-1"></a>      ic_sbv <span class="sc">+</span> ic_rezedu</span>
-<span id="cb90-10"><a href="imputacion_censal.html#cb90-10" tabindex="-1"></a>  )</span>
-<span id="cb90-11"><a href="imputacion_censal.html#cb90-11" tabindex="-1"></a><span class="co"># Validación de los predict </span></span>
-<span id="cb90-12"><a href="imputacion_censal.html#cb90-12" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ic_ali_nc) <span class="sc">-</span> <span class="fu">mean</span>(pred_ic_ali_nc)</span>
-<span id="cb90-13"><a href="imputacion_censal.html#cb90-13" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ic_segsoc) <span class="sc">-</span> <span class="fu">mean</span>(pred_segsoc)</span>
-<span id="cb90-14"><a href="imputacion_censal.html#cb90-14" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ingreso) <span class="sc">-</span> <span class="fu">mean</span>(pred_ingreso)</span></code></pre></div>
+<p>Se realizan predicciones utilizando los modelos ajustados previamente para evaluar diferentes indicadores de bienestar social. Primero, se emplea el modelo para ingresos, cargado previamente en <code>fit_ingreso</code>, para generar predicciones sobre la muestra ampliada. Estas predicciones se obtienen mediante la función <code>predict</code>, especificando el nuevo conjunto de datos (<code>muestra_ampliada</code>) y el tipo de respuesta esperado.</p>
+<p>De manera similar, se aplican los modelos para los indicadores de alimentación (<code>fit_alimento</code>) y para seguridad social (<code>fit_salud</code>) en la misma muestra ampliada. Al usar <code>allow.new.levels = TRUE</code>, se asegura que las predicciones puedan realizarse incluso para niveles no presentes en los datos de entrenamiento, lo que permite una evaluación más completa y precisa sobre el conjunto de datos actual.</p>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="imputacion_censal.html#cb94-1" tabindex="-1"></a>pred_ingreso <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_ingreso, </span>
+<span id="cb94-2"><a href="imputacion_censal.html#cb94-2" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
+<span id="cb94-3"><a href="imputacion_censal.html#cb94-3" tabindex="-1"></a>                        <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb94-4"><a href="imputacion_censal.html#cb94-4" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb94-5"><a href="imputacion_censal.html#cb94-5" tabindex="-1"></a></span>
+<span id="cb94-6"><a href="imputacion_censal.html#cb94-6" tabindex="-1"></a>pred_ic_ali_nc <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_alimento, </span>
+<span id="cb94-7"><a href="imputacion_censal.html#cb94-7" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
+<span id="cb94-8"><a href="imputacion_censal.html#cb94-8" tabindex="-1"></a>                        <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb94-9"><a href="imputacion_censal.html#cb94-9" tabindex="-1"></a>                        <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb94-10"><a href="imputacion_censal.html#cb94-10" tabindex="-1"></a></span>
+<span id="cb94-11"><a href="imputacion_censal.html#cb94-11" tabindex="-1"></a>pred_segsoc <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_salud, </span>
+<span id="cb94-12"><a href="imputacion_censal.html#cb94-12" tabindex="-1"></a>                        <span class="at">newdata =</span> muestra_ampliada,</span>
+<span id="cb94-13"><a href="imputacion_censal.html#cb94-13" tabindex="-1"></a>                       <span class="at">allow.new.levels =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb94-14"><a href="imputacion_censal.html#cb94-14" tabindex="-1"></a>                       <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
+</div>
+<div id="cálculo-de-la-desviación-estándar-residual-para-el-modelo-de-ingreso" class="section level4 unnumbered hasAnchor">
+<h4>Cálculo de la Desviación Estándar Residual para el Modelo de Ingreso<a href="imputacion_censal.html#cálculo-de-la-desviación-estándar-residual-para-el-modelo-de-ingreso" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Se calcula la desviación estándar residual para el modelo de ingresos ajustado para evaluar la precisión de las predicciones. Primero, se agrega la variable de predicción <code>pred_ingreso</code> al conjunto de datos <code>encuesta_enigh</code>. Luego, se define un diseño de encuesta utilizando la función <code>svydesign</code> del paquete <code>survey</code>, que incluye información sobre el diseño muestral, como los identificadores de unidades primarias de muestreo (UPM), los estratos y los pesos.</p>
+<p>A continuación, se agrupan los datos por el nivel municipal (<code>cve_mun</code>) para calcular la media observada y la media predicha de los ingresos. La desviación estándar residual se obtiene al calcular la raíz cuadrada de la media de las diferencias cuadráticas entre las medias observadas y las predicciones. Finalmente, se compara la desviación estándar calculada con la desviación estándar del error residual del modelo (<code>sigma(fit_ingreso)</code>), y se toma el valor mínimo de ambos para una evaluación más robusta.</p>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="imputacion_censal.html#cb95-1" tabindex="-1"></a>paso <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">pred_ingreso =</span> pred_ingreso) <span class="sc">%&gt;%</span></span>
+<span id="cb95-2"><a href="imputacion_censal.html#cb95-2" tabindex="-1"></a>  survey<span class="sc">::</span><span class="fu">svydesign</span>(</span>
+<span id="cb95-3"><a href="imputacion_censal.html#cb95-3" tabindex="-1"></a>    <span class="at">id =</span>  <span class="sc">~</span> upm ,</span>
+<span id="cb95-4"><a href="imputacion_censal.html#cb95-4" tabindex="-1"></a>    <span class="at">strata =</span> <span class="sc">~</span> estrato ,</span>
+<span id="cb95-5"><a href="imputacion_censal.html#cb95-5" tabindex="-1"></a>    <span class="at">data =</span> .,</span>
+<span id="cb95-6"><a href="imputacion_censal.html#cb95-6" tabindex="-1"></a>    <span class="at">weights =</span> <span class="sc">~</span> fep</span>
+<span id="cb95-7"><a href="imputacion_censal.html#cb95-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb95-8"><a href="imputacion_censal.html#cb95-8" tabindex="-1"></a>  <span class="fu">as_survey_design</span>()</span>
+<span id="cb95-9"><a href="imputacion_censal.html#cb95-9" tabindex="-1"></a></span>
+<span id="cb95-10"><a href="imputacion_censal.html#cb95-10" tabindex="-1"></a>sd_1 <span class="ot">&lt;-</span> paso <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span></span>
+<span id="cb95-11"><a href="imputacion_censal.html#cb95-11" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">media_obs =</span> <span class="fu">survey_mean</span>(ingreso),</span>
+<span id="cb95-12"><a href="imputacion_censal.html#cb95-12" tabindex="-1"></a>            <span class="at">media_pred =</span> <span class="fu">survey_mean</span>(pred_ingreso)) <span class="sc">%&gt;%</span></span>
+<span id="cb95-13"><a href="imputacion_censal.html#cb95-13" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">media_sd =</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(<span class="fu">c</span>(</span>
+<span id="cb95-14"><a href="imputacion_censal.html#cb95-14" tabindex="-1"></a>    media_obs <span class="sc">-</span> media_pred</span>
+<span id="cb95-15"><a href="imputacion_censal.html#cb95-15" tabindex="-1"></a>  ) <span class="sc">^</span> <span class="dv">2</span>)))</span>
+<span id="cb95-16"><a href="imputacion_censal.html#cb95-16" tabindex="-1"></a></span>
+<span id="cb95-17"><a href="imputacion_censal.html#cb95-17" tabindex="-1"></a>desv_estandar_residual <span class="ot">&lt;-</span></span>
+<span id="cb95-18"><a href="imputacion_censal.html#cb95-18" tabindex="-1"></a>  <span class="fu">min</span>(<span class="fu">c</span>(<span class="fu">as.numeric</span>(sd_1), <span class="fu">sigma</span>(fit_ingreso)))</span></code></pre></div>
+</div>
+<div id="cálculo-del-índice-de-pobreza-multidimensional-ipm" class="section level4 unnumbered hasAnchor">
+<h4>Cálculo del Índice de Pobreza Multidimensional (IPM)<a href="imputacion_censal.html#cálculo-del-índice-de-pobreza-multidimensional-ipm" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Para calcular el Índice de Pobreza Multidimensional (IPM), se utiliza una combinación de las predicciones de los modelos y los datos originales. Primero, se realiza una unión con los datos de las líneas de bienestar (<code>LB</code>). Luego, se crea una nueva variable llamada <code>tol_ic</code> que suma los indicadores de carencia.</p>
+<p>Con la variable <code>tol_ic</code> calculada, se define el índice IPM mediante la función <code>case_when</code>. Esta función clasifica a la población en cuatro categorías:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Situación de pobreza (Categoría I)</strong>: Se asigna a aquellos cuyo ingreso es menor que el umbral de pobreza (<code>lp</code>) y tienen al menos una carencia social (<code>tol_ic &gt;= 1</code>).</li>
+<li><strong>Vulnerabilidad por carencias sociales (Categoría II)</strong>: Se asigna a quienes tienen un ingreso igual o superior al umbral de pobreza pero presentan al menos una carencia social.</li>
+<li><strong>Vulnerabilidad por ingresos (Categoría III)</strong>: Se asigna a quienes tienen un ingreso menor o igual al umbral de pobreza pero no presentan carencias sociales.</li>
+<li><strong>No pobre multidimensional y no vulnerable (Categoría IV)</strong>: Se asigna a aquellos con ingresos igual o superior al umbral de pobreza y sin carencias sociales.</li>
+</ol>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="imputacion_censal.html#cb96-1" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB) <span class="sc">%&gt;%</span> </span>
+<span id="cb96-2"><a href="imputacion_censal.html#cb96-2" tabindex="-1"></a>   <span class="fu">mutate</span>(</span>
+<span id="cb96-3"><a href="imputacion_censal.html#cb96-3" tabindex="-1"></a>   <span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span>  ic_sbv <span class="sc">+</span> ic_rezedu,</span>
+<span id="cb96-4"><a href="imputacion_censal.html#cb96-4" tabindex="-1"></a>   <span class="at">ipm   =</span> <span class="fu">case_when</span>(</span>
+<span id="cb96-5"><a href="imputacion_censal.html#cb96-5" tabindex="-1"></a>     <span class="co"># Población en situación de pobreza.</span></span>
+<span id="cb96-6"><a href="imputacion_censal.html#cb96-6" tabindex="-1"></a>     ingreso <span class="sc">&lt;</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;I&quot;</span>,</span>
+<span id="cb96-7"><a href="imputacion_censal.html#cb96-7" tabindex="-1"></a>     <span class="co"># Población vulnerable por carencias sociales.</span></span>
+<span id="cb96-8"><a href="imputacion_censal.html#cb96-8" tabindex="-1"></a>     ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&gt;=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;II&quot;</span>,</span>
+<span id="cb96-9"><a href="imputacion_censal.html#cb96-9" tabindex="-1"></a>     <span class="co"># Poblacion vulnerable por ingresos.</span></span>
+<span id="cb96-10"><a href="imputacion_censal.html#cb96-10" tabindex="-1"></a>     ingreso <span class="sc">&lt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;III&quot;</span>,</span>
+<span id="cb96-11"><a href="imputacion_censal.html#cb96-11" tabindex="-1"></a>     <span class="co"># Población no pobre multidimensional y no vulnerable.</span></span>
+<span id="cb96-12"><a href="imputacion_censal.html#cb96-12" tabindex="-1"></a>     ingreso <span class="sc">&gt;=</span> lp <span class="sc">&amp;</span> tol_ic <span class="sc">&lt;</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;IV&quot;</span></span>
+<span id="cb96-13"><a href="imputacion_censal.html#cb96-13" tabindex="-1"></a>     )</span>
+<span id="cb96-14"><a href="imputacion_censal.html#cb96-14" tabindex="-1"></a>   )</span></code></pre></div>
+</div>
+<div id="predicción-final-y-almacenamiento" class="section level4 unnumbered hasAnchor">
+<h4>Predicción Final y Almacenamiento:<a href="imputacion_censal.html#predicción-final-y-almacenamiento" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Para completar el análisis, se realiza una predicción final utilizando los modelos ajustados sobre la muestra ampliada. Esto incluye la predicción para los modelos de ingreso, alimentación y seguridad social (<code>pred_ingreso</code>, <code>pred_ic_ali_nc</code>, y <code>pred_segsoc</code>, respectivamente).</p>
+<p>Además, se calcula la desviación estándar residual (<code>desv_estandar_residual</code>) para el modelo de ingreso, que se usa para ajustar y validar el modelo.</p>
+<p>Finalmente, se guarda un archivo en formato RDS con todas las predicciones y la desviación estándar residual calculada. Este archivo se almacena en la ruta especificada: <code>"../output/2020/modelos/predicciones.rds"</code>. Este archivo facilitará el acceso a los resultados para futuras etapas del análisis o para reportes posteriores.</p>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="imputacion_censal.html#cb97-1" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="fu">list</span>(<span class="at">pred_ingreso =</span> pred_ingreso, </span>
+<span id="cb97-2"><a href="imputacion_censal.html#cb97-2" tabindex="-1"></a>          <span class="at">pred_ic_ali_nc =</span> pred_ic_ali_nc, </span>
+<span id="cb97-3"><a href="imputacion_censal.html#cb97-3" tabindex="-1"></a>          <span class="at">pred_segsoc =</span> pred_segsoc, </span>
+<span id="cb97-4"><a href="imputacion_censal.html#cb97-4" tabindex="-1"></a>          <span class="at">desv_estandar_residual =</span> desv_estandar_residual),</span>
+<span id="cb97-5"><a href="imputacion_censal.html#cb97-5" tabindex="-1"></a>     <span class="at">file =</span>  <span class="st">&quot;../output/2020/modelos/predicciones.rds&quot;</span>)</span></code></pre></div>
+</div>
+<div id="ajuste-y-validación-de-las-predicciones-en-la-muestra-ampliada" class="section level4 unnumbered hasAnchor">
+<h4>Ajuste y Validación de las Predicciones en la Muestra Ampliada<a href="imputacion_censal.html#ajuste-y-validación-de-las-predicciones-en-la-muestra-ampliada" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Una vez realizadas las predicciones con los modelos ajustados, se procede a ajustar los valores en la muestra ampliada utilizando las predicciones obtenidas. Para cada observación en la muestra ampliada, se ajustan las variables relacionadas con las carencias y el ingreso:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Ajuste de las Carencias</strong>: Las variables de carencia (<code>ic_segsoc</code> e <code>ic_ali_nc</code>) se generan utilizando la función <code>rbinom</code>, que permite modelar estas variables como variables binomiales con probabilidades dadas por las predicciones (<code>pred_segsoc</code> y <code>pred_ic_ali_nc</code>).</p></li>
+<li><p><strong>Ajuste del Ingreso</strong>: El ingreso se ajusta sumando a las predicciones de ingreso (<code>pred_ingreso</code>) un término de error normalmente distribuido con media cero y desviación estándar residual (<code>desv_estandar_residual</code>).</p></li>
+<li><p><strong>Cálculo de la Variable <code>tol_ic</code></strong>: Se calcula la suma de todas las carencias para obtener <code>tol_ic</code>.</p></li>
+</ol>
+<p>Finalmente, se valida la precisión de las predicciones comparando las medias de las variables ajustadas (<code>muestra_ampliada_pred</code>) con las medias de las predicciones originales (<code>pred_ic_ali_nc</code>, <code>pred_segsoc</code>, y <code>pred_ingreso</code>). La diferencia entre estas medias proporciona una indicación de la precisión de las predicciones.</p>
+<p>Este proceso asegura que las predicciones realizadas se ajusten adecuadamente a la muestra ampliada y permite evaluar la exactitud de las predicciones en el contexto de la muestra.</p>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="imputacion_censal.html#cb98-1" tabindex="-1"></a>muestra_ampliada_pred <span class="ot">&lt;-</span></span>
+<span id="cb98-2"><a href="imputacion_censal.html#cb98-2" tabindex="-1"></a>  muestra_ampliada <span class="sc">%&gt;%</span> </span>
+<span id="cb98-3"><a href="imputacion_censal.html#cb98-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(col_names_muestra), li, lp) <span class="sc">%&gt;%</span></span>
+<span id="cb98-4"><a href="imputacion_censal.html#cb98-4" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb98-5"><a href="imputacion_censal.html#cb98-5" tabindex="-1"></a>    <span class="at">ic_segsoc =</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> pred_segsoc),</span>
+<span id="cb98-6"><a href="imputacion_censal.html#cb98-6" tabindex="-1"></a>    <span class="at">ic_ali_nc =</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> pred_ic_ali_nc),</span>
+<span id="cb98-7"><a href="imputacion_censal.html#cb98-7" tabindex="-1"></a>    <span class="at">ingreso =</span> pred_ingreso <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean =</span> <span class="dv">0</span>, desv_estandar_residual),</span>
+<span id="cb98-8"><a href="imputacion_censal.html#cb98-8" tabindex="-1"></a>    <span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span></span>
+<span id="cb98-9"><a href="imputacion_censal.html#cb98-9" tabindex="-1"></a>      ic_sbv <span class="sc">+</span> ic_rezedu</span>
+<span id="cb98-10"><a href="imputacion_censal.html#cb98-10" tabindex="-1"></a>  )</span>
+<span id="cb98-11"><a href="imputacion_censal.html#cb98-11" tabindex="-1"></a><span class="co"># Validación de los predict </span></span>
+<span id="cb98-12"><a href="imputacion_censal.html#cb98-12" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ic_ali_nc) <span class="sc">-</span> <span class="fu">mean</span>(pred_ic_ali_nc)</span>
+<span id="cb98-13"><a href="imputacion_censal.html#cb98-13" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ic_segsoc) <span class="sc">-</span> <span class="fu">mean</span>(pred_segsoc)</span>
+<span id="cb98-14"><a href="imputacion_censal.html#cb98-14" tabindex="-1"></a><span class="fu">mean</span>(muestra_ampliada_pred<span class="sc">$</span>ingreso) <span class="sc">-</span> <span class="fu">mean</span>(pred_ingreso)</span></code></pre></div>
 
 </div>
 </div>

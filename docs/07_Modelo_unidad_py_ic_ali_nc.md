@@ -11,7 +11,27 @@ Finalmente, los resultados del modelo se guardan en un archivo RDS (`fit_mrp_ic_
 
 #### Limpieza del Entorno y Carga de Bibliotecas{-}
 
-Se limpia el entorno de R y se cargan las bibliotecas necesarias para el análisis, incluyendo la biblioteca `reticulate` para interactuar con Python.
+En esta etapa, se realiza la limpieza del entorno de R para eliminar objetos previamente cargados y garantizar un inicio limpio para el análisis. Esto se hace utilizando el comando `rm(list = ls())`, que elimina todos los objetos del espacio de trabajo actual.
+
+A continuación, se cargan las bibliotecas necesarias para el análisis. Estas bibliotecas incluyen:
+
+- **`patchwork`**: Para la combinación de múltiples gráficos en una sola visualización.
+- **`nortest`**: Proporciona pruebas de normalidad para analizar la distribución de los datos.
+- **`lme4`**: Utilizada para ajustar modelos lineales mixtos, que permiten manejar datos con estructura jerárquica.
+- **`tidyverse`**: Un conjunto de paquetes para la manipulación y visualización de datos.
+- **`magrittr`**: Proporciona el operador `%>%` para facilitar el encadenamiento de operaciones en R.
+- **`caret`**: Para la creación de modelos de machine learning y la selección de variables.
+- **`car`**: Ofrece herramientas para el análisis de regresión y diagnóstico de modelos.
+- **`randomForest`**: Implementa el algoritmo de bosques aleatorios para clasificación y regresión.
+- **`reticulate`**: Permite la integración de Python en R, facilitando el uso de bibliotecas de Python desde el entorno R.
+
+Además, se importan módulos específicos de Python usando `reticulate`:
+
+- **`pandas`**: Para la manipulación de datos en estructuras tabulares.
+- **`sklearn.feature_selection`**: Para la selección de características en modelos de machine learning.
+- **`sklearn.ensemble`**: Proporciona métodos de ensamblaje, como los bosques aleatorios y gradientes impulsados.
+
+Finalmente, se carga un script adicional, `modelos_freq.R`, que probablemente contiene funciones personalizadas o modelos específicos necesarios para el análisis. Esto asegura que todas las herramientas y funciones requeridas estén disponibles para proceder con el análisis.
 
 
 ``` r
@@ -38,7 +58,15 @@ source("../source/modelos_freq.R")
 
 #### Carga de Datos {-}
 
-Se cargan los datos de la encuesta, el censo y los predictores a nivel estatal.
+En esta fase, se procede a la carga de los datos necesarios para el análisis. Se utilizan las funciones `readRDS()` para leer archivos en formato RDS, que es un formato de almacenamiento de objetos en R.
+
+1. **Carga de la Encuesta:** Se carga el conjunto de datos de la encuesta, almacenado en el archivo `../input/2020/enigh/encuesta_sta.rds`. Este conjunto de datos contiene información sobre las variables de interés para el análisis.
+
+2. **Carga del Censo:** Se lee el archivo `../input/2020/muestra_ampliada/muestra_cuestionario_ampliado.rds`, que contiene datos censales ampliados. Estos datos se usarán para la calibración y comparación con los datos de la encuesta.
+
+3. **Carga de Predictores Estatales:** Se carga el archivo `../input/2020/predictores/statelevel_predictors_df.rds`, que incluye predictores a nivel estatal que se utilizarán para el análisis.
+
+Además, se extraen los nombres de las variables del dataframe `statelevel_predictors_df` y se filtran para eliminar las variables que comienzan con "hog_" o "cve_mun", asegurando que solo se conserven las variables relevantes para el análisis posterior. Esto se realiza mediante la función `grepl()` para identificar y excluir las variables no deseadas.
 
 
 ``` r
@@ -55,7 +83,30 @@ cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
 
 #### Selección de Variables {-}
 
-Se definen las variables de agregación y se seleccionan las variables predictoras más relevantes.
+En esta etapa, se definen y seleccionan las variables que serán utilizadas en el análisis posterior. 
+
+1. **Variables de Agregación:** Se establece un vector llamado `byAgrega` que contiene las variables de agregación. Estas variables son fundamentales para estructurar y resumir los datos de acuerdo a diferentes dimensiones y características. El vector incluye:
+   - `ent` (Entidad Federativa)
+   - `cve_mun` (Clave de Municipio)
+   - `area` (Área)
+   - `sexo` (Sexo)
+   - `edad` (Edad)
+   - `discapacidad` (Discapacidad)
+   - `hlengua` (Lengua Indígena)
+   - `nivel_edu` (Nivel Educativo)
+
+2. **Selección de Variables Predictoras:** Se identifican las variables predictoras más relevantes para el análisis. En el código comentado, se había planificado usar un modelo de Random Forest y el método RFE (Recursive Feature Elimination) de Python para seleccionar las variables predictoras más importantes. Sin embargo, el código relacionado con la integración de Python se encuentra comentado.
+
+En lugar de ello, se definen directamente las variables seleccionadas y se especifica un vector `cov_names` que incluye las variables predictoras relevantes para el análisis. Estas variables son:
+   - `modifica_humana` (Modificación Humana)
+   - `acceso_hosp` (Acceso a Hospital)
+   - `acceso_hosp_caminando` (Acceso a Hospital Caminando)
+   - `cubrimiento_cultivo` (Cobertura de Cultivo)
+   - `cubrimiento_urbano` (Cobertura Urbana)
+   - `luces_nocturnas` (Luces Nocturnas)
+   - Variables seleccionadas como `porc_ing_ilpi_urb`, `pob_ind_rur`, `pob_ind_urb`, `porc_hogremesas_rur`, `porc_segsoc15`, `porc_ali15`, `plp15`, `pob_rur`, y `altitud1000`.
+
+Estos pasos aseguran que se utilicen las variables más relevantes para el análisis, optimizando la capacidad predictiva y el rendimiento del modelo.
 
 
 ``` r
@@ -115,7 +166,11 @@ cov_names <- c(
 
 #### Definición de la Fórmula del Modelo {-}
 
-Se define la fórmula del modelo incluyendo los efectos aleatorios y las variables predictoras seleccionadas.
+
+Se define una fórmula para el modelo que incluye tanto efectos aleatorios como variables predictoras seleccionadas. Primero, se determina el conjunto de variables relevantes excluyendo algunas específicas que no se incluirán en el análisis. Estas exclusiones se hacen utilizando la función `setdiff`, que elimina variables como `elec_mun20`, `elec_mun19`, `transf_gobpc_15_20`, y otras relacionadas con transferencias, electrificación, y características del desempeño y calidad. 
+
+El vector resultante de variables seleccionadas se concatena en una cadena de texto para construir la fórmula del modelo. Esta fórmula se configura para ajustar el modelo a datos binomiales, utilizando `cbind(si, no)` como la variable dependiente. La fórmula también incorpora efectos aleatorios para la clave de municipio `(1 | cve_mun)`, la lengua indígena `(1 | hlengua)`, y la discapacidad `(1 | discapacidad)`. Además, incluye efectos fijos para `nivel_edu`, `edad`, `ent`, `area`, y `sexo`. Finalmente, se agregan las variables predictoras seleccionadas.
+
 
 
 ``` r
@@ -142,7 +197,11 @@ cov_registros <-
   )
 
 cov_registros <- paste0(cov_registros, collapse = " + ")
+```
+La fórmula completa se define como:
 
+
+``` r
 formula_model <-
   paste0(
     "cbind(si, no) ~ (1 | cve_mun) + (1 | hlengua) + (1 | discapacidad) +  nivel_edu + edad  + ent + area + sexo "
@@ -152,9 +211,15 @@ formula_model <-
   )
 ```
 
+Esta estructura permite capturar la variabilidad entre los municipios y otras dimensiones de la población, mientras que también evalúa el impacto de las variables predictoras sobre la variable dependiente.
+
 #### Ajuste del Modelo {-}
 
-Se ajusta el modelo utilizando la función `modelo_dummy` y se guarda el resultado.
+Se ajusta el modelo utilizando la función `modelo_dummy`, que se aplica a los datos de la encuesta junto con los predictores y el censo. Primero, se transforma la variable `ic_ali_nc` en una variable binaria `yk`, donde se asigna el valor 1 si `ic_ali_nc` es igual a 1, y 0 en caso contrario. Esta transformación permite modelar la variable como un resultado binomial en el análisis.
+
+Luego, se pasa el conjunto de datos transformado (`encuesta_sta` con la nueva variable `yk`), los predictores a nivel estatal (`statelevel_predictors_df`), y el censo estatal (`censo_sta`) a la función `modelo_dummy`, junto con la fórmula del modelo previamente definida y el vector `byAgrega` para la agregación.
+
+Finalmente, se guarda el resultado del ajuste del modelo en un archivo RDS en la carpeta especificada, utilizando el nombre `fit_mrp_ic_ali_nc.rds`. Esto permite almacenar los resultados del modelo para su posterior análisis o uso.
 
 
 ``` r
