@@ -1,4 +1,4 @@
-# 15_estimacion_municipios_ipm_pobreza_error.R
+# 15_estimacion_municipios_ipm_pobreza_error.R {-}
 
 Para la ejecución del presente análisis, se debe abrir el archivo **15_estimacion_municipios_ipm_pobreza_error.R** disponible en la ruta **Rcodes/2020/15_estimacion_municipios_ipm_pobreza_error.R**.
 

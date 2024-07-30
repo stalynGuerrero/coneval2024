@@ -1,4 +1,4 @@
-# 19_Mapas_carencias.R
+# 19_Mapas_carencias.R {-}
 
 Para la ejecución del presente análisis, se debe abrir el archivo **19_Mapas_carencias.R** disponible en la ruta *Rcodes/2020/19_Mapas_carencias.R*.
 

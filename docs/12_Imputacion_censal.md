@@ -1,4 +1,4 @@
-# 12_Imputacion_censal.R
+# 12_Imputacion_censal.R{-}
 
 Para la ejecución del presente análisis, se debe abrir el archivo **12_Imputacion_censal.R** disponible en la ruta **Rcodes/2020/12_Imputacion_censal.R**.
 

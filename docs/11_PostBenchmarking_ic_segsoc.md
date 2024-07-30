@@ -1,4 +1,4 @@
-# 11_PostBenchmarking_ic_segsoc.r
+# 11_PostBenchmarking_ic_segsoc.r {-}
 
 Para la ejecución del presente análisis, se debe abrir el archivo **11_PostBenchmarking_ic_segsoc.R** disponible en la ruta *Rcodes/2020/11_PostBenchmarking_ic_segsoc.R*.
 

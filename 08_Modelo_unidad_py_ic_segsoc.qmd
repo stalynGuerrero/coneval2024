@@ -1,4 +1,4 @@
-# 08_Modelo_unidad_py_ic_segsoc
+# 08_Modelo_unidad_py_ic_segsoc {-}
 
 Para la ejecución del presente análisis, se debe abrir el archivo **08_Modelo_unidad_py_ic_segsoc.R** disponible en la ruta `Rcodes/2020/08_Modelo_unidad_py_ic_segsoc.R`.
 

@@ -1,4 +1,4 @@
-# 04_Armonizar_encuesta.R 
+# 04_Armonizar_encuesta.R {-}
 
 Para la ejecución del presente archivo, debe abrir el archivo **04_Armonizar_encuesta.R** disponible en la ruta *Rcodes/2020/04_Armonizar_encuesta.R*. Este script está diseñado para llevar a cabo un análisis exhaustivo de datos a través de un proceso metódico en varias fases.
 

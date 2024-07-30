@@ -1,4 +1,4 @@
-# 05_Validacion_encuestas.R
+# 05_Validacion_encuestas.R {-}
 
 Para ejecutar este archivo, es necesario abrir el archivo **05_Validacion_encuestas.R** ubicado en la ruta *Rcodes/2020/05_Validacion_encuestas.R*. Este script está diseñado para llevar a cabo un análisis integral de datos con varias fases que aseguran una evaluación rigurosa de la información disponible.
 

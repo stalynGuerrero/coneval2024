@@ -1,4 +1,4 @@
-# 10_PostBenchmarking_ic_ali_nc.R
+# 10_PostBenchmarking_ic_ali_nc.R {-}
 
 Para la ejecución del presente archivo, debe abrir el archivo **10_PostBenchmarking_ic_ali_nc.R** disponible en la ruta *Rcodes/2020/10_PostBenchmarking_ic_ali_nc.R*.
 

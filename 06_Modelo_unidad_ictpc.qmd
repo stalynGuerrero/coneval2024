@@ -1,4 +1,4 @@
-# 06_Modelo_unidad_ictpc.R
+# 06_Modelo_unidad_ictpc.R {-}
 
 Para la ejecución del presente archivo, debe abrir el archivo **06_Modelo_unidad_ictpc.R** disponible en la ruta *Rcodes/2020/06_Modelo_unidad_ictpc.R*.
 

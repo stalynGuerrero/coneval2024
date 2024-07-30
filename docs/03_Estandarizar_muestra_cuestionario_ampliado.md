@@ -1,4 +1,4 @@
-# 03_Estandarizar_muestra_cuestionario_ampliado.R
+# 03_Estandarizar_muestra_cuestionario_ampliado.R {-}
 
 Para la ejecución del presente archivo, debe abrir el archivo **02_Union_predictores.R** disponible en la ruta *Rcodes/2020/02_Union_predictores.R*. Este script está diseñado para llevar a cabo un análisis detallado de datos mediante un proceso estructurado en varias fases.
 

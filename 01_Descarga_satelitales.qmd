@@ -1,4 +1,4 @@
-# 01_Descarga_satelitales.R
+# 01_Descarga_satelitales.R {-}
 
 Para la ejecución del presente archivo, debe abrir el archivo **01_Descarga_satelitales.R** disponible en la ruta *Rcodes/2020/01_Descarga_satelitales.R*.
 

@@ -1,4 +1,4 @@
-# 18_estimacion_municipios_carencias_error.R
+# 18_estimacion_municipios_carencias_error.R {-}
 
 Para la ejecución del presente análisis, se debe abrir el archivo **18_estimacion_municipios_carencias_error.R** disponible en la ruta *Rcodes/2020/18_estimacion_municipios_carencias_error.R*.
 

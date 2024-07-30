@@ -1,4 +1,4 @@
-# 16_Mapas.R
+# 16_Mapas.R {-}
 
 Para la ejecución del presente análisis, se debe abrir el archivo **16_Mapas.R** disponible en la ruta *Rcodes/2020/16_Mapas.R*.
 

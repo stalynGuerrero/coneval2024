@@ -1,4 +1,4 @@
-# 02_Union_predictores.R
+# 02_Union_predictores.R {-}
 
 Para la ejecución del presente archivo, debe abrir el archivo **02_Union_predictores.R** disponible en la ruta *Rcodes/2020/02_Union_predictores.R*.
 

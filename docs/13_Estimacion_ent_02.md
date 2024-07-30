@@ -1,5 +1,5 @@
-# 13_Estimacion_ent_02.R
-
+# 13_Estimacion_ent_02.R {-}
+ 
 Para la ejecución del presente archivo, debe abrir el archivo **13_Estimacion_ent_02.R** disponible en la ruta *Rcodes/2020/13_Estimacion_ent_02.R*.
 
 

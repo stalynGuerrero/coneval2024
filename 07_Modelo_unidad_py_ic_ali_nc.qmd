@@ -1,4 +1,4 @@
-# 07_Modelo_unidad_py_ic_ali_nc.R
+# 07_Modelo_unidad_py_ic_ali_nc.R {-}
 
 Para la ejecución del presente archivo, debe abrir el archivo **07_Modelo_unidad_py_ic_ali_nc.R** disponible en la ruta *Rcodes/2020/07_Modelo_unidad_py_ic_ali_nc.R*.
 
