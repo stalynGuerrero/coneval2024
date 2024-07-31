@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2024-07-30" />
+<meta name="date" content="2024-07-31" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -165,7 +165,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="estimacion_municipios_ipm_pobreza.html"><a href="estimacion_municipios_ipm_pobreza.html"><i class="fa fa-check"></i>14_estimacion_municipios_ipm_pobreza.R</a></li>
 <li class="chapter" data-level="" data-path="estimacion_municipios_ipm_pobreza_error.html"><a href="estimacion_municipios_ipm_pobreza_error.html"><i class="fa fa-check"></i>15_estimacion_municipios_ipm_pobreza_error.R</a></li>
 <li class="chapter" data-level="" data-path="mapas.html"><a href="mapas.html"><i class="fa fa-check"></i>16_Mapas.R</a></li>
-<li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a>
+<ul>
+<li class="chapter" data-level="0.0.1" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html#descripción-general"><i class="fa fa-check"></i><b>0.0.1</b> Descripción General</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias_error.html"><a href="estimacion_municipios_carencias_error.html"><i class="fa fa-check"></i>18_estimacion_municipios_carencias_error.R</a></li>
 <li class="chapter" data-level="" data-path="mapas_carencias.html"><a href="mapas_carencias.html"><i class="fa fa-check"></i>19_Mapas_carencias.R</a></li>
 <li class="chapter" data-level="" data-path="estimacion_directa_carencias.html"><a href="estimacion_directa_carencias.html"><i class="fa fa-check"></i>20_estimacion_directa_carencias.R</a></li>
@@ -198,241 +201,275 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Los resultados combinados (<code>temp</code>) se enriquecen con información de población de <code>N_mpio</code> y se guardan en archivos RDS y Excel utilizando <code>saveRDS()</code> y <code>write.xlsx()</code>. Se calcula también un resumen a nivel estatal, agregando los resultados por entidad. En la última sección del script, se realiza un análisis gráfico de las estimaciones de pobreza. Se convierte <code>encuesta_enigh</code> en un diseño de encuesta usando <code>as_survey_design()</code>, y se calculan las estimaciones de pobreza por entidad. Luego, se generan gráficos con <code>ggplot2</code> para comparar las estimaciones de carencia entre los datos de la encuesta ENIGH y las estimaciones de CEPAL. Los gráficos se guardan como archivos PNG utilizando <code>ggsave()</code>.</p>
 <div id="limpieza-del-entorno-y-carga-de-bibliotecas-10" class="section level4 unnumbered hasAnchor">
 <h4>Limpieza del Entorno y Carga de Bibliotecas<a href="estimacion_municipios_carencias_error.html#limpieza-del-entorno-y-carga-de-bibliotecas-10" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se limpia el entorno de trabajo y se cargan las bibliotecas necesarias para la manipulación de datos y la visualización.</p>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="estimacion_municipios_carencias_error.html#cb137-1" tabindex="-1"></a>   <span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb137-2"><a href="estimacion_municipios_carencias_error.html#cb137-2" tabindex="-1"></a>   <span class="fu">library</span>(tidyverse)</span>
-<span id="cb137-3"><a href="estimacion_municipios_carencias_error.html#cb137-3" tabindex="-1"></a>   <span class="fu">library</span>(magrittr)</span>
-<span id="cb137-4"><a href="estimacion_municipios_carencias_error.html#cb137-4" tabindex="-1"></a>   <span class="fu">library</span>(survey)</span>
-<span id="cb137-5"><a href="estimacion_municipios_carencias_error.html#cb137-5" tabindex="-1"></a>   <span class="fu">library</span>(srvyr)</span>
-<span id="cb137-6"><a href="estimacion_municipios_carencias_error.html#cb137-6" tabindex="-1"></a>   <span class="fu">library</span>(tidyselect)</span></code></pre></div>
+<p>En esta sección, el código se ocupa de limpiar el entorno de trabajo y cargar las bibliotecas necesarias para la manipulación y análisis de datos, así como para la visualización. Este proceso garantiza que el entorno esté libre de interferencias de objetos previos y que las herramientas requeridas estén disponibles para ejecutar el resto del script de manera eficiente.</p>
+<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="estimacion_municipios_carencias_error.html#cb153-1" tabindex="-1"></a>   <span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb153-2"><a href="estimacion_municipios_carencias_error.html#cb153-2" tabindex="-1"></a>   <span class="fu">library</span>(tidyverse)</span>
+<span id="cb153-3"><a href="estimacion_municipios_carencias_error.html#cb153-3" tabindex="-1"></a>   <span class="fu">library</span>(magrittr)</span>
+<span id="cb153-4"><a href="estimacion_municipios_carencias_error.html#cb153-4" tabindex="-1"></a>   <span class="fu">library</span>(survey)</span>
+<span id="cb153-5"><a href="estimacion_municipios_carencias_error.html#cb153-5" tabindex="-1"></a>   <span class="fu">library</span>(srvyr)</span>
+<span id="cb153-6"><a href="estimacion_municipios_carencias_error.html#cb153-6" tabindex="-1"></a>   <span class="fu">library</span>(tidyselect)</span></code></pre></div>
+<ul>
+<li><strong>Limpieza del entorno</strong>: El comando <code>rm(list = ls())</code> se utiliza para eliminar todos los objetos en el entorno de trabajo de R. Esto asegura que no haya residuos de datos anteriores que puedan afectar el nuevo análisis.</li>
+<li><strong>Carga de bibliotecas</strong>:
+<ul>
+<li><code>tidyverse</code>: Conjunto de paquetes que incluye <code>ggplot2</code>, <code>dplyr</code>, <code>tidyr</code>, <code>readr</code>, <code>purrr</code>, <code>tibble</code>, entre otros. Estos paquetes son esenciales para la manipulación de datos, análisis y visualización.</li>
+<li><code>magrittr</code>: Proporciona el operador de pipe (<code>%&gt;%</code>), facilitando la escritura de código legible y conciso al encadenar funciones.</li>
+<li><code>survey</code>: Ofrece herramientas para el análisis de datos de encuestas complejas, permitiendo el diseño de muestras y la estimación de estadísticas ponderadas.</li>
+<li><code>srvyr</code>: Extiende las funcionalidades del paquete <code>survey</code> utilizando la sintaxis de <code>dplyr</code>, lo que facilita la manipulación y resumen de datos de encuestas.</li>
+<li><code>tidyselect</code>: Utilizado para facilitar la selección de columnas en operaciones de manipulación de datos dentro del ecosistema de tidyverse.</li>
+</ul></li>
+</ul>
+<p>Este paso es crucial para asegurar un entorno limpio y preparado para realizar análisis de datos precisos y eficientes.</p>
+<div id="lectura-de-datos-5" class="section level5 unnumbered hasAnchor">
+<h5>Lectura de Datos<a href="estimacion_municipios_carencias_error.html#lectura-de-datos-5" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>En esta sección, el código se encarga de leer y cargar los datos necesarios para el análisis desde archivos RDS y CSV. Estos datos incluyen encuestas ampliadas, encuestas ENIGH y líneas de bienestar.</p>
+<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="estimacion_municipios_carencias_error.html#cb154-1" tabindex="-1"></a>encuesta_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
+<span id="cb154-2"><a href="estimacion_municipios_carencias_error.html#cb154-2" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span></span>
+<span id="cb154-3"><a href="estimacion_municipios_carencias_error.html#cb154-3" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb154-4"><a href="estimacion_municipios_carencias_error.html#cb154-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ingreso =</span> ictpc)</span>
+<span id="cb154-5"><a href="estimacion_municipios_carencias_error.html#cb154-5" tabindex="-1"></a></span>
+<span id="cb154-6"><a href="estimacion_municipios_carencias_error.html#cb154-6" tabindex="-1"></a>LB <span class="ot">&lt;-</span></span>
+<span id="cb154-7"><a href="estimacion_municipios_carencias_error.html#cb154-7" tabindex="-1"></a>  <span class="fu">read.delim</span>(</span>
+<span id="cb154-8"><a href="estimacion_municipios_carencias_error.html#cb154-8" tabindex="-1"></a>    <span class="st">&quot;../input/2020/Lineas_Bienestar.csv&quot;</span>,</span>
+<span id="cb154-9"><a href="estimacion_municipios_carencias_error.html#cb154-9" tabindex="-1"></a>    <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb154-10"><a href="estimacion_municipios_carencias_error.html#cb154-10" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
+<span id="cb154-11"><a href="estimacion_municipios_carencias_error.html#cb154-11" tabindex="-1"></a>    <span class="at">dec =</span> <span class="st">&quot;,&quot;</span></span>
+<span id="cb154-12"><a href="estimacion_municipios_carencias_error.html#cb154-12" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb154-13"><a href="estimacion_municipios_carencias_error.html#cb154-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">as.character</span>(area))</span></code></pre></div>
+<ul>
+<li><strong>Lectura de encuesta ampliada</strong>:
+<ul>
+<li><code>encuesta_ampliada &lt;- readRDS("../../output/2020/encuesta_ampliada.rds")</code>: Carga el archivo RDS que contiene la encuesta ampliada. Este archivo se encuentra en la carpeta de salida <code>output/2020</code> y contiene datos detallados sobre las encuestas realizadas en 2020.</li>
+</ul></li>
+<li><strong>Lectura de encuesta ENIGH</strong>:
+<ul>
+<li><code>encuesta_enigh &lt;- readRDS("../input/2020/enigh/encuesta_sta.rds")</code>: Carga el archivo RDS que contiene los datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH) de 2020.</li>
+<li><code>mutate(ingreso = ictpc)</code>: Añade una nueva columna <code>ingreso</code> a la encuesta ENIGH, utilizando la columna <code>ictpc</code> que representa el ingreso total per cápita.</li>
+</ul></li>
+<li><strong>Lectura de líneas de bienestar</strong>:
+<ul>
+<li><code>LB &lt;- read.delim("../input/2020/Lineas_Bienestar.csv", header = TRUE, sep = ";", dec = ",")</code>: Lee el archivo CSV que contiene las líneas de bienestar. Este archivo se encuentra en la carpeta <code>input/2020</code> y contiene información sobre las líneas de pobreza y bienestar.</li>
+<li><code>mutate(area = as.character(area))</code>: Convierte la columna <code>area</code> en tipo de dato carácter, asegurando una correcta manipulación de los datos en análisis posteriores.</li>
+</ul></li>
+</ul>
+<p>Este paso es esencial para preparar y estructurar los datos que se utilizarán en el análisis, asegurando que toda la información necesaria esté disponible y correctamente formateada.</p>
 </div>
-<div id="lectura-de-datos-5" class="section level4 unnumbered hasAnchor">
-<h4>Lectura de Datos<a href="estimacion_municipios_carencias_error.html#lectura-de-datos-5" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se cargan los datos de las encuestas y las líneas de bienestar desde archivos RDS y CSV.</p>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="estimacion_municipios_carencias_error.html#cb138-1" tabindex="-1"></a>encuesta_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
-<span id="cb138-2"><a href="estimacion_municipios_carencias_error.html#cb138-2" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span></span>
-<span id="cb138-3"><a href="estimacion_municipios_carencias_error.html#cb138-3" tabindex="-1"></a>  <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb138-4"><a href="estimacion_municipios_carencias_error.html#cb138-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ingreso =</span> ictpc)</span>
-<span id="cb138-5"><a href="estimacion_municipios_carencias_error.html#cb138-5" tabindex="-1"></a></span>
-<span id="cb138-6"><a href="estimacion_municipios_carencias_error.html#cb138-6" tabindex="-1"></a>LB <span class="ot">&lt;-</span></span>
-<span id="cb138-7"><a href="estimacion_municipios_carencias_error.html#cb138-7" tabindex="-1"></a>  <span class="fu">read.delim</span>(</span>
-<span id="cb138-8"><a href="estimacion_municipios_carencias_error.html#cb138-8" tabindex="-1"></a>    <span class="st">&quot;../input/2020/Lineas_Bienestar.csv&quot;</span>,</span>
-<span id="cb138-9"><a href="estimacion_municipios_carencias_error.html#cb138-9" tabindex="-1"></a>    <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb138-10"><a href="estimacion_municipios_carencias_error.html#cb138-10" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>,</span>
-<span id="cb138-11"><a href="estimacion_municipios_carencias_error.html#cb138-11" tabindex="-1"></a>    <span class="at">dec =</span> <span class="st">&quot;,&quot;</span></span>
-<span id="cb138-12"><a href="estimacion_municipios_carencias_error.html#cb138-12" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb138-13"><a href="estimacion_municipios_carencias_error.html#cb138-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">as.character</span>(area))</span></code></pre></div>
 </div>
 <div id="cálculo-de-indicadores-de-pobreza" class="section level4 unnumbered hasAnchor">
 <h4>Cálculo de Indicadores de Pobreza<a href="estimacion_municipios_carencias_error.html#cálculo-de-indicadores-de-pobreza" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se calculan varios indicadores de pobreza basados en el ingreso y las carencias sociales.</p>
-<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="estimacion_municipios_carencias_error.html#cb139-1" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB) <span class="sc">%&gt;%</span></span>
-<span id="cb139-2"><a href="estimacion_municipios_carencias_error.html#cb139-2" tabindex="-1"></a><span class="fu">mutate</span>(</span>
-<span id="cb139-3"><a href="estimacion_municipios_carencias_error.html#cb139-3" tabindex="-1"></a><span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span> ic_sbv <span class="sc">+</span> ic_rezedu,</span>
-<span id="cb139-4"><a href="estimacion_municipios_carencias_error.html#cb139-4" tabindex="-1"></a><span class="at">pobrea_lp =</span> <span class="fu">ifelse</span>(ingreso <span class="sc">&lt;</span> lp, <span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb139-5"><a href="estimacion_municipios_carencias_error.html#cb139-5" tabindex="-1"></a><span class="at">pobrea_li =</span> <span class="fu">ifelse</span>(ingreso <span class="sc">&lt;</span> li, <span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb139-6"><a href="estimacion_municipios_carencias_error.html#cb139-6" tabindex="-1"></a><span class="at">tol_ic_1 =</span> <span class="fu">ifelse</span>(tol_ic <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb139-7"><a href="estimacion_municipios_carencias_error.html#cb139-7" tabindex="-1"></a><span class="at">tol_ic_2 =</span> <span class="fu">ifelse</span>(tol_ic <span class="sc">&gt;</span> <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb139-8"><a href="estimacion_municipios_carencias_error.html#cb139-8" tabindex="-1"></a>)</span></code></pre></div>
+<p>En esta sección, se calculan diversos indicadores de pobreza utilizando los datos de la encuesta ENIGH y las líneas de bienestar. El código une los datos de la encuesta ENIGH con las líneas de bienestar (<code>LB</code>) mediante una unión interna, asegurando que solo se conserven las observaciones presentes en ambos conjuntos de datos. A continuación, se calcula el total de carencias sociales (<code>tol_ic</code>) sumando las diferentes carencias individuales (<code>ic_segsoc</code>, <code>ic_ali_nc</code>, <code>ic_asalud</code>, <code>ic_cv</code>, <code>ic_sbv</code>, <code>ic_rezedu</code>). Se determinan indicadores binarios de pobreza basados en el ingreso, como <code>pobrea_lp</code>, que indica si un hogar está por debajo de la línea de pobreza (<code>lp</code>), y <code>pobrea_li</code>, que indica si un hogar está por debajo de la línea de indigencia (<code>li</code>). Asimismo, se calculan indicadores de pobreza basados en el número de carencias sociales, como <code>tol_ic_1</code>, que indica si un hogar tiene al menos una carencia social, y <code>tol_ic_2</code>, que indica si un hogar tiene más de dos carencias sociales. Estos cálculos permiten evaluar diferentes dimensiones de la pobreza, combinando tanto el ingreso como las carencias sociales para ofrecer una visión más completa de la situación socioeconómica de los hogares.</p>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="estimacion_municipios_carencias_error.html#cb155-1" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(LB) <span class="sc">%&gt;%</span></span>
+<span id="cb155-2"><a href="estimacion_municipios_carencias_error.html#cb155-2" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb155-3"><a href="estimacion_municipios_carencias_error.html#cb155-3" tabindex="-1"></a><span class="at">tol_ic =</span> ic_segsoc <span class="sc">+</span> ic_ali_nc <span class="sc">+</span> ic_asalud <span class="sc">+</span> ic_cv <span class="sc">+</span> ic_sbv <span class="sc">+</span> ic_rezedu,</span>
+<span id="cb155-4"><a href="estimacion_municipios_carencias_error.html#cb155-4" tabindex="-1"></a><span class="at">pobrea_lp =</span> <span class="fu">ifelse</span>(ingreso <span class="sc">&lt;</span> lp, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb155-5"><a href="estimacion_municipios_carencias_error.html#cb155-5" tabindex="-1"></a><span class="at">pobrea_li =</span> <span class="fu">ifelse</span>(ingreso <span class="sc">&lt;</span> li, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb155-6"><a href="estimacion_municipios_carencias_error.html#cb155-6" tabindex="-1"></a><span class="at">tol_ic_1 =</span> <span class="fu">ifelse</span>(tol_ic <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb155-7"><a href="estimacion_municipios_carencias_error.html#cb155-7" tabindex="-1"></a><span class="at">tol_ic_2 =</span> <span class="fu">ifelse</span>(tol_ic <span class="sc">&gt;</span> <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb155-8"><a href="estimacion_municipios_carencias_error.html#cb155-8" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="procesamiento-de-resultados-iterativos" class="section level4 unnumbered hasAnchor">
 <h4>Procesamiento de Resultados Iterativos<a href="estimacion_municipios_carencias_error.html#procesamiento-de-resultados-iterativos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se listan y procesan los directorios que contienen resultados iterativos.</p>
-<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="estimacion_municipios_carencias_error.html#cb140-1" tabindex="-1"></a>   list_estiacion <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">&quot;../../output/2020/iteraciones/mpio_calib_carencia//&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb140-2"><a href="estimacion_municipios_carencias_error.html#cb140-2" tabindex="-1"></a>   list_estiacion <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(list_estiacion, <span class="at">iter =</span> list_estiacion <span class="sc">%&gt;%</span> <span class="fu">map_dbl</span>(<span class="sc">~</span><span class="fu">list.files</span>(.x) <span class="sc">%&gt;%</span> <span class="fu">length</span>())) <span class="sc">%&gt;%</span></span>
-<span id="cb140-3"><a href="estimacion_municipios_carencias_error.html#cb140-3" tabindex="-1"></a>     <span class="fu">filter</span>(iter <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb140-4"><a href="estimacion_municipios_carencias_error.html#cb140-4" tabindex="-1"></a></span>
-<span id="cb140-5"><a href="estimacion_municipios_carencias_error.html#cb140-5" tabindex="-1"></a>   resul_ent_ipm <span class="ot">&lt;-</span> <span class="fu">list</span>()</span></code></pre></div>
+<p>Esta sección se encarga de listar y procesar los directorios que contienen los resultados de iteraciones previas, almacenados en archivos. Primero, se listan todos los directorios dentro de la ruta especificada (<code>../output/2020/iteraciones/mpio_calib_carencia//</code>) utilizando la función <code>list.files</code>, incluyendo sus rutas completas. Luego, se crea un data frame (<code>list_estiacion</code>) que contiene las rutas de los directorios y la cantidad de archivos en cada uno de ellos, que se determina aplicando la función <code>length</code> a la lista de archivos en cada directorio. Se filtran los directorios para conservar solo aquellos que contienen al menos un archivo de iteración (es decir, aquellos con <code>iter &gt; 0</code>). Finalmente, se inicializa una lista vacía (<code>resul_ent_ipm</code>) para almacenar los resultados procesados de estas iteraciones.</p>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="estimacion_municipios_carencias_error.html#cb156-1" tabindex="-1"></a>   list_estiacion <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">&quot;../output/2020/iteraciones/mpio_calib_carencia//&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb156-2"><a href="estimacion_municipios_carencias_error.html#cb156-2" tabindex="-1"></a>   list_estiacion <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(list_estiacion, <span class="at">iter =</span> list_estiacion <span class="sc">%&gt;%</span> <span class="fu">map_dbl</span>(<span class="sc">~</span><span class="fu">list.files</span>(.x) <span class="sc">%&gt;%</span> <span class="fu">length</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb156-3"><a href="estimacion_municipios_carencias_error.html#cb156-3" tabindex="-1"></a>     <span class="fu">filter</span>(iter <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb156-4"><a href="estimacion_municipios_carencias_error.html#cb156-4" tabindex="-1"></a></span>
+<span id="cb156-5"><a href="estimacion_municipios_carencias_error.html#cb156-5" tabindex="-1"></a>   resul_ent_ipm <span class="ot">&lt;-</span> <span class="fu">list</span>()</span></code></pre></div>
 </div>
 <div id="combinación-de-resultados-iterativos" class="section level4 unnumbered hasAnchor">
 <h4>Combinación de Resultados Iterativos<a href="estimacion_municipios_carencias_error.html#combinación-de-resultados-iterativos" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se combinan los resultados de las iteraciones en un único conjunto de datos.</p>
-<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="estimacion_municipios_carencias_error.html#cb141-1" tabindex="-1"></a><span class="cf">for</span> (ii_ent <span class="cf">in</span> list_estiacion<span class="sc">$</span>list_estiacion) {</span>
-<span id="cb141-2"><a href="estimacion_municipios_carencias_error.html#cb141-2" tabindex="-1"></a>  archivos <span class="ot">&lt;-</span> <span class="fu">list.files</span>(ii_ent, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb141-3"><a href="estimacion_municipios_carencias_error.html#cb141-3" tabindex="-1"></a>  datos <span class="ot">&lt;-</span> <span class="fu">map_df</span>(archivos, <span class="sc">~</span> <span class="fu">readRDS</span>(.x)<span class="sc">$</span>estima_calib)</span>
-<span id="cb141-4"><a href="estimacion_municipios_carencias_error.html#cb141-4" tabindex="-1"></a>  </span>
-<span id="cb141-5"><a href="estimacion_municipios_carencias_error.html#cb141-5" tabindex="-1"></a>  dat_estima <span class="ot">&lt;-</span></span>
-<span id="cb141-6"><a href="estimacion_municipios_carencias_error.html#cb141-6" tabindex="-1"></a>    datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), mean) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
-<span id="cb141-7"><a href="estimacion_municipios_carencias_error.html#cb141-7" tabindex="-1"></a>  dat_n <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">tally</span>()</span>
-<span id="cb141-8"><a href="estimacion_municipios_carencias_error.html#cb141-8" tabindex="-1"></a>  dat_B <span class="ot">&lt;-</span></span>
-<span id="cb141-9"><a href="estimacion_municipios_carencias_error.html#cb141-9" tabindex="-1"></a>    datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), var) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
-<span id="cb141-10"><a href="estimacion_municipios_carencias_error.html#cb141-10" tabindex="-1"></a>  </span>
-<span id="cb141-11"><a href="estimacion_municipios_carencias_error.html#cb141-11" tabindex="-1"></a>  dat_Ubar <span class="ot">&lt;-</span></span>
-<span id="cb141-12"><a href="estimacion_municipios_carencias_error.html#cb141-12" tabindex="-1"></a>    datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), mean) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
-<span id="cb141-13"><a href="estimacion_municipios_carencias_error.html#cb141-13" tabindex="-1"></a>  <span class="fu">names</span>(dat_Ubar) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;_var&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(dat_Ubar))</span>
-<span id="cb141-14"><a href="estimacion_municipios_carencias_error.html#cb141-14" tabindex="-1"></a>  </span>
-<span id="cb141-15"><a href="estimacion_municipios_carencias_error.html#cb141-15" tabindex="-1"></a>  dat_var <span class="ot">&lt;-</span></span>
-<span id="cb141-16"><a href="estimacion_municipios_carencias_error.html#cb141-16" tabindex="-1"></a>    dat_B <span class="sc">%&gt;%</span> <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Indicador&quot;</span>, <span class="at">value =</span> <span class="st">&quot;B&quot;</span>, <span class="sc">-</span>cve_mun) <span class="sc">%&gt;%</span></span>
-<span id="cb141-17"><a href="estimacion_municipios_carencias_error.html#cb141-17" tabindex="-1"></a>    <span class="fu">inner_join</span>(dat_Ubar <span class="sc">%&gt;%</span> <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Indicador&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Ubar&quot;</span>, <span class="sc">-</span>cve_mun)) <span class="sc">%&gt;%</span></span>
-<span id="cb141-18"><a href="estimacion_municipios_carencias_error.html#cb141-18" tabindex="-1"></a>    <span class="fu">inner_join</span>(dat_n)</span>
-<span id="cb141-19"><a href="estimacion_municipios_carencias_error.html#cb141-19" tabindex="-1"></a>  </span>
-<span id="cb141-20"><a href="estimacion_municipios_carencias_error.html#cb141-20" tabindex="-1"></a>  var_est <span class="ot">&lt;-</span></span>
-<span id="cb141-21"><a href="estimacion_municipios_carencias_error.html#cb141-21" tabindex="-1"></a>    dat_var <span class="sc">%&gt;%</span> <span class="fu">transmute</span>(cve_mun,</span>
-<span id="cb141-22"><a href="estimacion_municipios_carencias_error.html#cb141-22" tabindex="-1"></a>                          Indicador,</span>
-<span id="cb141-23"><a href="estimacion_municipios_carencias_error.html#cb141-23" tabindex="-1"></a>                          <span class="at">var =</span> Ubar <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span> <span class="sc">/</span> n) <span class="sc">*</span> B,</span>
-<span id="cb141-24"><a href="estimacion_municipios_carencias_error.html#cb141-24" tabindex="-1"></a>                          <span class="at">ee =</span> <span class="fu">sqrt</span>(var)) <span class="sc">%&gt;%</span></span>
-<span id="cb141-25"><a href="estimacion_municipios_carencias_error.html#cb141-25" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(</span>
-<span id="cb141-26"><a href="estimacion_municipios_carencias_error.html#cb141-26" tabindex="-1"></a>      <span class="at">id_cols =</span> <span class="st">&quot;cve_mun&quot;</span>,</span>
-<span id="cb141-27"><a href="estimacion_municipios_carencias_error.html#cb141-27" tabindex="-1"></a>      <span class="at">names_from =</span> <span class="st">&quot;Indicador&quot;</span>,</span>
-<span id="cb141-28"><a href="estimacion_municipios_carencias_error.html#cb141-28" tabindex="-1"></a>      <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;var&quot;</span>, <span class="st">&quot;ee&quot;</span>),</span>
-<span id="cb141-29"><a href="estimacion_municipios_carencias_error.html#cb141-29" tabindex="-1"></a>      <span class="at">values_fill =</span> <span class="dv">0</span></span>
-<span id="cb141-30"><a href="estimacion_municipios_carencias_error.html#cb141-30" tabindex="-1"></a>    )</span>
-<span id="cb141-31"><a href="estimacion_municipios_carencias_error.html#cb141-31" tabindex="-1"></a>  </span>
-<span id="cb141-32"><a href="estimacion_municipios_carencias_error.html#cb141-32" tabindex="-1"></a>  dat_var <span class="ot">&lt;-</span></span>
-<span id="cb141-33"><a href="estimacion_municipios_carencias_error.html#cb141-33" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(</span>
-<span id="cb141-34"><a href="estimacion_municipios_carencias_error.html#cb141-34" tabindex="-1"></a>      <span class="at">data =</span> dat_var,</span>
-<span id="cb141-35"><a href="estimacion_municipios_carencias_error.html#cb141-35" tabindex="-1"></a>      <span class="at">id_cols =</span> <span class="st">&quot;cve_mun&quot;</span>,</span>
-<span id="cb141-36"><a href="estimacion_municipios_carencias_error.html#cb141-36" tabindex="-1"></a>      <span class="at">names_from =</span> <span class="st">&quot;Indicador&quot;</span>,</span>
-<span id="cb141-37"><a href="estimacion_municipios_carencias_error.html#cb141-37" tabindex="-1"></a>      <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;B&quot;</span>, <span class="st">&quot;Ubar&quot;</span>),</span>
-<span id="cb141-38"><a href="estimacion_municipios_carencias_error.html#cb141-38" tabindex="-1"></a>      <span class="at">values_fill =</span> <span class="dv">0</span></span>
-<span id="cb141-39"><a href="estimacion_municipios_carencias_error.html#cb141-39" tabindex="-1"></a>    )</span>
-<span id="cb141-40"><a href="estimacion_municipios_carencias_error.html#cb141-40" tabindex="-1"></a>  </span>
-<span id="cb141-41"><a href="estimacion_municipios_carencias_error.html#cb141-41" tabindex="-1"></a>resul_ent_ipm[[ii_ent]] <span class="ot">&lt;-</span></span>
-<span id="cb141-42"><a href="estimacion_municipios_carencias_error.html#cb141-42" tabindex="-1"></a>    dat_n <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(dat_estima) <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(dat_var) <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(var_est)</span>
-<span id="cb141-43"><a href="estimacion_municipios_carencias_error.html#cb141-43" tabindex="-1"></a>}</span></code></pre></div>
+<p>Esta sección combina los resultados de las iteraciones en un único conjunto de datos. Primero, se recorre cada directorio listado en <code>list_estiacion$list_estiacion</code>. Para cada directorio, se obtiene la lista de archivos dentro de él y se leen los datos contenidos en cada archivo utilizando la función <code>readRDS</code>, combinando los datos en un solo data frame con <code>map_df</code>. Luego, se agrupan los datos por <code>cve_mun</code> y se calculan diversas estadísticas: las medias (<code>summarise_at(vars(!matches("var")), mean)</code>), el conteo (<code>tally()</code>), las varianzas (<code>summarise_at(vars(!matches("var")), var)</code>), y las medias de las varianzas (<code>summarise_at(vars(matches("var")), mean)</code>).</p>
+<p>Posteriormente, los datos se transforman y combinan para calcular las varianzas totales y los errores estándar (<code>transmute(cve_mun, Indicador, var = Ubar + (1 + 1 / n) * B, ee = sqrt(var))</code>). Los resultados se reestructuran utilizando <code>pivot_wider</code> para obtener el formato deseado y se guardan en la lista <code>resul_ent_ipm</code> para cada entidad procesada. Finalmente, se unen los diversos data frames generados (<code>dat_n</code>, <code>dat_estima</code>, <code>dat_var</code>, <code>var_est</code>) en un único data frame por entidad y se almacenan en la lista de resultados.</p>
+<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="estimacion_municipios_carencias_error.html#cb157-1" tabindex="-1"></a><span class="cf">for</span> (ii_ent <span class="cf">in</span> list_estiacion<span class="sc">$</span>list_estiacion) {</span>
+<span id="cb157-2"><a href="estimacion_municipios_carencias_error.html#cb157-2" tabindex="-1"></a>  archivos <span class="ot">&lt;-</span> <span class="fu">list.files</span>(ii_ent, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb157-3"><a href="estimacion_municipios_carencias_error.html#cb157-3" tabindex="-1"></a>  datos <span class="ot">&lt;-</span> <span class="fu">map_df</span>(archivos, <span class="sc">~</span> <span class="fu">readRDS</span>(.x)<span class="sc">$</span>estima_calib)</span>
+<span id="cb157-4"><a href="estimacion_municipios_carencias_error.html#cb157-4" tabindex="-1"></a>  </span>
+<span id="cb157-5"><a href="estimacion_municipios_carencias_error.html#cb157-5" tabindex="-1"></a>  dat_estima <span class="ot">&lt;-</span></span>
+<span id="cb157-6"><a href="estimacion_municipios_carencias_error.html#cb157-6" tabindex="-1"></a>    datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), mean) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
+<span id="cb157-7"><a href="estimacion_municipios_carencias_error.html#cb157-7" tabindex="-1"></a>  dat_n <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">tally</span>()</span>
+<span id="cb157-8"><a href="estimacion_municipios_carencias_error.html#cb157-8" tabindex="-1"></a>  dat_B <span class="ot">&lt;-</span></span>
+<span id="cb157-9"><a href="estimacion_municipios_carencias_error.html#cb157-9" tabindex="-1"></a>    datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="sc">!</span><span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), var) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
+<span id="cb157-10"><a href="estimacion_municipios_carencias_error.html#cb157-10" tabindex="-1"></a>  </span>
+<span id="cb157-11"><a href="estimacion_municipios_carencias_error.html#cb157-11" tabindex="-1"></a>  dat_Ubar <span class="ot">&lt;-</span></span>
+<span id="cb157-12"><a href="estimacion_municipios_carencias_error.html#cb157-12" tabindex="-1"></a>    datos <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(cve_mun) <span class="sc">%&gt;%</span> <span class="fu">summarise_at</span>(<span class="fu">vars</span>(<span class="fu">matches</span>(<span class="st">&quot;var&quot;</span>)), mean) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
+<span id="cb157-13"><a href="estimacion_municipios_carencias_error.html#cb157-13" tabindex="-1"></a>  <span class="fu">names</span>(dat_Ubar) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;_var&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(dat_Ubar))</span>
+<span id="cb157-14"><a href="estimacion_municipios_carencias_error.html#cb157-14" tabindex="-1"></a>  </span>
+<span id="cb157-15"><a href="estimacion_municipios_carencias_error.html#cb157-15" tabindex="-1"></a>  dat_var <span class="ot">&lt;-</span></span>
+<span id="cb157-16"><a href="estimacion_municipios_carencias_error.html#cb157-16" tabindex="-1"></a>    dat_B <span class="sc">%&gt;%</span> <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Indicador&quot;</span>, <span class="at">value =</span> <span class="st">&quot;B&quot;</span>, <span class="sc">-</span>cve_mun) <span class="sc">%&gt;%</span></span>
+<span id="cb157-17"><a href="estimacion_municipios_carencias_error.html#cb157-17" tabindex="-1"></a>    <span class="fu">inner_join</span>(dat_Ubar <span class="sc">%&gt;%</span> <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Indicador&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Ubar&quot;</span>, <span class="sc">-</span>cve_mun)) <span class="sc">%&gt;%</span></span>
+<span id="cb157-18"><a href="estimacion_municipios_carencias_error.html#cb157-18" tabindex="-1"></a>    <span class="fu">inner_join</span>(dat_n)</span>
+<span id="cb157-19"><a href="estimacion_municipios_carencias_error.html#cb157-19" tabindex="-1"></a>  </span>
+<span id="cb157-20"><a href="estimacion_municipios_carencias_error.html#cb157-20" tabindex="-1"></a>  var_est <span class="ot">&lt;-</span></span>
+<span id="cb157-21"><a href="estimacion_municipios_carencias_error.html#cb157-21" tabindex="-1"></a>    dat_var <span class="sc">%&gt;%</span> <span class="fu">transmute</span>(cve_mun,</span>
+<span id="cb157-22"><a href="estimacion_municipios_carencias_error.html#cb157-22" tabindex="-1"></a>                          Indicador,</span>
+<span id="cb157-23"><a href="estimacion_municipios_carencias_error.html#cb157-23" tabindex="-1"></a>                          <span class="at">var =</span> Ubar <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span> <span class="sc">/</span> n) <span class="sc">*</span> B,</span>
+<span id="cb157-24"><a href="estimacion_municipios_carencias_error.html#cb157-24" tabindex="-1"></a>                          <span class="at">ee =</span> <span class="fu">sqrt</span>(var)) <span class="sc">%&gt;%</span></span>
+<span id="cb157-25"><a href="estimacion_municipios_carencias_error.html#cb157-25" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(</span>
+<span id="cb157-26"><a href="estimacion_municipios_carencias_error.html#cb157-26" tabindex="-1"></a>      <span class="at">id_cols =</span> <span class="st">&quot;cve_mun&quot;</span>,</span>
+<span id="cb157-27"><a href="estimacion_municipios_carencias_error.html#cb157-27" tabindex="-1"></a>      <span class="at">names_from =</span> <span class="st">&quot;Indicador&quot;</span>,</span>
+<span id="cb157-28"><a href="estimacion_municipios_carencias_error.html#cb157-28" tabindex="-1"></a>      <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;var&quot;</span>, <span class="st">&quot;ee&quot;</span>),</span>
+<span id="cb157-29"><a href="estimacion_municipios_carencias_error.html#cb157-29" tabindex="-1"></a>      <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb157-30"><a href="estimacion_municipios_carencias_error.html#cb157-30" tabindex="-1"></a>    )</span>
+<span id="cb157-31"><a href="estimacion_municipios_carencias_error.html#cb157-31" tabindex="-1"></a>  </span>
+<span id="cb157-32"><a href="estimacion_municipios_carencias_error.html#cb157-32" tabindex="-1"></a>  dat_var <span class="ot">&lt;-</span></span>
+<span id="cb157-33"><a href="estimacion_municipios_carencias_error.html#cb157-33" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(</span>
+<span id="cb157-34"><a href="estimacion_municipios_carencias_error.html#cb157-34" tabindex="-1"></a>      <span class="at">data =</span> dat_var,</span>
+<span id="cb157-35"><a href="estimacion_municipios_carencias_error.html#cb157-35" tabindex="-1"></a>      <span class="at">id_cols =</span> <span class="st">&quot;cve_mun&quot;</span>,</span>
+<span id="cb157-36"><a href="estimacion_municipios_carencias_error.html#cb157-36" tabindex="-1"></a>      <span class="at">names_from =</span> <span class="st">&quot;Indicador&quot;</span>,</span>
+<span id="cb157-37"><a href="estimacion_municipios_carencias_error.html#cb157-37" tabindex="-1"></a>      <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&quot;B&quot;</span>, <span class="st">&quot;Ubar&quot;</span>),</span>
+<span id="cb157-38"><a href="estimacion_municipios_carencias_error.html#cb157-38" tabindex="-1"></a>      <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb157-39"><a href="estimacion_municipios_carencias_error.html#cb157-39" tabindex="-1"></a>    )</span>
+<span id="cb157-40"><a href="estimacion_municipios_carencias_error.html#cb157-40" tabindex="-1"></a>  </span>
+<span id="cb157-41"><a href="estimacion_municipios_carencias_error.html#cb157-41" tabindex="-1"></a>resul_ent_ipm[[ii_ent]] <span class="ot">&lt;-</span></span>
+<span id="cb157-42"><a href="estimacion_municipios_carencias_error.html#cb157-42" tabindex="-1"></a>    dat_n <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(dat_estima) <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(dat_var) <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(var_est)</span>
+<span id="cb157-43"><a href="estimacion_municipios_carencias_error.html#cb157-43" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="guardado-de-resultados" class="section level4 unnumbered hasAnchor">
 <h4>Guardado de Resultados<a href="estimacion_municipios_carencias_error.html#guardado-de-resultados" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se guardan los resultados combinados en archivos RDS y Excel.</p>
-<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="estimacion_municipios_carencias_error.html#cb142-1" tabindex="-1"></a>temp <span class="ot">&lt;-</span> resul_ent_ipm <span class="sc">%&gt;%</span> <span class="fu">bind_rows</span>()</span>
-<span id="cb142-2"><a href="estimacion_municipios_carencias_error.html#cb142-2" tabindex="-1"></a>temp <span class="sc">%&lt;&gt;%</span> <span class="fu">inner_join</span>(N_mpio) <span class="sc">%&gt;%</span></span>
-<span id="cb142-3"><a href="estimacion_municipios_carencias_error.html#cb142-3" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb142-4"><a href="estimacion_municipios_carencias_error.html#cb142-4" tabindex="-1"></a>    ent,</span>
-<span id="cb142-5"><a href="estimacion_municipios_carencias_error.html#cb142-5" tabindex="-1"></a>    cve_mun,</span>
-<span id="cb142-6"><a href="estimacion_municipios_carencias_error.html#cb142-6" tabindex="-1"></a>    <span class="st">&quot;pobrea_lp&quot;</span>,</span>
-<span id="cb142-7"><a href="estimacion_municipios_carencias_error.html#cb142-7" tabindex="-1"></a>    <span class="st">&quot;pobrea_li&quot;</span>,</span>
-<span id="cb142-8"><a href="estimacion_municipios_carencias_error.html#cb142-8" tabindex="-1"></a>    <span class="st">&quot;tol_ic_1&quot;</span>,</span>
-<span id="cb142-9"><a href="estimacion_municipios_carencias_error.html#cb142-9" tabindex="-1"></a>    <span class="st">&quot;tol_ic_2&quot;</span>,</span>
-<span id="cb142-10"><a href="estimacion_municipios_carencias_error.html#cb142-10" tabindex="-1"></a>    <span class="st">&quot;ic_segsoc&quot;</span>,</span>
-<span id="cb142-11"><a href="estimacion_municipios_carencias_error.html#cb142-11" tabindex="-1"></a>    <span class="st">&quot;ic_ali_nc&quot;</span>,</span>
-<span id="cb142-12"><a href="estimacion_municipios_carencias_error.html#cb142-12" tabindex="-1"></a>    N_pers_mpio,</span>
-<span id="cb142-13"><a href="estimacion_municipios_carencias_error.html#cb142-13" tabindex="-1"></a>    <span class="fu">matches</span>(<span class="st">&quot;ee&quot;</span>)</span>
-<span id="cb142-14"><a href="estimacion_municipios_carencias_error.html#cb142-14" tabindex="-1"></a>  )</span>
-<span id="cb142-15"><a href="estimacion_municipios_carencias_error.html#cb142-15" tabindex="-1"></a></span>
-<span id="cb142-16"><a href="estimacion_municipios_carencias_error.html#cb142-16" tabindex="-1"></a>temp <span class="sc">%&gt;%</span> <span class="fu">saveRDS</span>(<span class="st">&quot;../output/Entregas/2020/result_mpios_carencia.RDS&quot;</span>)</span>
-<span id="cb142-17"><a href="estimacion_municipios_carencias_error.html#cb142-17" tabindex="-1"></a></span>
-<span id="cb142-18"><a href="estimacion_municipios_carencias_error.html#cb142-18" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(</span>
-<span id="cb142-19"><a href="estimacion_municipios_carencias_error.html#cb142-19" tabindex="-1"></a>  temp,</span>
-<span id="cb142-20"><a href="estimacion_municipios_carencias_error.html#cb142-20" tabindex="-1"></a>  <span class="fu">paste0</span>(</span>
-<span id="cb142-21"><a href="estimacion_municipios_carencias_error.html#cb142-21" tabindex="-1"></a>    <span class="st">&quot;../output/Entregas/2020/estimacion_numicipal_carencia_&quot;</span>,</span>
-<span id="cb142-22"><a href="estimacion_municipios_carencias_error.html#cb142-22" tabindex="-1"></a>    <span class="fu">Sys.Date</span>(),</span>
-<span id="cb142-23"><a href="estimacion_municipios_carencias_error.html#cb142-23" tabindex="-1"></a>    <span class="st">&quot;.xlsx&quot;</span></span>
-<span id="cb142-24"><a href="estimacion_municipios_carencias_error.html#cb142-24" tabindex="-1"></a>  )</span>
-<span id="cb142-25"><a href="estimacion_municipios_carencias_error.html#cb142-25" tabindex="-1"></a>)</span>
-<span id="cb142-26"><a href="estimacion_municipios_carencias_error.html#cb142-26" tabindex="-1"></a></span>
-<span id="cb142-27"><a href="estimacion_municipios_carencias_error.html#cb142-27" tabindex="-1"></a>temp2 <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
-<span id="cb142-28"><a href="estimacion_municipios_carencias_error.html#cb142-28" tabindex="-1"></a>  <span class="fu">select</span>(ent, pobrea_lp<span class="sc">:</span>ic_ali_nc, N_pers_mpio) <span class="sc">%&gt;%</span></span>
-<span id="cb142-29"><a href="estimacion_municipios_carencias_error.html#cb142-29" tabindex="-1"></a>  <span class="fu">group_by</span>(ent) <span class="sc">%&gt;%</span></span>
-<span id="cb142-30"><a href="estimacion_municipios_carencias_error.html#cb142-30" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(</span>
-<span id="cb142-31"><a href="estimacion_municipios_carencias_error.html#cb142-31" tabindex="-1"></a>    <span class="fu">c</span>(</span>
-<span id="cb142-32"><a href="estimacion_municipios_carencias_error.html#cb142-32" tabindex="-1"></a>      <span class="st">&quot;pobrea_lp&quot;</span>,</span>
-<span id="cb142-33"><a href="estimacion_municipios_carencias_error.html#cb142-33" tabindex="-1"></a>      <span class="st">&quot;pobrea_li&quot;</span>,</span>
-<span id="cb142-34"><a href="estimacion_municipios_carencias_error.html#cb142-34" tabindex="-1"></a>      <span class="st">&quot;tol_ic_1&quot;</span>,</span>
-<span id="cb142-35"><a href="estimacion_municipios_carencias_error.html#cb142-35" tabindex="-1"></a>      <span class="st">&quot;tol_ic_2&quot;</span>,</span>
-<span id="cb142-36"><a href="estimacion_municipios_carencias_error.html#cb142-36" tabindex="-1"></a>      <span class="st">&quot;ic_segsoc&quot;</span>,</span>
-<span id="cb142-37"><a href="estimacion_municipios_carencias_error.html#cb142-37" tabindex="-1"></a>      <span class="st">&quot;ic_ali_nc&quot;</span></span>
-<span id="cb142-38"><a href="estimacion_municipios_carencias_error.html#cb142-38" tabindex="-1"></a>    ),</span>
-<span id="cb142-39"><a href="estimacion_municipios_carencias_error.html#cb142-39" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">sum</span>(.x <span class="sc">*</span> N_pers_mpio) <span class="sc">/</span> <span class="fu">sum</span>(N_pers_mpio)</span>
-<span id="cb142-40"><a href="estimacion_municipios_carencias_error.html#cb142-40" tabindex="-1"></a>  ))</span>
-<span id="cb142-41"><a href="estimacion_municipios_carencias_error.html#cb142-41" tabindex="-1"></a></span>
-<span id="cb142-42"><a href="estimacion_municipios_carencias_error.html#cb142-42" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(</span>
-<span id="cb142-43"><a href="estimacion_municipios_carencias_error.html#cb142-43" tabindex="-1"></a>  temp2,</span>
-<span id="cb142-44"><a href="estimacion_municipios_carencias_error.html#cb142-44" tabindex="-1"></a>  <span class="fu">paste0</span>(</span>
-<span id="cb142-45"><a href="estimacion_municipios_carencias_error.html#cb142-45" tabindex="-1"></a>    <span class="st">&quot;../output/Entregas/2020/estimacion_estado_carencia_&quot;</span>,</span>
-<span id="cb142-46"><a href="estimacion_municipios_carencias_error.html#cb142-46" tabindex="-1"></a>    <span class="fu">Sys.Date</span>(),</span>
-<span id="cb142-47"><a href="estimacion_municipios_carencias_error.html#cb142-47" tabindex="-1"></a>    <span class="st">&quot;.xlsx&quot;</span></span>
-<span id="cb142-48"><a href="estimacion_municipios_carencias_error.html#cb142-48" tabindex="-1"></a>  )</span>
-<span id="cb142-49"><a href="estimacion_municipios_carencias_error.html#cb142-49" tabindex="-1"></a>)</span></code></pre></div>
+<p>En esta sección se guardan los resultados combinados en archivos RDS y Excel. Primero, se unen todos los data frames contenidos en la lista <code>resul_ent_ipm</code> utilizando <code>bind_rows()</code>. A continuación, se hace un <code>inner_join</code> con el data frame <code>N_mpio</code> y se seleccionan las columnas relevantes: <code>ent</code>, <code>cve_mun</code>, los indicadores de pobreza y carencias (<code>pobrea_lp</code>, <code>pobrea_li</code>, <code>tol_ic_1</code>, <code>tol_ic_2</code>, <code>ic_segsoc</code>, <code>ic_ali_nc</code>), <code>N_pers_mpio</code> y las columnas que coinciden con <code>ee</code>. Este conjunto de datos se guarda en un archivo RDS con la función <code>saveRDS</code>.</p>
+<p>Luego, se guarda el mismo conjunto de datos en un archivo Excel utilizando la función <code>write.xlsx</code> de la biblioteca <code>openxlsx</code>. Se genera un nombre de archivo que incluye la fecha actual obtenida con <code>Sys.Date()</code>.</p>
+<p>Para obtener un resumen a nivel de entidad, se seleccionan las columnas relevantes (<code>ent</code>, <code>pobrea_lp</code>, <code>pobrea_li</code>, <code>tol_ic_1</code>, <code>tol_ic_2</code>, <code>ic_segsoc</code>, <code>ic_ali_nc</code>, <code>N_pers_mpio</code>) y se agrupan por <code>ent</code>. Se calculan las medias ponderadas de los indicadores de pobreza y carencias, ponderadas por el número de personas en cada municipio (<code>N_pers_mpio</code>). Este resumen se guarda en otro archivo Excel, también con un nombre que incluye la fecha actual.</p>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="estimacion_municipios_carencias_error.html#cb158-1" tabindex="-1"></a>temp <span class="ot">&lt;-</span> resul_ent_ipm <span class="sc">%&gt;%</span> <span class="fu">bind_rows</span>()</span>
+<span id="cb158-2"><a href="estimacion_municipios_carencias_error.html#cb158-2" tabindex="-1"></a>temp <span class="sc">%&lt;&gt;%</span> <span class="fu">inner_join</span>(N_mpio) <span class="sc">%&gt;%</span></span>
+<span id="cb158-3"><a href="estimacion_municipios_carencias_error.html#cb158-3" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb158-4"><a href="estimacion_municipios_carencias_error.html#cb158-4" tabindex="-1"></a>    ent,</span>
+<span id="cb158-5"><a href="estimacion_municipios_carencias_error.html#cb158-5" tabindex="-1"></a>    cve_mun,</span>
+<span id="cb158-6"><a href="estimacion_municipios_carencias_error.html#cb158-6" tabindex="-1"></a>    <span class="st">&quot;pobrea_lp&quot;</span>,</span>
+<span id="cb158-7"><a href="estimacion_municipios_carencias_error.html#cb158-7" tabindex="-1"></a>    <span class="st">&quot;pobrea_li&quot;</span>,</span>
+<span id="cb158-8"><a href="estimacion_municipios_carencias_error.html#cb158-8" tabindex="-1"></a>    <span class="st">&quot;tol_ic_1&quot;</span>,</span>
+<span id="cb158-9"><a href="estimacion_municipios_carencias_error.html#cb158-9" tabindex="-1"></a>    <span class="st">&quot;tol_ic_2&quot;</span>,</span>
+<span id="cb158-10"><a href="estimacion_municipios_carencias_error.html#cb158-10" tabindex="-1"></a>    <span class="st">&quot;ic_segsoc&quot;</span>,</span>
+<span id="cb158-11"><a href="estimacion_municipios_carencias_error.html#cb158-11" tabindex="-1"></a>    <span class="st">&quot;ic_ali_nc&quot;</span>,</span>
+<span id="cb158-12"><a href="estimacion_municipios_carencias_error.html#cb158-12" tabindex="-1"></a>    N_pers_mpio,</span>
+<span id="cb158-13"><a href="estimacion_municipios_carencias_error.html#cb158-13" tabindex="-1"></a>    <span class="fu">matches</span>(<span class="st">&quot;ee&quot;</span>)</span>
+<span id="cb158-14"><a href="estimacion_municipios_carencias_error.html#cb158-14" tabindex="-1"></a>  )</span>
+<span id="cb158-15"><a href="estimacion_municipios_carencias_error.html#cb158-15" tabindex="-1"></a></span>
+<span id="cb158-16"><a href="estimacion_municipios_carencias_error.html#cb158-16" tabindex="-1"></a>temp <span class="sc">%&gt;%</span> <span class="fu">saveRDS</span>(<span class="st">&quot;../output/Entregas/2020/result_mpios_carencia.RDS&quot;</span>)</span>
+<span id="cb158-17"><a href="estimacion_municipios_carencias_error.html#cb158-17" tabindex="-1"></a></span>
+<span id="cb158-18"><a href="estimacion_municipios_carencias_error.html#cb158-18" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(</span>
+<span id="cb158-19"><a href="estimacion_municipios_carencias_error.html#cb158-19" tabindex="-1"></a>  temp,</span>
+<span id="cb158-20"><a href="estimacion_municipios_carencias_error.html#cb158-20" tabindex="-1"></a>  <span class="fu">paste0</span>(</span>
+<span id="cb158-21"><a href="estimacion_municipios_carencias_error.html#cb158-21" tabindex="-1"></a>    <span class="st">&quot;../output/Entregas/2020/estimacion_numicipal_carencia_&quot;</span>,</span>
+<span id="cb158-22"><a href="estimacion_municipios_carencias_error.html#cb158-22" tabindex="-1"></a>    <span class="fu">Sys.Date</span>(),</span>
+<span id="cb158-23"><a href="estimacion_municipios_carencias_error.html#cb158-23" tabindex="-1"></a>    <span class="st">&quot;.xlsx&quot;</span></span>
+<span id="cb158-24"><a href="estimacion_municipios_carencias_error.html#cb158-24" tabindex="-1"></a>  )</span>
+<span id="cb158-25"><a href="estimacion_municipios_carencias_error.html#cb158-25" tabindex="-1"></a>)</span>
+<span id="cb158-26"><a href="estimacion_municipios_carencias_error.html#cb158-26" tabindex="-1"></a></span>
+<span id="cb158-27"><a href="estimacion_municipios_carencias_error.html#cb158-27" tabindex="-1"></a>temp2 <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
+<span id="cb158-28"><a href="estimacion_municipios_carencias_error.html#cb158-28" tabindex="-1"></a>  <span class="fu">select</span>(ent, pobrea_lp<span class="sc">:</span>ic_ali_nc, N_pers_mpio) <span class="sc">%&gt;%</span></span>
+<span id="cb158-29"><a href="estimacion_municipios_carencias_error.html#cb158-29" tabindex="-1"></a>  <span class="fu">group_by</span>(ent) <span class="sc">%&gt;%</span></span>
+<span id="cb158-30"><a href="estimacion_municipios_carencias_error.html#cb158-30" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(</span>
+<span id="cb158-31"><a href="estimacion_municipios_carencias_error.html#cb158-31" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb158-32"><a href="estimacion_municipios_carencias_error.html#cb158-32" tabindex="-1"></a>      <span class="st">&quot;pobrea_lp&quot;</span>,</span>
+<span id="cb158-33"><a href="estimacion_municipios_carencias_error.html#cb158-33" tabindex="-1"></a>      <span class="st">&quot;pobrea_li&quot;</span>,</span>
+<span id="cb158-34"><a href="estimacion_municipios_carencias_error.html#cb158-34" tabindex="-1"></a>      <span class="st">&quot;tol_ic_1&quot;</span>,</span>
+<span id="cb158-35"><a href="estimacion_municipios_carencias_error.html#cb158-35" tabindex="-1"></a>      <span class="st">&quot;tol_ic_2&quot;</span>,</span>
+<span id="cb158-36"><a href="estimacion_municipios_carencias_error.html#cb158-36" tabindex="-1"></a>      <span class="st">&quot;ic_segsoc&quot;</span>,</span>
+<span id="cb158-37"><a href="estimacion_municipios_carencias_error.html#cb158-37" tabindex="-1"></a>      <span class="st">&quot;ic_ali_nc&quot;</span></span>
+<span id="cb158-38"><a href="estimacion_municipios_carencias_error.html#cb158-38" tabindex="-1"></a>    ),</span>
+<span id="cb158-39"><a href="estimacion_municipios_carencias_error.html#cb158-39" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">sum</span>(.x <span class="sc">*</span> N_pers_mpio) <span class="sc">/</span> <span class="fu">sum</span>(N_pers_mpio)</span>
+<span id="cb158-40"><a href="estimacion_municipios_carencias_error.html#cb158-40" tabindex="-1"></a>  ))</span>
+<span id="cb158-41"><a href="estimacion_municipios_carencias_error.html#cb158-41" tabindex="-1"></a></span>
+<span id="cb158-42"><a href="estimacion_municipios_carencias_error.html#cb158-42" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(</span>
+<span id="cb158-43"><a href="estimacion_municipios_carencias_error.html#cb158-43" tabindex="-1"></a>  temp2,</span>
+<span id="cb158-44"><a href="estimacion_municipios_carencias_error.html#cb158-44" tabindex="-1"></a>  <span class="fu">paste0</span>(</span>
+<span id="cb158-45"><a href="estimacion_municipios_carencias_error.html#cb158-45" tabindex="-1"></a>    <span class="st">&quot;../output/Entregas/2020/estimacion_estado_carencia_&quot;</span>,</span>
+<span id="cb158-46"><a href="estimacion_municipios_carencias_error.html#cb158-46" tabindex="-1"></a>    <span class="fu">Sys.Date</span>(),</span>
+<span id="cb158-47"><a href="estimacion_municipios_carencias_error.html#cb158-47" tabindex="-1"></a>    <span class="st">&quot;.xlsx&quot;</span></span>
+<span id="cb158-48"><a href="estimacion_municipios_carencias_error.html#cb158-48" tabindex="-1"></a>  )</span>
+<span id="cb158-49"><a href="estimacion_municipios_carencias_error.html#cb158-49" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="visualización-de-resultados" class="section level4 unnumbered hasAnchor">
 <h4>Visualización de Resultados<a href="estimacion_municipios_carencias_error.html#visualización-de-resultados" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se generan y guardan gráficos que comparan los indicadores de pobreza entre diferentes fuentes de datos.</p>
-<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="estimacion_municipios_carencias_error.html#cb143-1" tabindex="-1"></a>diseno <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb143-2"><a href="estimacion_municipios_carencias_error.html#cb143-2" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(<span class="at">ids =</span> upm,</span>
-<span id="cb143-3"><a href="estimacion_municipios_carencias_error.html#cb143-3" tabindex="-1"></a>                   <span class="at">weights =</span> fep,</span>
-<span id="cb143-4"><a href="estimacion_municipios_carencias_error.html#cb143-4" tabindex="-1"></a>                   <span class="at">nest =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb143-5"><a href="estimacion_municipios_carencias_error.html#cb143-5" tabindex="-1"></a></span>
-<span id="cb143-6"><a href="estimacion_municipios_carencias_error.html#cb143-6" tabindex="-1"></a>estimad_dir <span class="ot">&lt;-</span> diseno <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ent) <span class="sc">%&gt;%</span></span>
-<span id="cb143-7"><a href="estimacion_municipios_carencias_error.html#cb143-7" tabindex="-1"></a>  <span class="fu">summarise_at</span>(</span>
-<span id="cb143-8"><a href="estimacion_municipios_carencias_error.html#cb143-8" tabindex="-1"></a>    <span class="at">.vars =</span> <span class="fu">c</span>(</span>
-<span id="cb143-9"><a href="estimacion_municipios_carencias_error.html#cb143-9" tabindex="-1"></a>      <span class="st">&quot;pobrea_lp&quot;</span>,</span>
-<span id="cb143-10"><a href="estimacion_municipios_carencias_error.html#cb143-10" tabindex="-1"></a>      <span class="st">&quot;pobrea_li&quot;</span>,</span>
-<span id="cb143-11"><a href="estimacion_municipios_carencias_error.html#cb143-11" tabindex="-1"></a>      <span class="st">&quot;tol_ic_1&quot;</span>,</span>
-<span id="cb143-12"><a href="estimacion_municipios_carencias_error.html#cb143-12" tabindex="-1"></a>      <span class="st">&quot;tol_ic_2&quot;</span>,</span>
-<span id="cb143-13"><a href="estimacion_municipios_carencias_error.html#cb143-13" tabindex="-1"></a>      <span class="st">&quot;ic_segsoc&quot;</span>,</span>
-<span id="cb143-14"><a href="estimacion_municipios_carencias_error.html#cb143-14" tabindex="-1"></a>      <span class="st">&quot;ic_ali_nc&quot;</span></span>
-<span id="cb143-15"><a href="estimacion_municipios_carencias_error.html#cb143-15" tabindex="-1"></a>    ),</span>
-<span id="cb143-16"><a href="estimacion_municipios_carencias_error.html#cb143-16" tabindex="-1"></a>    <span class="at">.funs =</span> <span class="fu">list</span>(<span class="at">dir =</span> <span class="sc">~</span> <span class="fu">survey_mean</span>(., <span class="at">vartype =</span> <span class="st">&quot;ci&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb143-17"><a href="estimacion_municipios_carencias_error.html#cb143-17" tabindex="-1"></a>  )</span>
-<span id="cb143-18"><a href="estimacion_municipios_carencias_error.html#cb143-18" tabindex="-1"></a></span>
-<span id="cb143-19"><a href="estimacion_municipios_carencias_error.html#cb143-19" tabindex="-1"></a>ind <span class="ot">&lt;-</span></span>
-<span id="cb143-20"><a href="estimacion_municipios_carencias_error.html#cb143-20" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;pobrea_lp&quot;</span>,</span>
-<span id="cb143-21"><a href="estimacion_municipios_carencias_error.html#cb143-21" tabindex="-1"></a>    <span class="st">&quot;pobrea_li&quot;</span>,</span>
-<span id="cb143-22"><a href="estimacion_municipios_carencias_error.html#cb143-22" tabindex="-1"></a>    <span class="st">&quot;tol_ic_1&quot;</span>,</span>
-<span id="cb143-23"><a href="estimacion_municipios_carencias_error.html#cb143-23" tabindex="-1"></a>    <span class="st">&quot;tol_ic_2&quot;</span>,</span>
-<span id="cb143-24"><a href="estimacion_municipios_carencias_error.html#cb143-24" tabindex="-1"></a>    <span class="st">&quot;ic_segsoc&quot;</span>,</span>
-<span id="cb143-25"><a href="estimacion_municipios_carencias_error.html#cb143-25" tabindex="-1"></a>    <span class="st">&quot;ic_ali_nc&quot;</span>)</span>
-<span id="cb143-26"><a href="estimacion_municipios_carencias_error.html#cb143-26" tabindex="-1"></a></span>
-<span id="cb143-27"><a href="estimacion_municipios_carencias_error.html#cb143-27" tabindex="-1"></a><span class="cf">for</span> (ii_ipm <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) {</span>
-<span id="cb143-28"><a href="estimacion_municipios_carencias_error.html#cb143-28" tabindex="-1"></a>  ii_ipm <span class="ot">&lt;-</span> ind[ii_ipm]</span>
-<span id="cb143-29"><a href="estimacion_municipios_carencias_error.html#cb143-29" tabindex="-1"></a>  paso <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;(_|</span><span class="sc">\\</span><span class="st">b)&quot;</span>, ii_ipm, <span class="st">&quot;(_|</span><span class="sc">\\</span><span class="st">b)&quot;</span>)</span>
-<span id="cb143-30"><a href="estimacion_municipios_carencias_error.html#cb143-30" tabindex="-1"></a>  dat_plot <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(estimad_dir, temp2) <span class="sc">%&gt;%</span></span>
-<span id="cb143-31"><a href="estimacion_municipios_carencias_error.html#cb143-31" tabindex="-1"></a>    <span class="fu">select</span>(ent, <span class="fu">matches</span>(paso))</span>
-<span id="cb143-32"><a href="estimacion_municipios_carencias_error.html#cb143-32" tabindex="-1"></a>  </span>
-<span id="cb143-33"><a href="estimacion_municipios_carencias_error.html#cb143-33" tabindex="-1"></a>  dat_lim <span class="ot">&lt;-</span> dat_plot <span class="sc">%&gt;%</span> <span class="fu">select</span>(ent, <span class="fu">matches</span>(<span class="st">&quot;upp|low&quot;</span>))</span>
-<span id="cb143-34"><a href="estimacion_municipios_carencias_error.html#cb143-34" tabindex="-1"></a>  <span class="fu">names</span>(dat_lim) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>, <span class="st">&quot;Lim_Inf&quot;</span>, <span class="st">&quot;Lim_Sup&quot;</span>)</span>
-<span id="cb143-35"><a href="estimacion_municipios_carencias_error.html#cb143-35" tabindex="-1"></a>  </span>
-<span id="cb143-36"><a href="estimacion_municipios_carencias_error.html#cb143-36" tabindex="-1"></a>  dat_plot <span class="sc">%&lt;&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">matches</span>(<span class="st">&quot;upp|low&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb143-37"><a href="estimacion_municipios_carencias_error.html#cb143-37" tabindex="-1"></a>    <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Origen&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Prop&quot;</span>, <span class="sc">-</span>ent) <span class="sc">%&gt;%</span></span>
-<span id="cb143-38"><a href="estimacion_municipios_carencias_error.html#cb143-38" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Origen =</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="at">pattern =</span> <span class="st">&quot;dir&quot;</span>, <span class="at">x =</span> Origen), <span class="st">&quot;ENIGH&quot;</span>, <span class="st">&quot;Estimación CEPAL&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb143-39"><a href="estimacion_municipios_carencias_error.html#cb143-39" tabindex="-1"></a>    <span class="fu">inner_join</span>(dat_lim)</span>
-<span id="cb143-40"><a href="estimacion_municipios_carencias_error.html#cb143-40" tabindex="-1"></a>  </span>
-<span id="cb143-41"><a href="estimacion_municipios_carencias_error.html#cb143-41" tabindex="-1"></a>  gg_plot <span class="ot">&lt;-</span></span>
-<span id="cb143-42"><a href="estimacion_municipios_carencias_error.html#cb143-42" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> dat_plot, <span class="fu">aes</span>(<span class="at">x =</span> ent, <span class="at">y =</span> Prop, <span class="at">color =</span> Origen)) <span class="sc">+</span></span>
-<span id="cb143-43"><a href="estimacion_municipios_carencias_error.html#cb143-43" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
-<span id="cb143-44"><a href="estimacion_municipios_carencias_error.html#cb143-44" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb143-45"><a href="estimacion_municipios_carencias_error.html#cb143-45" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;Estimación&quot;</span>,</span>
-<span id="cb143-46"><a href="estimacion_municipios_carencias_error.html#cb143-46" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb143-47"><a href="estimacion_municipios_carencias_error.html#cb143-47" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Estimación de la carencia 2020 -&quot;</span>, ii_ipm)</span>
-<span id="cb143-48"><a href="estimacion_municipios_carencias_error.html#cb143-48" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb143-49"><a href="estimacion_municipios_carencias_error.html#cb143-49" tabindex="-1"></a>    <span class="fu">theme_bw</span>(<span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb143-50"><a href="estimacion_municipios_carencias_error.html#cb143-50" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb143-51"><a href="estimacion_municipios_carencias_error.html#cb143-51" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
-<span id="cb143-52"><a href="estimacion_municipios_carencias_error.html#cb143-52" tabindex="-1"></a>          <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb143-53"><a href="estimacion_municipios_carencias_error.html#cb143-53" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">scale =</span> <span class="dv">100</span>))</span>
-<span id="cb143-54"><a href="estimacion_municipios_carencias_error.html#cb143-54" tabindex="-1"></a>  </span>
-<span id="cb143-55"><a href="estimacion_municipios_carencias_error.html#cb143-55" tabindex="-1"></a>  gg_plot <span class="ot">&lt;-</span> gg_plot <span class="sc">+</span></span>
-<span id="cb143-56"><a href="estimacion_municipios_carencias_error.html#cb143-56" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(</span>
-<span id="cb143-57"><a href="estimacion_municipios_carencias_error.html#cb143-57" tabindex="-1"></a>      <span class="at">data =</span> dat_plot <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Origen <span class="sc">==</span> <span class="st">&quot;ENIGH&quot;</span>),</span>
-<span id="cb143-58"><a href="estimacion_municipios_carencias_error.html#cb143-58" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">ymin =</span> Lim_Inf, <span class="at">ymax =</span> Lim_Sup, <span class="at">x =</span> ent),</span>
-<span id="cb143-59"><a href="estimacion_municipios_carencias_error.html#cb143-59" tabindex="-1"></a>      <span class="at">width =</span> <span class="fl">0.2</span>,</span>
-<span id="cb143-60"><a href="estimacion_municipios_carencias_error.html#cb143-60" tabindex="-1"></a>      <span class="at">linewidth =</span> <span class="dv">1</span></span>
-<span id="cb143-61"><a href="estimacion_municipios_carencias_error.html#cb143-61" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb143-62"><a href="estimacion_municipios_carencias_error.html#cb143-62" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(</span>
-<span id="cb143-63"><a href="estimacion_municipios_carencias_error.html#cb143-63" tabindex="-1"></a>      <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">&quot;ENIGH&quot;</span>, <span class="st">&quot;Estimación CEPAL&quot;</span>),</span>
-<span id="cb143-64"><a href="estimacion_municipios_carencias_error.html#cb143-64" tabindex="-1"></a>      <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue3&quot;</span>)</span>
-<span id="cb143-65"><a href="estimacion_municipios_carencias_error.html#cb143-65" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb143-66"><a href="estimacion_municipios_carencias_error.html#cb143-66" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
-<span id="cb143-67"><a href="estimacion_municipios_carencias_error.html#cb143-67" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
-<span id="cb143-68"><a href="estimacion_municipios_carencias_error.html#cb143-68" tabindex="-1"></a>      <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
-<span id="cb143-69"><a href="estimacion_municipios_carencias_error.html#cb143-69" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
-<span id="cb143-70"><a href="estimacion_municipios_carencias_error.html#cb143-70" tabindex="-1"></a>      <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(</span>
-<span id="cb143-71"><a href="estimacion_municipios_carencias_error.html#cb143-71" tabindex="-1"></a>        <span class="at">angle =</span> <span class="dv">90</span>,</span>
-<span id="cb143-72"><a href="estimacion_municipios_carencias_error.html#cb143-72" tabindex="-1"></a>        <span class="at">size =</span> <span class="dv">8</span>,</span>
-<span id="cb143-73"><a href="estimacion_municipios_carencias_error.html#cb143-73" tabindex="-1"></a>        <span class="at">vjust =</span> <span class="fl">0.3</span></span>
-<span id="cb143-74"><a href="estimacion_municipios_carencias_error.html#cb143-74" tabindex="-1"></a>      ),</span>
-<span id="cb143-75"><a href="estimacion_municipios_carencias_error.html#cb143-75" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
-<span id="cb143-76"><a href="estimacion_municipios_carencias_error.html#cb143-76" tabindex="-1"></a>      <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>)</span>
-<span id="cb143-77"><a href="estimacion_municipios_carencias_error.html#cb143-77" tabindex="-1"></a>    )</span>
-<span id="cb143-78"><a href="estimacion_municipios_carencias_error.html#cb143-78" tabindex="-1"></a>  </span>
-<span id="cb143-79"><a href="estimacion_municipios_carencias_error.html#cb143-79" tabindex="-1"></a>  <span class="fu">print</span>(gg_plot)</span>
-<span id="cb143-80"><a href="estimacion_municipios_carencias_error.html#cb143-80" tabindex="-1"></a>  <span class="fu">ggsave</span>(</span>
-<span id="cb143-81"><a href="estimacion_municipios_carencias_error.html#cb143-81" tabindex="-1"></a>    <span class="at">plot =</span> gg_plot,</span>
-<span id="cb143-82"><a href="estimacion_municipios_carencias_error.html#cb143-82" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">16</span>,</span>
-<span id="cb143-83"><a href="estimacion_municipios_carencias_error.html#cb143-83" tabindex="-1"></a>    <span class="at">height =</span> <span class="dv">9</span>,</span>
-<span id="cb143-84"><a href="estimacion_municipios_carencias_error.html#cb143-84" tabindex="-1"></a>    <span class="at">filename =</span> <span class="fu">paste0</span>(<span class="st">&quot;../output/Entregas/2020/plot_uni/ipm_&quot;</span>, ii_ipm, <span class="st">&quot;.png&quot;</span>)</span>
-<span id="cb143-85"><a href="estimacion_municipios_carencias_error.html#cb143-85" tabindex="-1"></a>  )</span>
-<span id="cb143-86"><a href="estimacion_municipios_carencias_error.html#cb143-86" tabindex="-1"></a>}</span></code></pre></div>
+<p>En esta sección se generan y guardan gráficos que comparan los indicadores de pobreza entre diferentes fuentes de datos. Primero, se crea un diseño de encuesta utilizando la base de datos <code>encuesta_enigh</code> con la función <code>as_survey_design</code>, eliminando previamente los valores faltantes. Con este diseño, se calculan estimaciones directas de los indicadores de pobreza y carencias (<code>pobrea_lp</code>, <code>pobrea_li</code>, <code>tol_ic_1</code>, <code>tol_ic_2</code>, <code>ic_segsoc</code>, <code>ic_ali_nc</code>) para cada entidad (<code>ent</code>), incluyendo intervalos de confianza (<code>ci</code>).</p>
+<p>Los indicadores de interés se almacenan en el vector <code>ind</code>, y se itera sobre cada uno de ellos para generar los gráficos correspondientes. Para cada indicador, se filtran y preparan los datos de comparación entre las estimaciones directas (ENIGH) y las estimaciones calculadas (CEPAL), utilizando <code>inner_join</code> y funciones de manipulación de datos de <code>dplyr</code> y <code>tidyr</code>. Se calculan los límites inferior y superior de los intervalos de confianza y se reorganizan los datos para su visualización.</p>
+<p>Se genera un gráfico utilizando <code>ggplot2</code>, con las entidades en el eje x y las proporciones estimadas en el eje y. Las estimaciones de ENIGH y CEPAL se diferencian por colores. Se añaden barras de error para los intervalos de confianza de ENIGH y se ajustan los elementos visuales del gráfico para mejorar la presentación. Finalmente, se guarda cada gráfico como un archivo PNG con un nombre que incluye el indicador correspondiente.</p>
+<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="estimacion_municipios_carencias_error.html#cb159-1" tabindex="-1"></a>diseno <span class="ot">&lt;-</span> encuesta_enigh <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb159-2"><a href="estimacion_municipios_carencias_error.html#cb159-2" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(<span class="at">ids =</span> upm,</span>
+<span id="cb159-3"><a href="estimacion_municipios_carencias_error.html#cb159-3" tabindex="-1"></a>                   <span class="at">weights =</span> fep,</span>
+<span id="cb159-4"><a href="estimacion_municipios_carencias_error.html#cb159-4" tabindex="-1"></a>                   <span class="at">nest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb159-5"><a href="estimacion_municipios_carencias_error.html#cb159-5" tabindex="-1"></a></span>
+<span id="cb159-6"><a href="estimacion_municipios_carencias_error.html#cb159-6" tabindex="-1"></a>estimad_dir <span class="ot">&lt;-</span> diseno <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(ent) <span class="sc">%&gt;%</span></span>
+<span id="cb159-7"><a href="estimacion_municipios_carencias_error.html#cb159-7" tabindex="-1"></a>  <span class="fu">summarise_at</span>(</span>
+<span id="cb159-8"><a href="estimacion_municipios_carencias_error.html#cb159-8" tabindex="-1"></a>    <span class="at">.vars =</span> <span class="fu">c</span>(</span>
+<span id="cb159-9"><a href="estimacion_municipios_carencias_error.html#cb159-9" tabindex="-1"></a>      <span class="st">&quot;pobrea_lp&quot;</span>,</span>
+<span id="cb159-10"><a href="estimacion_municipios_carencias_error.html#cb159-10" tabindex="-1"></a>      <span class="st">&quot;pobrea_li&quot;</span>,</span>
+<span id="cb159-11"><a href="estimacion_municipios_carencias_error.html#cb159-11" tabindex="-1"></a>      <span class="st">&quot;tol_ic_1&quot;</span>,</span>
+<span id="cb159-12"><a href="estimacion_municipios_carencias_error.html#cb159-12" tabindex="-1"></a>      <span class="st">&quot;tol_ic_2&quot;</span>,</span>
+<span id="cb159-13"><a href="estimacion_municipios_carencias_error.html#cb159-13" tabindex="-1"></a>      <span class="st">&quot;ic_segsoc&quot;</span>,</span>
+<span id="cb159-14"><a href="estimacion_municipios_carencias_error.html#cb159-14" tabindex="-1"></a>      <span class="st">&quot;ic_ali_nc&quot;</span></span>
+<span id="cb159-15"><a href="estimacion_municipios_carencias_error.html#cb159-15" tabindex="-1"></a>    ),</span>
+<span id="cb159-16"><a href="estimacion_municipios_carencias_error.html#cb159-16" tabindex="-1"></a>    <span class="at">.funs =</span> <span class="fu">list</span>(<span class="at">dir =</span> <span class="sc">~</span> <span class="fu">survey_mean</span>(., <span class="at">vartype =</span> <span class="st">&quot;ci&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb159-17"><a href="estimacion_municipios_carencias_error.html#cb159-17" tabindex="-1"></a>  )</span>
+<span id="cb159-18"><a href="estimacion_municipios_carencias_error.html#cb159-18" tabindex="-1"></a></span>
+<span id="cb159-19"><a href="estimacion_municipios_carencias_error.html#cb159-19" tabindex="-1"></a>ind <span class="ot">&lt;-</span></span>
+<span id="cb159-20"><a href="estimacion_municipios_carencias_error.html#cb159-20" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;pobrea_lp&quot;</span>,</span>
+<span id="cb159-21"><a href="estimacion_municipios_carencias_error.html#cb159-21" tabindex="-1"></a>    <span class="st">&quot;pobrea_li&quot;</span>,</span>
+<span id="cb159-22"><a href="estimacion_municipios_carencias_error.html#cb159-22" tabindex="-1"></a>    <span class="st">&quot;tol_ic_1&quot;</span>,</span>
+<span id="cb159-23"><a href="estimacion_municipios_carencias_error.html#cb159-23" tabindex="-1"></a>    <span class="st">&quot;tol_ic_2&quot;</span>,</span>
+<span id="cb159-24"><a href="estimacion_municipios_carencias_error.html#cb159-24" tabindex="-1"></a>    <span class="st">&quot;ic_segsoc&quot;</span>,</span>
+<span id="cb159-25"><a href="estimacion_municipios_carencias_error.html#cb159-25" tabindex="-1"></a>    <span class="st">&quot;ic_ali_nc&quot;</span>)</span>
+<span id="cb159-26"><a href="estimacion_municipios_carencias_error.html#cb159-26" tabindex="-1"></a></span>
+<span id="cb159-27"><a href="estimacion_municipios_carencias_error.html#cb159-27" tabindex="-1"></a><span class="cf">for</span> (ii_ipm <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) {</span>
+<span id="cb159-28"><a href="estimacion_municipios_carencias_error.html#cb159-28" tabindex="-1"></a>  ii_ipm <span class="ot">&lt;-</span> ind[ii_ipm]</span>
+<span id="cb159-29"><a href="estimacion_municipios_carencias_error.html#cb159-29" tabindex="-1"></a>  paso <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;(_|</span><span class="sc">\\</span><span class="st">b)&quot;</span>, ii_ipm, <span class="st">&quot;(_|</span><span class="sc">\\</span><span class="st">b)&quot;</span>)</span>
+<span id="cb159-30"><a href="estimacion_municipios_carencias_error.html#cb159-30" tabindex="-1"></a>  dat_plot <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(estimad_dir, temp2) <span class="sc">%&gt;%</span></span>
+<span id="cb159-31"><a href="estimacion_municipios_carencias_error.html#cb159-31" tabindex="-1"></a>    <span class="fu">select</span>(ent, <span class="fu">matches</span>(paso))</span>
+<span id="cb159-32"><a href="estimacion_municipios_carencias_error.html#cb159-32" tabindex="-1"></a>  </span>
+<span id="cb159-33"><a href="estimacion_municipios_carencias_error.html#cb159-33" tabindex="-1"></a>  dat_lim <span class="ot">&lt;-</span> dat_plot <span class="sc">%&gt;%</span> <span class="fu">select</span>(ent, <span class="fu">matches</span>(<span class="st">&quot;upp|low&quot;</span>))</span>
+<span id="cb159-34"><a href="estimacion_municipios_carencias_error.html#cb159-34" tabindex="-1"></a>  <span class="fu">names</span>(dat_lim) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ent&quot;</span>, <span class="st">&quot;Lim_Inf&quot;</span>, <span class="st">&quot;Lim_Sup&quot;</span>)</span>
+<span id="cb159-35"><a href="estimacion_municipios_carencias_error.html#cb159-35" tabindex="-1"></a>  </span>
+<span id="cb159-36"><a href="estimacion_municipios_carencias_error.html#cb159-36" tabindex="-1"></a>  dat_plot <span class="sc">%&lt;&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">matches</span>(<span class="st">&quot;upp|low&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb159-37"><a href="estimacion_municipios_carencias_error.html#cb159-37" tabindex="-1"></a>    <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Origen&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Prop&quot;</span>, <span class="sc">-</span>ent) <span class="sc">%&gt;%</span></span>
+<span id="cb159-38"><a href="estimacion_municipios_carencias_error.html#cb159-38" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Origen =</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="at">pattern =</span> <span class="st">&quot;dir&quot;</span>, <span class="at">x =</span> Origen), <span class="st">&quot;ENIGH&quot;</span>, <span class="st">&quot;Estimación CEPAL&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb159-39"><a href="estimacion_municipios_carencias_error.html#cb159-39" tabindex="-1"></a>    <span class="fu">inner_join</span>(dat_lim)</span>
+<span id="cb159-40"><a href="estimacion_municipios_carencias_error.html#cb159-40" tabindex="-1"></a>  </span>
+<span id="cb159-41"><a href="estimacion_municipios_carencias_error.html#cb159-41" tabindex="-1"></a>  gg_plot <span class="ot">&lt;-</span></span>
+<span id="cb159-42"><a href="estimacion_municipios_carencias_error.html#cb159-42" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> dat_plot, <span class="fu">aes</span>(<span class="at">x =</span> ent, <span class="at">y =</span> Prop, <span class="at">color =</span> Origen)) <span class="sc">+</span></span>
+<span id="cb159-43"><a href="estimacion_municipios_carencias_error.html#cb159-43" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb159-44"><a href="estimacion_municipios_carencias_error.html#cb159-44" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb159-45"><a href="estimacion_municipios_carencias_error.html#cb159-45" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;Estimación&quot;</span>,</span>
+<span id="cb159-46"><a href="estimacion_municipios_carencias_error.html#cb159-46" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb159-47"><a href="estimacion_municipios_carencias_error.html#cb159-47" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Estimación de la carencia 2020 -&quot;</span>, ii_ipm)</span>
+<span id="cb159-48"><a href="estimacion_municipios_carencias_error.html#cb159-48" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb159-49"><a href="estimacion_municipios_carencias_error.html#cb159-49" tabindex="-1"></a>    <span class="fu">theme_bw</span>(<span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb159-50"><a href="estimacion_municipios_carencias_error.html#cb159-50" tabindex="-1"></a>    <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb159-51"><a href="estimacion_municipios_carencias_error.html#cb159-51" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb159-52"><a href="estimacion_municipios_carencias_error.html#cb159-52" tabindex="-1"></a>          <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb159-53"><a href="estimacion_municipios_carencias_error.html#cb159-53" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">scale =</span> <span class="dv">100</span>))</span>
+<span id="cb159-54"><a href="estimacion_municipios_carencias_error.html#cb159-54" tabindex="-1"></a>  </span>
+<span id="cb159-55"><a href="estimacion_municipios_carencias_error.html#cb159-55" tabindex="-1"></a>  gg_plot <span class="ot">&lt;-</span> gg_plot <span class="sc">+</span></span>
+<span id="cb159-56"><a href="estimacion_municipios_carencias_error.html#cb159-56" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(</span>
+<span id="cb159-57"><a href="estimacion_municipios_carencias_error.html#cb159-57" tabindex="-1"></a>      <span class="at">data =</span> dat_plot <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Origen <span class="sc">==</span> <span class="st">&quot;ENIGH&quot;</span>),</span>
+<span id="cb159-58"><a href="estimacion_municipios_carencias_error.html#cb159-58" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">ymin =</span> Lim_Inf, <span class="at">ymax =</span> Lim_Sup, <span class="at">x =</span> ent),</span>
+<span id="cb159-59"><a href="estimacion_municipios_carencias_error.html#cb159-59" tabindex="-1"></a>      <span class="at">width =</span> <span class="fl">0.2</span>,</span>
+<span id="cb159-60"><a href="estimacion_municipios_carencias_error.html#cb159-60" tabindex="-1"></a>      <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb159-61"><a href="estimacion_municipios_carencias_error.html#cb159-61" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb159-62"><a href="estimacion_municipios_carencias_error.html#cb159-62" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(</span>
+<span id="cb159-63"><a href="estimacion_municipios_carencias_error.html#cb159-63" tabindex="-1"></a>      <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">&quot;ENIGH&quot;</span>, <span class="st">&quot;Estimación CEPAL&quot;</span>),</span>
+<span id="cb159-64"><a href="estimacion_municipios_carencias_error.html#cb159-64" tabindex="-1"></a>      <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue3&quot;</span>)</span>
+<span id="cb159-65"><a href="estimacion_municipios_carencias_error.html#cb159-65" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb159-66"><a href="estimacion_municipios_carencias_error.html#cb159-66" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb159-67"><a href="estimacion_municipios_carencias_error.html#cb159-67" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb159-68"><a href="estimacion_municipios_carencias_error.html#cb159-68" tabindex="-1"></a>      <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb159-69"><a href="estimacion_municipios_carencias_error.html#cb159-69" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb159-70"><a href="estimacion_municipios_carencias_error.html#cb159-70" tabindex="-1"></a>      <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(</span>
+<span id="cb159-71"><a href="estimacion_municipios_carencias_error.html#cb159-71" tabindex="-1"></a>        <span class="at">angle =</span> <span class="dv">90</span>,</span>
+<span id="cb159-72"><a href="estimacion_municipios_carencias_error.html#cb159-72" tabindex="-1"></a>        <span class="at">size =</span> <span class="dv">8</span>,</span>
+<span id="cb159-73"><a href="estimacion_municipios_carencias_error.html#cb159-73" tabindex="-1"></a>        <span class="at">vjust =</span> <span class="fl">0.3</span></span>
+<span id="cb159-74"><a href="estimacion_municipios_carencias_error.html#cb159-74" tabindex="-1"></a>      ),</span>
+<span id="cb159-75"><a href="estimacion_municipios_carencias_error.html#cb159-75" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>),</span>
+<span id="cb159-76"><a href="estimacion_municipios_carencias_error.html#cb159-76" tabindex="-1"></a>      <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>)</span>
+<span id="cb159-77"><a href="estimacion_municipios_carencias_error.html#cb159-77" tabindex="-1"></a>    )</span>
+<span id="cb159-78"><a href="estimacion_municipios_carencias_error.html#cb159-78" tabindex="-1"></a>  </span>
+<span id="cb159-79"><a href="estimacion_municipios_carencias_error.html#cb159-79" tabindex="-1"></a>  <span class="fu">print</span>(gg_plot)</span>
+<span id="cb159-80"><a href="estimacion_municipios_carencias_error.html#cb159-80" tabindex="-1"></a>  <span class="fu">ggsave</span>(</span>
+<span id="cb159-81"><a href="estimacion_municipios_carencias_error.html#cb159-81" tabindex="-1"></a>    <span class="at">plot =</span> gg_plot,</span>
+<span id="cb159-82"><a href="estimacion_municipios_carencias_error.html#cb159-82" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">16</span>,</span>
+<span id="cb159-83"><a href="estimacion_municipios_carencias_error.html#cb159-83" tabindex="-1"></a>    <span class="at">height =</span> <span class="dv">9</span>,</span>
+<span id="cb159-84"><a href="estimacion_municipios_carencias_error.html#cb159-84" tabindex="-1"></a>    <span class="at">filename =</span> <span class="fu">paste0</span>(<span class="st">&quot;../output/Entregas/2020/plot_uni/ipm_&quot;</span>, ii_ipm, <span class="st">&quot;.png&quot;</span>)</span>
+<span id="cb159-85"><a href="estimacion_municipios_carencias_error.html#cb159-85" tabindex="-1"></a>  )</span>
+<span id="cb159-86"><a href="estimacion_municipios_carencias_error.html#cb159-86" tabindex="-1"></a>}</span></code></pre></div>
 
 </div>
 </div>

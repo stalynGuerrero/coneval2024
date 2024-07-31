@@ -9,6 +9,13 @@ El proceso de benchmarking se realiza mediante la función `benchmarking`, utili
 Para validar el modelo a nivel de subgrupos, se definen diversos subgrupos como `ent`, `area`, `sexo`, `edad`, `discapacidad`, `hlengua` y `nivel_edu`. Se crean gráficos de validación para cada subgrupo utilizando la función `plot_uni_validacion`. Estos gráficos se combinan y se guardan en un archivo JPG (`plot_uni.jpg`). Además, se guarda la lista de gráficos y el dataframe postestratificado en archivos RDS (`plot_uni.rds` y `poststrat_df_ictpc.rds` respectivamente), lo que permite una fácil recuperación y análisis posterior.
 
 
+#### Limpieza del Entorno y Carga de Bibliotecas{-}
+
+El entorno de R se limpia al eliminar todos los objetos actuales y se limpia la consola para asegurar que el análisis comience desde un estado limpio. A continuación, se cargan las bibliotecas necesarias para el análisis, que incluyen `scales`, `patchwork`, `srvyr`, `survey`, `haven`, `sampling`, y `tidyverse`. Estas bibliotecas proporcionan herramientas para la manipulación de datos, la creación de gráficos, el análisis de encuestas y la realización de muestreos.
+
+
+
+
 
 ```{r, eval=FALSE}
 rm(list =ls())
@@ -24,22 +31,30 @@ library(survey)
 library(haven)
 library(sampling)
 library(tidyverse)
+```
 
-###############################################################
-# Lectura de funciones 
-###############################################################
+#### Lectura de Funciones{-}
 
+Se cargan dos archivos de funciones que serán utilizadas en el análisis: `Plot_validacion_bench.R` y `Benchmarking.R`. Estos archivos contienen funciones personalizadas para la validación y el análisis comparativo.
+
+```{r, eval=FALSE}
 source("../source/Plot_validacion_bench.R", encoding = "UTF-8")
 source("../source/Benchmarking.R", encoding = "UTF-8")
+```
 
-###############################################################
-# Lectura del modelo 
-###############################################################
+#### Lectura del Modelo {-}
 
+Se lee el modelo ajustado previamente, guardado en un archivo RDS (`fit_mrp_ictpc.rds`). Este modelo será utilizado para realizar análisis adicionales o generar nuevas predicciones basadas en los datos de entrada.
+
+```{r, eval=FALSE}
 fit <- readRDS("../output/2020/modelos/fit_mrp_ictpc.rds")
 ```
 
 #### proceso de benchmarking{-}
+
+En esta sección se realiza el proceso de benchmarking utilizando la función `benchmarking`, aplicada al modelo previamente ajustado. La función evalúa el rendimiento del modelo y compara los resultados basados en las variables seleccionadas. Se especifican las variables que se consideran en el análisis: `ent`, `area`, `sexo`, `edad`, `discapacidad`, y `hlengua`. El método de benchmarking utilizado es `logit`, que se emplea para analizar el ajuste del modelo en función de estas variables.
+
+El resultado del proceso de benchmarking se guarda en un archivo RDS (`list_bench.rds`), que contiene las evaluaciones del modelo. Aunque el código para guardar y cargar este archivo está comentado, se proporciona la estructura para guardar los resultados y posteriormente cargarlos si es necesario.
 
 ```{r, eval=FALSE}
 list_bench <- benchmarking(modelo = fit,
@@ -55,7 +70,15 @@ list_bench <- benchmarking(modelo = fit,
 # list_bench <- readRDS("output/2020/plots/ictpc/list_bench.rds")
 ```
 
-#### Validaciones y plot uni {-}
+#### Validaciones benchmarking {-}
+
+En esta sección se llevan a cabo validaciones del modelo y se comparan los resultados con los datos de la encuesta. Primero, se prepara un DataFrame `poststrat_df` que incluye las predicciones del modelo (`yk_lmer`) y un ajuste de benchmarking (`yk_bench`). Esto permite comparar las estimaciones del modelo con los datos observados.
+
+Luego, se crea un objeto de diseño de encuesta `diseno_encuesta` utilizando la función `as_survey_design` para aplicar los pesos de encuesta a los datos. Se calculan las medias de las predicciones del modelo y de los datos directos para verificar la consistencia entre ambos.
+
+Para la validación nacional, se comparan las estimaciones nacionales obtenidas de la encuesta y del modelo. Esto se realiza mediante la comparación de las medias estimadas a nivel nacional del diseño de encuesta (`Nacional_dir`), el modelo ajustado (`Nacional_lmer`), y el benchmarking (`Nacional_bench`). Los resultados se resumen en un `cbind` para facilitar la comparación.
+
+Este proceso de validación permite evaluar la precisión del modelo y asegurar que sus estimaciones sean consistentes con los datos observados y con los ajustes de benchmarking.
 
 ```{r, eval=FALSE}
 poststrat_df <- fit$poststrat_df %>% data.frame() %>%  
@@ -84,6 +107,14 @@ cbind(
 ```
 
 #### Validaciones por subgrupo completo{-}
+
+En esta sección se lleva a cabo la validación del modelo a nivel de subgrupos, comparando las estimaciones del modelo con los datos directos para cada subgrupo definido. 
+
+Se definen los subgrupos de interés en el vector `subgrupo`, que incluye variables como `ent`, `area`, `sexo`, `edad`, `discapacidad`, `hlengua`, y `nivel_edu`. Se generan gráficos y tablas de validación para cada uno de estos subgrupos utilizando la función `plot_uni_validacion`. 
+
+Cada gráfico y tabla permite comparar las estimaciones del modelo (`stan_lmer`) con los datos directos (`directo`) y calcular el error relativo (ER), que muestra la diferencia porcentual entre las dos estimaciones. La tabla de validación para el subgrupo `sexo` muestra estas diferencias de manera detallada, mientras que los gráficos combinados permiten una visualización comparativa entre los diferentes subgrupos.
+
+Finalmente, se combinan los gráficos de validación en un solo objeto `plot_uni` utilizando la función `patchwork`. El gráfico combinado se guarda como una imagen JPG en el directorio de salida, y los objetos `plot_subgrupo` y `poststrat_df` se almacenan en archivos RDS para su uso futuro. Esta sección asegura que las estimaciones del modelo se validen de manera exhaustiva para cada subgrupo y se registren adecuadamente para futuras referencias.
 
 ```{r, eval=FALSE}
 subgrupo <- c("ent",

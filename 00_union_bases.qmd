@@ -62,6 +62,8 @@ memory.limit(250000000)
 
 #### Definición de Variables y Obtención de Archivos{-}
 
+Para llevar a cabo la validación y procesamiento de datos del censo 2020, se define un conjunto de variables que serán validadas. Estas variables incluyen indicadores clave como rezago educativo (`ic_rezedu`), acceso a servicios de salud (`ic_asalud`), seguridad social (`ic_segsoc`), calidad de la vivienda (`ic_cv`), servicios básicos en la vivienda (`ic_sbv`), acceso a alimentación nutritiva y de calidad (`ic_ali_nc`), y el índice de pobreza multidimensional (`ictpc`).
+
 ```{r, eval=FALSE}
 validar_var <- c(
   "ic_rezedu",
@@ -73,29 +75,46 @@ validar_var <- c(
   "ictpc"
 )
 ```
-Se define un conjunto de variables que serán validadas.
 
+Posteriormente, se obtienen listas de archivos con extensión `.dta`, que corresponden a diferentes conjuntos de datos del censo 2020. Estos archivos se organizan en tres categorías principales:
+
+1. **Archivos de muestra del censo 2020 por estado**: Se buscan archivos en la ruta `../input/2020/muestra_ampliada/SegSocial/SegSoc/` que contengan información de seguridad social.
+  
 ```{r, eval=FALSE}
-
 file_muestra_censo_2020_estado <- list.files(
   "../input/2020/muestra_ampliada/SegSocial/SegSoc/",
   full.names = TRUE,
   pattern = "dta$"
 )
+```
+
+2. **Archivos complementarios de muestra del censo 2020 por estado**: Se buscan archivos adicionales en la ruta `../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/` que contienen datos complementarios de seguridad social.
+
+```{r, eval=FALSE}
 file_muestra_censo_2020_estado_complemento <- list.files(
   "../input/2020/muestra_ampliada/SegSocial/Complemento_SegSoc/",
   full.names = TRUE,
   pattern = "dta$"
 )
+```
+
+3. **Archivos de cuestionario ampliado del censo 2020 por estado**: Se buscan archivos en la ruta `../input/2020/muestra_ampliada/IndicadoresCenso/` que incluyen indicadores generales del censo.
+
+```{r, eval=FALSE}
 muestra_cuestionario_ampliado_censo_2020_estado <- list.files(
   "../input/2020/muestra_ampliada/IndicadoresCenso/",
   full.names = TRUE,
   pattern = "dta$"
 )
 ```
-Se obtienen listas de archivos `.dta` correspondientes a diferentes conjuntos de datos del censo 2020.
+
+Estas listas de archivos permiten acceder y gestionar de manera eficiente los datos necesarios para el análisis y validación de los indicadores de pobreza y carencias sociales del censo 2020.
+
 
 #### Lectura y Combinación de Datos del Censo{-}
+
+Este bloque de código está diseñado para leer, combinar y guardar datos provenientes de múltiples archivos del censo. El objetivo es consolidar la información de diferentes fuentes en un único dataframe y almacenar los resultados intermedios y finales en archivos `.rds`.
+
 
 ```{r, eval=FALSE}
 df <- data.frame()
@@ -116,16 +135,17 @@ for (ii in 1:32) {
   cat(file_muestra_censo_2020_estado[ii], "\n")
 }
 ```
-Se iteran los archivos de datos del censo, se combinan y se almacenan en archivos `.rds` individuales y en un dataframe único.
+
+Se guarda el dataframe combinado en un archivo `.rds`.
 
 ```{r, eval=FALSE}
 saveRDS(df, file = "../output/2020/muestra_cuestionario_ampliado.rds")
 ```
-Se guarda el dataframe combinado en un archivo `.rds`.
-
 
 
 #### Lectura y Combinación de Datos de la ENIGH{-}
+
+Este bloque de código está diseñado para leer, verificar y combinar datos de la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH) 2020. La finalidad es consolidar la información de diferentes archivos de datos en un único dataframe para su posterior análisis.
 
 ```{r, eval=FALSE}
 enigh_hogares <- read_dta("../input/2020/enigh/base_hogares20.dta")
@@ -154,16 +174,28 @@ enigh <- inner_join(
 Se combinan los datos de pobreza y hogares utilizando un `inner_join`.
 
 #### Selección y Renombramiento de Variables {-}
-```{r, eval=FALSE}
-enigh$ic_ali_nc
-enigh$ictpc_pers
-enigh$ictpc <- enigh$ictpc_pers
-enigh$ic_segsoc
-```
-Se seleccionan y renombran variables clave para asegurar la consistencia en el análisis.
 
-#### Guardado del DataFrame Combinado{-}
+En esta sección, se seleccionan y renombran algunas variables clave del dataframe combinado para asegurar la consistencia en el análisis y facilitar su manipulación posterior.
+
+
 ```{r, eval=FALSE}
-saveRDS(enigh, file = "../output/2020/enigh.rds")
+   enigh$ic_ali_nc
+   enigh$ictpc_pers
+   enigh$ictpc <- enigh$ictpc_pers
+   enigh$ic_segsoc
 ```
-Se guarda el dataframe combinado en un archivo `.rds` para facilitar el acceso y análisis futuros.
+   - `enigh$ic_ali_nc`: Selección de la variable que indica carencia por acceso a la alimentación nutritiva y de calidad.
+   - `enigh$ictpc_pers`: Selección de la variable que representa el ingreso corriente total por persona.
+   - `enigh$ictpc <- enigh$ictpc_pers`: Renombramiento de `ictpc_pers` a `ictpc` para simplificar su uso en análisis posteriores.
+   - `enigh$ic_segsoc`: Selección de la variable que indica carencia por acceso a la seguridad social.
+
+#### Guardado del DataFrame Combinado {-}
+
+Finalmente, se guarda el dataframe combinado en un archivo `.rds` para facilitar el acceso y análisis futuros.
+
+
+```{r, eval=FALSE}
+   saveRDS(enigh, file = "../output/2020/enigh.rds")
+```
+Se guarda el dataframe `enigh` en un archivo `.rds` en la ruta especificada `../output/2020/enigh.rds`.
+

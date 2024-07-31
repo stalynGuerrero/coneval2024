@@ -23,7 +23,7 @@
 <meta name="author" content="Andrés Gutiérrez, Stalyn Guerrero" />
 
 
-<meta name="date" content="2024-07-30" />
+<meta name="date" content="2024-07-31" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -165,7 +165,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="estimacion_municipios_ipm_pobreza.html"><a href="estimacion_municipios_ipm_pobreza.html"><i class="fa fa-check"></i>14_estimacion_municipios_ipm_pobreza.R</a></li>
 <li class="chapter" data-level="" data-path="estimacion_municipios_ipm_pobreza_error.html"><a href="estimacion_municipios_ipm_pobreza_error.html"><i class="fa fa-check"></i>15_estimacion_municipios_ipm_pobreza_error.R</a></li>
 <li class="chapter" data-level="" data-path="mapas.html"><a href="mapas.html"><i class="fa fa-check"></i>16_Mapas.R</a></li>
-<li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a></li>
+<li class="chapter" data-level="" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html"><i class="fa fa-check"></i>17_estimacion_municipios_carencias.R</a>
+<ul>
+<li class="chapter" data-level="0.0.1" data-path="estimacion_municipios_carencias.html"><a href="estimacion_municipios_carencias.html#descripción-general"><i class="fa fa-check"></i><b>0.0.1</b> Descripción General</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="estimacion_municipios_carencias_error.html"><a href="estimacion_municipios_carencias_error.html"><i class="fa fa-check"></i>18_estimacion_municipios_carencias_error.R</a></li>
 <li class="chapter" data-level="" data-path="mapas_carencias.html"><a href="mapas_carencias.html"><i class="fa fa-check"></i>19_Mapas_carencias.R</a></li>
 <li class="chapter" data-level="" data-path="estimacion_directa_carencias.html"><a href="estimacion_directa_carencias.html"><i class="fa fa-check"></i>20_estimacion_directa_carencias.R</a></li>
@@ -199,6 +202,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Este enfoque permite realizar un ajuste fino de los modelos predictivos y asegurar que las estimaciones de pobreza sean lo más precisas posible, utilizando simulaciones y técnicas avanzadas de calibración.</p>
 <div id="limpieza-del-entorno-y-carga-de-bibliotecas-9" class="section level4 unnumbered hasAnchor">
 <h4>Limpieza del Entorno y Carga de Bibliotecas<a href="estimacion_municipios_ipm_pobreza.html#limpieza-del-entorno-y-carga-de-bibliotecas-9" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Antes de iniciar el análisis, se realiza una limpieza del entorno de trabajo para asegurar que no queden variables o datos residuales que puedan interferir con el análisis actual. Se utiliza <code>rm(list = ls())</code> para eliminar todos los objetos del entorno de R.</p>
+<p>A continuación, se cargan las bibliotecas necesarias para el análisis. Estas bibliotecas incluyen:</p>
+<ul>
+<li><strong><code>tidyverse</code></strong>: Para manipulación y visualización de datos.</li>
+<li><strong><code>data.table</code></strong>: Para operaciones eficientes con datos en tablas.</li>
+<li><strong><code>openxlsx</code></strong>: Para leer y escribir archivos de Excel.</li>
+<li><strong><code>magrittr</code></strong>: Para usar el operador de tubería (<code>%&gt;%</code>) que facilita la cadena de operaciones.</li>
+<li><strong><code>haven</code></strong>: Para importar y exportar datos en formatos de software estadístico como SPSS, Stata, y SAS.</li>
+<li><strong><code>labelled</code></strong>: Para gestionar y manipular etiquetas de variables.</li>
+<li><strong><code>sampling</code></strong>: Para técnicas de muestreo y análisis relacionados.</li>
+<li><strong><code>lme4</code></strong>: Para ajustar modelos lineales y no lineales de efectos mixtos.</li>
+<li><strong><code>survey</code></strong>: Para análisis de datos de encuestas complejas.</li>
+<li><strong><code>srvyr</code></strong>: Para aplicar métodos de análisis de encuestas utilizando una sintaxis similar a <code>dplyr</code>.</li>
+</ul>
+<p>Finalmente, se carga un script adicional desde una ubicación específica, <code>benchmarking_indicador.R</code>, que probablemente contiene funciones y procedimientos específicos para el análisis de benchmarking que se realizará a continuación.</p>
 <div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="estimacion_municipios_ipm_pobreza.html#cb116-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
 <span id="cb116-2"><a href="estimacion_municipios_ipm_pobreza.html#cb116-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb116-3"><a href="estimacion_municipios_ipm_pobreza.html#cb116-3" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
@@ -214,7 +232,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="lectura-de-datos-2" class="section level4 unnumbered hasAnchor">
 <h4>Lectura de Datos<a href="estimacion_municipios_ipm_pobreza.html#lectura-de-datos-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se cargan los datos necesarios y las predicciones de los modelos previamente ajustados.</p>
+<p>Se inicia el análisis cargando los datos necesarios y las predicciones de los modelos ajustados previamente.</p>
+<p>Primero, se leen las predicciones almacenadas en el archivo <code>predicciones.rds</code>, que contiene las predicciones para ingresos, alimentación, y seguridad social, así como la desviación estándar residual.</p>
+<p>Luego, se carga la muestra ampliada desde el archivo <code>encuesta_ampliada.rds</code>. Esta muestra ampliada es esencial para ajustar los valores y validar las predicciones en un contexto más amplio.</p>
+<p>A continuación, se carga la encuesta ENIGH desde <code>encuesta_sta.rds</code>. Se realiza una mutación en los datos para agregar la variable de ingreso (<code>ingreso</code>) basada en el indicador <code>ictpc</code>.</p>
+<p>Finalmente, se lee el archivo <code>Lineas_Bienestar.csv</code>, que contiene las líneas de bienestar. Estos datos se importan utilizando la función <code>read.delim</code> con las especificaciones adecuadas para el separador de campos y el decimal. Posteriormente, se convierte la columna <code>area</code> a formato de carácter para su uso en el análisis.</p>
 <div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="estimacion_municipios_ipm_pobreza.html#cb117-1" tabindex="-1"></a>predicciones <span class="ot">&lt;-</span> <span class="fu">readRDS</span>( <span class="st">&quot;../output/2020/modelos/predicciones.rds&quot;</span>)</span>
 <span id="cb117-2"><a href="estimacion_municipios_ipm_pobreza.html#cb117-2" tabindex="-1"></a>muestra_ampliada <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../output/2020/encuesta_ampliada.rds&quot;</span>)</span>
 <span id="cb117-3"><a href="estimacion_municipios_ipm_pobreza.html#cb117-3" tabindex="-1"></a>encuesta_enigh <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;../input/2020/enigh/encuesta_sta.rds&quot;</span>) <span class="sc">%&gt;%</span></span>
@@ -229,7 +251,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="cálculo-del-ipm-en-la-encuesta" class="section level4 unnumbered hasAnchor">
 <h4>Cálculo del IPM en la Encuesta<a href="estimacion_municipios_ipm_pobreza.html#cálculo-del-ipm-en-la-encuesta" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Aquí se calcula el IPM y las nuevas variables de pobreza moderada y extrema en la encuesta <code>encuesta_enigh</code>.</p>
+<p>En esta sección, se calcula el Índice de Pobreza Multidimensional (IPM) y se definen nuevas variables relacionadas con la pobreza en la encuesta ENIGH.</p>
+<p>Primero, se unen los datos de la encuesta ENIGH con las líneas de bienestar (<code>LB</code>) mediante la función <code>inner_join</code>. Esto permite integrar la información adicional necesaria para el cálculo del IPM.</p>
+<p>Luego, se añade una nueva columna <code>tol_ic</code> que representa la suma de los indicadores de carencia social (<code>ic_segsoc</code>, <code>ic_ali_nc</code>, <code>ic_asalud</code>, <code>ic_cv</code>, <code>ic_sbv</code>, <code>ic_rezedu</code>). A continuación, se calcula el IPM basado en las siguientes condiciones:
+- <strong>Categoría I:</strong> Población en situación de pobreza, donde el ingreso es menor que el umbral de pobreza (<code>lp</code>) y el total de carencias sociales (<code>tol_ic</code>) es mayor o igual a 1.
+- <strong>Categoría II:</strong> Población vulnerable por carencias sociales, donde el ingreso es mayor o igual al umbral de pobreza y el total de carencias sociales es mayor o igual a 1.
+- <strong>Categoría III:</strong> Población vulnerable por ingresos, donde el ingreso es menor o igual al umbral de pobreza y el total de carencias sociales es menor a 1.
+- <strong>Categoría IV:</strong> Población no pobre multidimensional y no vulnerable, donde el ingreso es mayor o igual al umbral de pobreza y el total de carencias sociales es menor a 1.</p>
+<p>Además, se crean dos nuevas variables:
+- <strong><code>pobre_moderada</code>:</strong> Indica si una persona está en situación de pobreza moderada, donde el ingreso está entre el límite inferior (<code>li</code>) y el límite de pobreza (<code>lp</code>), y el total de carencias sociales (<code>tol_ic</code>) es mayor a 2.
+- <strong><code>pobre_extrema</code>:</strong> Indica si una persona está en situación de pobreza extrema, definida como aquellos en la categoría “I” del IPM y que no cumplen con los criterios de pobreza moderada.</p>
+<p>Estas variables proporcionan una visión más detallada sobre los niveles de pobreza y las carencias sociales en la muestra.</p>
 <div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="estimacion_municipios_ipm_pobreza.html#cb118-1" tabindex="-1"></a><span class="do">################################################################################</span></span>
 <span id="cb118-2"><a href="estimacion_municipios_ipm_pobreza.html#cb118-2" tabindex="-1"></a><span class="co"># IPM en la enigh</span></span>
 <span id="cb118-3"><a href="estimacion_municipios_ipm_pobreza.html#cb118-3" tabindex="-1"></a><span class="do">################################################################################</span></span>
@@ -255,7 +287,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="preparación-de-la-muestra-intercensal" class="section level4 unnumbered hasAnchor">
 <h4>Preparación de la Muestra Intercensal<a href="estimacion_municipios_ipm_pobreza.html#preparación-de-la-muestra-intercensal" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Se ajusta la muestra ampliada y se añaden las predicciones y variables necesarias.</p>
+<p>En esta sección, se ajusta y se preparan los datos de la muestra ampliada, incorporando las predicciones obtenidas previamente y calculando nuevas variables necesarias para el análisis.</p>
+<p>Primero, la muestra ampliada se une con los datos de las líneas de bienestar (<code>LB</code>) para asegurar que toda la información relevante esté disponible. A continuación, se ajustan las variables de carencia social en la muestra ampliada para que sean binarias, es decir, se establecen como 1 si el indicador es positivo y 0 en caso contrario. Esto incluye las variables de <code>ic_asalud</code>, <code>ic_cv</code>, <code>ic_sbv</code>, y <code>ic_rezedu</code>.</p>
+<p>Se añade una nueva variable llamada <code>tol_ic4</code>, que es la suma de los indicadores ajustados de carencia social. Esta variable representa el total de carencias sociales en la muestra ampliada.</p>
+<p>Además, se incorporan las predicciones de los modelos ajustados, que incluyen:
+- <code>pred_segsoc</code>: Predicción para el indicador de seguridad social.
+- <code>pred_ingreso</code>: Predicción para el ingreso.
+- <code>desv_estandar_residual</code>: Desviación estándar residual utilizada para ajustar el modelo de ingreso.
+- <code>pred_ic_ali_nc</code>: Predicción para el indicador de alimentación y necesidades básicas.</p>
+<p>Finalmente, se elimina el objeto <code>predicciones</code> del entorno para liberar memoria, ya que los datos necesarios han sido incorporados en la muestra ampliada.</p>
+<p>Esta preparación asegura que la muestra intercensal esté completa y lista para el análisis posterior.</p>
 <div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="estimacion_municipios_ipm_pobreza.html#cb119-1" tabindex="-1"></a><span class="do">################################################################################</span></span>
 <span id="cb119-2"><a href="estimacion_municipios_ipm_pobreza.html#cb119-2" tabindex="-1"></a><span class="co"># preparando encuesta intercensal</span></span>
 <span id="cb119-3"><a href="estimacion_municipios_ipm_pobreza.html#cb119-3" tabindex="-1"></a><span class="do">################################################################################</span></span>
@@ -277,7 +318,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="iteración-por-entidades-federativas" class="section level4 unnumbered hasAnchor">
 <h4>Iteración por Entidades Federativas<a href="estimacion_municipios_ipm_pobreza.html#iteración-por-entidades-federativas" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Para cada entidad federal (<code>ii_ent</code>), se realiza una iteración que ajusta la muestra post-calibración y calcula las estimaciones.</p>
+<p>En esta sección, se realiza un proceso iterativo para ajustar y calibrar la muestra post-calibración en cada entidad federativa. El objetivo es obtener estimaciones precisas a nivel municipal y realizar validaciones. El proceso se repite para cada entidad federal especificada.</p>
+<p><strong>1. Inicialización y Configuración:</strong></p>
+<p>El código comienza con una lista de entidades federativas, representadas por sus códigos (<code>ii_ent</code>). Se establece un bucle que itera sobre cada uno de estos códigos. Para cada entidad federal, se imprime la hora de inicio de la iteración y se realiza el filtrado de datos específicos para la entidad actual.</p>
+<p><strong>2. Filtrado y Cálculo de Totales:</strong></p>
+<p>Para la entidad actual (<code>ii_ent</code>), se filtra la muestra ampliada (<code>muestra_ampliada</code>) para incluir solo los datos correspondientes. Luego, se calcula el total de cada municipio (<code>total_mpio</code>) sumando una variable de ponderación (<code>factor</code>). También se calcula el total para la entidad (<code>tot_ent</code>).</p>
+<p>La encuesta de referencia (<code>encuesta_enigh</code>) se filtra para la entidad actual y se eliminan las observaciones con valores faltantes (<code>na.omit</code>). A partir de esta encuesta, se calcula el total de población (<code>tot_pob</code>) por tipo de pobreza multidimensional (<code>ipm</code>). Se estima la proporción y el total ajustado para cada categoría de pobreza.</p>
+<p><strong>3. Cálculo de Pobreza:</strong></p>
+<p>Se calculan las tasas de pobreza moderada y extrema utilizando los datos de la encuesta. La pobreza moderada se define como aquellos con ingresos entre los umbrales de pobreza (<code>li</code> y <code>lp</code>) y con un índice de carencia social mayor que 2. La pobreza extrema se define como aquellos en situación de pobreza multidimensional sin pobreza moderada.</p>
+<p><strong>4. Ajuste y Calibración:</strong></p>
+<p>En cada iteración, se ajusta la muestra post-calibración (<code>muestra_post</code>) con las predicciones de los modelos (<code>pred_segsoc</code>, <code>pred_ic_ali_nc</code>, <code>pred_ingreso</code>) y la desviación estándar residual (<code>desv_estandar_residual</code>). Se calculan nuevas variables relacionadas con el índice de pobreza multidimensional (IPM) y la pobreza moderada y extrema.</p>
+<p>Se crean variables dummy para los municipios y las categorías de IPM y se incorporan al diseño de la encuesta (<code>diseno_post</code>). Luego, se realiza la calibración utilizando el método de raking (<code>calibrate</code>), ajustando el diseño para que coincida con las estimaciones de la población (<code>Tx_hat</code>).</p>
+<p><strong>5. Estimación y Validación:</strong></p>
+<p>Se obtienen las estimaciones calibradas para el IPM y la pobreza a nivel municipal. Estas estimaciones se comparan con los totales calculados previamente para validar la precisión de las predicciones. Se calcula la proporción de cada categoría de IPM y se compara con los totales esperados.</p>
+<p><strong>6. Guardado de Resultados:</strong></p>
+<p>Los resultados de cada iteración se guardan en un archivo <code>.rds</code> en una carpeta específica para la entidad y la iteración actual. El archivo incluye:
+- <code>valida</code>: Resultados de la validación de la pobreza y el IPM.
+- <code>estima_calib</code>: Estimaciones calibradas para el IPM y la pobreza.</p>
+<p>Finalmente, se mide y se imprime el tiempo total que tomó cada iteración. Se libera la memoria utilizada con <code>gc()</code> para optimizar el rendimiento durante el proceso iterativo.</p>
+<p>Este procedimiento asegura que las estimaciones sean precisas y que se validen adecuadamente para cada entidad federativa.</p>
 <div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="estimacion_municipios_ipm_pobreza.html#cb120-1" tabindex="-1"></a>ii_ent <span class="ot">&lt;-</span> <span class="st">&quot;02&quot;</span></span>
 <span id="cb120-2"><a href="estimacion_municipios_ipm_pobreza.html#cb120-2" tabindex="-1"></a>iter <span class="ot">=</span> <span class="dv">1</span></span>
 <span id="cb120-3"><a href="estimacion_municipios_ipm_pobreza.html#cb120-3" tabindex="-1"></a></span>

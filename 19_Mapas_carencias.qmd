@@ -8,6 +8,10 @@ A continuación, define los cortes para la clasificación de los datos en porcen
 
 Finalmente, el código realiza un proceso similar para visualizar los errores de estimación asociados a cada indicador. Los cortes para los errores se definen de manera diferente, y se generan mapas temáticos que muestran la magnitud de estos errores. Cada mapa se guarda en formato PNG con especificaciones similares.
 
+#### Limpieza del Entorno y Carga de Bibliotecas{-}
+
+Este fragmento de código realiza una serie de preparativos esenciales antes de ejecutar un análisis de datos. Primero, limpia el entorno de trabajo eliminando todos los objetos existentes en la memoria y fuerza la recolección de basura para liberar espacio en el sistema, asegurando que no queden residuos de ejecuciones anteriores que puedan afectar la ejecución actual. Luego, carga una serie de bibliotecas necesarias para el análisis y la visualización de datos. Entre las bibliotecas cargadas se encuentran `dplyr` y `data.table` para la manipulación de datos, `haven` para la importación de datos, `magrittr` para el uso de operadores encadenados, `stringr` para el manejo de cadenas de texto, `openxlsx` para la manipulación de archivos Excel, y `tmap` y `sf` para la creación de mapas y el manejo de datos espaciales. Además, se redefine la función `select` para asegurarse de que se utilice la versión de `dplyr`. Finalmente, el código establece un límite de memoria RAM de 250 GB para la ejecución del script, lo cual es crucial para evitar problemas de memoria durante el análisis de grandes volúmenes de datos.
+
 ```{r, eval=FALSE}
 rm(list = ls())
 gc()
@@ -28,10 +32,17 @@ select <- dplyr::select
 ###------------ Definiendo el límite de la memoria RAM a emplear ------------###
 
 memory.limit(250000000)
+```
 
-################################################################################
-###----------------------------- Loading datasets ---------------------------###
-################################################################################
+##### Lectura de Datos{-}
+
+Primero, carga un archivo de resultados de pobreza a nivel municipal en formato RDS, utilizando la función `readRDS`. El archivo cargado, `ipm_mpios`, contiene los resultados de los indicadores de pobreza a nivel municipal que se han generado previamente.
+
+En segundo lugar, lee un archivo de forma (shapefile) en formato `.shp` utilizando la función `read_sf` de la biblioteca `sf`. Este archivo, ubicado en la carpeta "../shapefile/2020/", contiene datos espaciales que describen la geografía de México para el año 2020. Una vez cargado el shapefile, el código realiza dos transformaciones en el objeto `ShapeDAM`: extrae el código de entidad (`ent`) a partir de los primeros dos dígitos del campo `CVEGEO`, y elimina la columna `CVEGEO`, ya que no es necesaria para el análisis posterior.
+
+Finalmente, define un vector `cortes` que contiene los puntos de corte para la clasificación de datos en intervalos porcentuales (0%, 15%, 30%, 50%, 80%, 100%). Estos cortes serán utilizados para categorizar o visualizar los datos de pobreza en diferentes rangos de intensidad.
+
+```{r, eval=FALSE}
 ipm_mpios <- 
   readRDS("../output/Entregas/2020/result_mpios_carencia.RDS")   
 
@@ -41,7 +52,21 @@ ShapeDAM %<>% mutate(cve_mun = CVEGEO ,
                      CVEGEO = NULL) 
 
 cortes <- c(0,  15, 30, 50, 80, 100 )/100
+```
 
+#### Mapas de las carencias estimadas {-}
+
+Primero, se crea un objeto `P1_mpio_norte` utilizando `tm_shape`, que carga un mapa basado en el shapefile `ShapeDAM` y une este mapa con los datos de pobreza `ipm_mpios` a través de la columna `cve_mun`. Los datos de pobreza son incorporados al mapa utilizando un `left_join`.
+
+Se define un vector `ind` que contiene los nombres de los indicadores de pobreza que se desean visualizar en los mapas. Estos indicadores incluyen varias medidas de pobreza y carencias sociales.
+
+Luego, se ejecuta un bucle `for` que recorre cada indicador en `ind`. Para cada indicador (`yks_ind`), se crea un mapa temático (`Mapa_I`) usando `tm_polygons`. Este mapa visualiza los datos de pobreza con una paleta de colores verde (`palette = "Greens"`) y clasifica los datos en intervalos definidos por el vector `cortes`. El título del mapa incluye el nombre del indicador actual.
+
+La función `tm_layout` ajusta la presentación del mapa, configurando la leyenda para que sea visible, con un tamaño de texto específico, y colocada en la posición izquierda. La leyenda se presenta en una disposición vertical y con estilos de fuente en negrita.
+
+Finalmente, el mapa se guarda en un archivo PNG utilizando `tmap_save`, con un tamaño de imagen de 4000x3000 píxeles y una relación de aspecto de 0. El archivo se nombra de acuerdo con el indicador de pobreza actual y se guarda en la carpeta "../output/Entregas/2020/mapas/".
+
+```{r, eval=FALSE}
 P1_mpio_norte <-
   tm_shape(ShapeDAM %>%
              left_join(ipm_mpios,   by = "cve_mun"))
@@ -82,12 +107,21 @@ for(yks_ind in ind){
   
     
 }
+```
 
+#### Mapas del error de la estimación de las carencias {-}
 
+Primero, se redefine el vector `cortes` para establecer los intervalos en los que se clasificarán los datos de error de estimación. Los cortes incluyen valores como 0%, 1.5%, 10%, 25%, 50% y 100%.
 
-################################################################################
-## Errores 
-################################################################################
+Luego, se genera un vector `ind_ee` que contiene los nombres de las variables de error de estimación, obtenidos al anteponer "ee_" a cada indicador de pobreza en `ind`. Por ejemplo, si `ind` incluye "pobrea_lp", entonces `ind_ee` incluirá "ee_pobrea_lp".
+
+A continuación, se ejecuta un bucle `for` que recorre cada indicador de error de estimación en `ind_ee`. Para cada indicador (`yks_ind`), se crea un mapa temático (`Mapa_I_ee`) usando `tm_polygons`. Este mapa visualiza el error de estimación con la paleta de colores verde (`palette = "Greens"`) y clasifica los datos en intervalos definidos por el vector `cortes`. El título del mapa incluye el nombre del indicador de error de estimación actual.
+
+La función `tm_layout` ajusta la presentación del mapa, configurando la leyenda para que sea visible, con un tamaño de texto específico y ubicada en la posición izquierda. La leyenda se presenta en una disposición vertical y con estilos de fuente en negrita.
+
+Finalmente, el mapa se guarda en un archivo PNG usando `tmap_save`, con un tamaño de imagen de 4000x3000 píxeles y una relación de aspecto de 0. El archivo se nombra según el indicador de error de estimación actual y se guarda en la carpeta "../output/Entregas/2020/mapas/".
+
+```{r, eval=FALSE}
 cortes <- c(0,  1,5,10, 25,  50,  100 )/100
 
 ind_ee <- paste0("ee_", ind)

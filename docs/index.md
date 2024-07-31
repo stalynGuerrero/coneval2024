@@ -1,7 +1,7 @@
 ---
 title: "Manual de procesamiento del indicador de pobreza multidimensional mediante el uso de estimación de áreas pequeñas para México 2020"
 author: "Andrés Gutiérrez^[Experto Regional en Estadísticas Sociales - Comisión Económica para América Latina y el Caribe (CEPAL) -  andres.gutierrez@cepal.org], Stalyn Guerrero^[Consultor - Comisión Económica para América Latina y el Caribe (CEPAL), guerrerostalyn@gmail.com]"
-date: "2024-07-30"
+date: "2024-07-31"
 documentclass: book
 biblio-style: apalike
 link-citations: yes

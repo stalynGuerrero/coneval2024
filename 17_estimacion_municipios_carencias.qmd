@@ -11,6 +11,8 @@ Finalmente, se guarda cada iteración de los resultados calibrados en archivos R
 
 #### Configuración y carga de librerías{-}
 
+El código comienza limpiando el entorno de trabajo en R para eliminar cualquier objeto residual que pudiera interferir con el análisis, utilizando la función `rm(list = ls())`. A continuación, carga una serie de librerías esenciales: `tidyverse` para manipulación de datos y visualización, `data.table` para el manejo eficiente de grandes conjuntos de datos, `openxlsx` para trabajar con archivos Excel, `magrittr` para el uso del operador `%>%` en la encadenación de operaciones, `haven` para leer y escribir datos en formatos de software estadístico, `labelled` para manejar etiquetas de variables, `sampling` para técnicas de muestreo, `lme4` para modelos lineales y no lineales con efectos mixtos, `survey` para el análisis de datos de encuestas, y `srvyr` para la integración de datos de encuestas con `dplyr`. Finalmente, el script `benchmarking_indicador.R` se carga usando la función `source()` para incluir funciones adicionales o configuraciones necesarias para el análisis.
+
 ```{r, eval=FALSE}
 ### Cleaning R environment ###
 rm(list = ls())
@@ -29,10 +31,9 @@ source("../source/benchmarking_indicador.R")
 
 #### Lectura de datos{-}
 
+El código comienza con la lectura de varios archivos de datos necesarios para el análisis. Primero, se cargan las predicciones guardadas en el archivo `predicciones.rds` ubicado en la carpeta de modelos de 2020. Luego, se lee el archivo `encuesta_ampliada.rds`, que contiene datos ampliados de encuestas, y el archivo `encuesta_sta.rds`, que se transforma para incluir la variable `ingreso`, calculada a partir de `ictpc`. Finalmente, se importa el archivo `Lineas_Bienestar.csv` con delimitadores específicos y se convierte la columna `area` en formato de texto. Estos pasos preparan los datos necesarios para realizar el análisis posterior.
+
 ```{r, eval=FALSE}
-################################################################################
-# Lectura de datos 
-################################################################################
 predicciones <- readRDS("../output/2020/modelos/predicciones.rds")
 encuesta_ampliada <- readRDS("../output/2020/encuesta_ampliada.rds")
 encuesta_enigh <- readRDS("../input/2020/enigh/encuesta_sta.rds") %>%
@@ -46,7 +47,19 @@ LB <- read.delim(
 ) %>% mutate(area = as.character(area))
 ```
 
-#### IPM en la ENIGH  {-}
+####  Índice de Pobreza Multidimensional en la ENIGH  {-}
+
+En esta sección del código se calcula el Índice de Pobreza Multidimensional (IPM) utilizando la Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH). 
+
+Primero, se realiza una combinación de la base de datos `encuesta_enigh` con el archivo `LB` que contiene las líneas de bienestar. Luego, se crean nuevas variables para evaluar la pobreza multidimensional:
+
+1. **`tol_ic`**: Suma de los indicadores de bienestar social y económico (`ic_segsoc`, `ic_ali_nc`, `ic_asalud`, `ic_cv`, `ic_sbv`, `ic_rezedu`).
+2. **`pobrea_lp`**: Variable binaria que indica si el ingreso es menor que el umbral de pobreza (lp), asignando un valor de 1 si es el caso, y 0 en caso contrario.
+3. **`pobrea_li`**: Variable binaria que indica si el ingreso es menor que el umbral de pobreza extrema (li), asignando un valor de 1 si es el caso, y 0 en caso contrario.
+4. **`tol_ic_1`**: Variable binaria que indica si la suma de los indicadores de bienestar (`tol_ic`) es mayor que 0, asignando un valor de 1 si es el caso, y 0 en caso contrario.
+5. **`tol_ic_2`**: Variable binaria que indica si la suma de los indicadores de bienestar (`tol_ic`) es mayor que 2, asignando un valor de 1 si es el caso, y 0 en caso contrario.
+
+Estas transformaciones permiten evaluar la pobreza multidimensional en función de los umbrales establecidos y los indicadores de bienestar.
 
 ```{r, eval=FALSE}
 ################################################################################
@@ -63,12 +76,15 @@ encuesta_enigh <- encuesta_enigh %>%
   )
 ```
 
-#### Preparación de encuesta intercensal {-}
+#### Preparación de encuesta ampliada {-}
+
+En esta sección, se lleva a cabo la preparación de la base de datos `encuesta_ampliada` para el análisis de pobreza multidimensional. En primer lugar, la base `encuesta_ampliada` se une con el archivo `LB`, que contiene las líneas de bienestar. A continuación, se realizan varias transformaciones importantes en las variables de la encuesta. Se transforman los indicadores relacionados con salud (`ic_asalud`), cobertura de vivienda (`ic_cv`), servicios básicos (`ic_sbv`), y educación (`ic_rezedu`) en variables binarias, donde un valor de 1 se mantiene como 1 y un valor distinto se convierte en 0. Además, se calcula `tol_ic4`, que representa la suma de estos indicadores de bienestar.
+
+Se incorporan también las predicciones generadas por modelos previos, incluyendo las predicciones de seguridad social (`pred_segsoc`), ingresos (`pred_ingreso`), y el indicador de alimentos no consumidos (`pred_ic_ali_nc`), junto con el error estándar residual (`desv_estandar_residual`). Aunque se ha planificado crear una estructura de directorios para almacenar los resultados de las iteraciones de calibración de carencia por municipio, esta parte del código está comentada y no se ejecuta en este fragmento.
+
+Finalmente, se realiza una limpieza de memoria al eliminar el objeto `predicciones`, y se configuran variables adicionales. Se define un código de entidad específico (`ii_ent`) y se prepara una lista (`list_yks`) que incluye las variables clave para el análisis, tales como indicadores de pobreza y bienestar. Esta preparación es esencial para facilitar el análisis posterior y la organización de los resultados en directorios específicos.
 
 ```{r, eval=FALSE}
-################################################################################
-# preparando encuesta intercensal
-################################################################################
 encuesta_ampliada <- encuesta_ampliada %>%
   inner_join(LB) %>%
   mutate(
@@ -103,7 +119,43 @@ list_yks <- list(
 )
 ```
 
+
 #### Iteraciones y calibración {-}
+
+En esta sección del código, se realiza un proceso iterativo para la calibración de estimaciones de pobreza multidimensional a nivel municipal. Este proceso se ejecuta para una lista específica de entidades, representadas por sus códigos (`ii_ent`).
+
+### Descripción General
+
+1. **Inicio del Ciclo de Iteración:**
+   - Se comienza un ciclo `for` que itera sobre una lista de códigos de entidades (`ii_ent`), que representan diferentes áreas geográficas para las cuales se calibrarán los modelos.
+
+2. **Configuración y Preparación de Datos:**
+   - Para cada entidad (`ii_ent`), se registra el tiempo de inicio y se filtran los datos correspondientes a la entidad actual en `encuesta_ampliada` y `encuesta_enigh`.
+   - Se agrupan los datos por municipio y se calcula la población total de cada municipio (`total_mpio`) y la población total a nivel estatal (`tot_pob`).
+   - Se crean los vectores `top_caren` y `tx_mun`, que se combinan en `Tx_hat` para la calibración de los modelos.
+
+3. **Iteraciones de Calibración:**
+   - Se inicia un ciclo `for` para realizar 200 iteraciones de calibración.
+   - En cada iteración:
+     - Se simulan nuevas observaciones para las variables `ic_segsoc`, `ic_ali_nc`, y `ingreso` utilizando distribuciones aleatorias basadas en las predicciones previas.
+     - Se actualizan las variables de pobreza y bienestar (`pobrea_lp`, `pobrea_li`, `tol_ic_1`, `tol_ic_2`) en función de los nuevos valores generados.
+   
+4. **Calibración del Modelo:**
+   - Para cada conjunto de variables de interés (`list_yks`), se preparan los datos para la calibración:
+     - Se generan variables dummy para los códigos de municipios y se construye un diseño de encuesta usando `as_survey_design`.
+     - Se define una fórmula para la calibración y se intenta ajustar el modelo con el método de `raking`.
+     - Si ocurre un error durante la calibración, se captura el error y se continúa con la siguiente iteración.
+
+5. **Resumen y Guardado de Resultados:**
+   - Los resultados calibrados se agrupan por municipio y se guardan en un archivo `.rds` en un directorio específico para cada entidad y cada iteración.
+   - Se limpia la memoria (`gc()`) para liberar espacio.
+   
+6. **Registro de Tiempo:**
+   - Al final de cada iteración de entidad, se calcula y se imprime el tiempo total transcurrido.
+
+
+Los resultados de cada iteración se guardan en archivos que permiten la evaluación de la calibración en diferentes áreas geográficas y en diferentes iteraciones, lo que facilita el análisis de la variabilidad y la precisión de las estimaciones de pobreza multidimensional. 
+
 
 ```{r, eval=FALSE}
 for(ii_ent in c("03", "06", "23", "04", "01", "22", "27", "25", "18",

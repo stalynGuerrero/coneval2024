@@ -11,7 +11,9 @@ Finalmente, se realiza una transformación la variable de ingreso (`ingreso`) a 
 
 #### Limpieza del Entorno y Carga de Bibliotecas {-}
 
-Se limpia el entorno de R y se cargan las bibliotecas necesarias para el análisis.
+Para preparar el entorno de análisis, se inicia con la limpieza del espacio de trabajo en R, eliminando todos los objetos existentes y ejecutando el recolector de basura para liberar memoria. Esta acción asegura que no haya conflictos o residuos de análisis anteriores que puedan afectar el trabajo actual. A continuación, se cargan las bibliotecas necesarias para el análisis. Entre estas se encuentran `patchwork` para la combinación de gráficos, `nortest` para pruebas de normalidad, `lme4` para modelos lineales mixtos, `tidyverse` para manipulación y visualización de datos, `magrittr` para la sintaxis de tuberías, `caret` para la creación de modelos predictivos, y `car` para técnicas de regresión y diagnóstico. Además, se incluye un archivo de funciones adicionales `modelos_freq.R`, que contiene scripts personalizados para el análisis de modelos.
+
+Este entorno preparado permite realizar un análisis riguroso y detallado de los datos, asegurando que todas las herramientas y funciones necesarias estén disponibles y actualizadas.
 
 ```{r, eval=FALSE}
 rm(list =ls())
@@ -30,7 +32,7 @@ source("../source/modelos_freq.R")
 
 #### Variables de Agregación {-}
 
-Se define un vector de variables que se utilizarán para la agregación de datos.
+Se define un vector de variables llamado `byAgrega`, que incluye los campos `ent`, `cve_mun`, `area`, `sexo`, `edad`, `discapacidad`, `hlengua`, y `nivel_edu`. Estas variables se utilizarán para la agregación de datos en el análisis, permitiendo estructurar y resumir la información según diferentes dimensiones y características.
 
 ```{r, eval=FALSE}
 byAgrega <-
@@ -46,7 +48,9 @@ byAgrega <-
 
 #### Carga de Datos {-}
 
-Se cargan los datos de la encuesta, el censo y los predictores a nivel estatal.
+Se cargan los datos necesarios para el análisis, incluyendo la encuesta (`encuesta_sta`), el censo (`censo_sta`), y los predictores a nivel estatal (`statelevel_predictors_df`). 
+
+La memoria se ajusta a un límite de 10 millones para manejar estos datos. Tras la carga de los archivos RDS, se extraen los nombres de las covariables de `statelevel_predictors_df`, excluyendo aquellos que comienzan con "hog_" y el identificador de municipio (`cve_mun`). Esto permite enfocarse en las variables relevantes para el análisis.
 
 ```{r, eval=FALSE}
 # Loading data ------------------------------------------------------------
@@ -61,7 +65,13 @@ cov_names <- cov_names[!grepl(x = cov_names,pattern = "^hog_|cve_mun")]
 
 #### Selección de Variables {-}
 
-Se seleccionan las variables predictoras que se utilizarán en el modelo.
+Se procede a la selección de las variables predictoras que se utilizarán en el modelo. Se inicia por definir un conjunto inicial de variables y luego se elige un subconjunto relevante para el análisis. En esta fase, se han identificado y seleccionado variables predictoras clave, entre las que se encuentran indicadores relacionados con educación, ingreso, y características geográficas y económicas.
+
+Primero, se propone una opción para seleccionar las variables usando una técnica de selección de características denominada `rfe` (recursive feature elimination), que evalúa el impacto de diferentes variables en la variable objetivo (`ingreso`). Sin embargo, esta opción está comentada en el código.
+
+Luego, se definen explícitamente las variables seleccionadas para el análisis. Estas incluyen indicadores como `prom_esc_rel_urb`, `smg1`, `gini15m`, `ictpc15`, `altitud1000`, entre otros. Estas variables se consideran relevantes para el modelo y son seleccionadas para su uso en el análisis.
+
+Finalmente, se filtran las variables que se registrarán para la inclusión en el análisis, excluyendo ciertas variables específicas que no serán consideradas. Este paso asegura que solo las covariables pertinentes sean utilizadas en la modelización, basándose en las necesidades específicas del análisis y los objetivos del estudio.
 
 ```{r, eval=FALSE}
 # Selección de variables
@@ -120,7 +130,13 @@ cov_registros <- setdiff(
 
 #### Fórmula del Modelo {-}
 
-Se define la fórmula del modelo incluyendo los efectos aleatorios y las variables predictoras seleccionadas.
+Se define la fórmula del modelo para el análisis, la cual especifica cómo se relacionan las variables predictoras con la variable dependiente `ingreso`. Esta fórmula incluye tanto efectos aleatorios como efectos fijos para capturar diferentes niveles de variabilidad en los datos.
+
+En la fórmula del modelo, se incorporan efectos aleatorios para los códigos municipales (`cve_mun`), el habla de lenguas indígenas (`hlengua`), y la discapacidad (`discapacidad`). Estos efectos aleatorios permiten capturar la variabilidad específica entre estos grupos y ajustar el modelo en consecuencia.
+
+Además, se incluyen varios efectos fijos que representan variables independientes clave en el análisis: entidad (`ent`), nivel educativo (`nivel_edu`), edad (`edad`), área (`area`), y sexo (`sexo`). Estas variables fijas proporcionan información sobre cómo estos factores afectan la variable dependiente.
+
+Finalmente, se incorporan las variables predictoras seleccionadas, que se concatenan en la fórmula como términos adicionales. Estas variables predictoras se han seleccionado previamente como relevantes para el modelo y se añaden para evaluar su impacto en el ingreso. La fórmula resultante combina estos elementos para construir un modelo completo que considera tanto efectos aleatorios como fijos en el análisis de los datos.
 
 ```{r, eval=FALSE}
 cov_registros <- paste0(cov_registros, collapse = " + ")
@@ -133,7 +149,9 @@ formula_model <-
 
 #### Ajuste del Modelo {-}
 
-Se ajusta el modelo de ingreso utilizando la función `modelo_ingreso` y se guarda el resultado.
+Se ajusta el modelo de ingreso utilizando la función `modelo_ingreso`, la cual se aplica a los datos de la encuesta (`encuesta_sta`) junto con los predictores a nivel estatal (`statelevel_predictors_df`) y la tabla censal (`censo_sta`). La fórmula del modelo, previamente definida (`formula_model`), se emplea para especificar las relaciones entre las variables y los efectos aleatorios y fijos en el análisis.
+
+Una vez ajustado el modelo, se guardan los resultados en un archivo `.rds` en la ruta especificada, lo que permite almacenar y compartir el modelo ajustado para su posterior análisis o uso. Además, se generan y guardan visualizaciones de los resultados del modelo, incluyendo un gráfico de densidad y un histograma de la posteriori, que se almacenan como archivos de imagen (`.png`). Estos gráficos permiten examinar la distribución de los resultados y la calidad del ajuste del modelo, proporcionando una representación visual de los resultados obtenidos.
 
 ```{r, eval=FALSE}
 encuesta_sta$ingreso <- as.numeric(encuesta_sta$ictpc)

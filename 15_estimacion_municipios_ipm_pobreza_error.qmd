@@ -13,7 +13,11 @@ Finalmente, se realiza una visualización comparativa de las estimaciones de pob
 El código que compartiste está orientado a procesar y analizar datos de una encuesta para calcular y comparar las estimaciones de pobreza y el Índice de Pobreza Multidimensional (IPM). A continuación, te proporciono un desglose de las principales secciones y acciones del código:
 
 ####  Preparación del Entorno{-}
-Limpia el entorno y carga las bibliotecas necesarias para el análisis.
+
+En esta etapa se realiza la limpieza del entorno de trabajo y se cargan las bibliotecas necesarias para llevar a cabo el análisis. Primero, se elimina cualquier objeto que pueda haber quedado en el entorno global, utilizando el comando `rm(list = ls())`. Este paso es crucial para evitar interferencias de variables o datos residuales de análisis previos.
+
+A continuación, se cargan las bibliotecas necesarias para el análisis. Las bibliotecas incluyen `tidyverse`, un conjunto de paquetes diseñado para facilitar la manipulación y visualización de datos, `magrittr`, que proporciona el operador de encadenamiento `%>%` para escribir código más legible y fluido, `survey`, que ofrece herramientas para el análisis de datos de encuestas complejas, y `srvyr`, que permite realizar operaciones sobre datos de encuestas utilizando una sintaxis similar a `dplyr`. La carga de estas bibliotecas asegura que se disponga de las herramientas adecuadas para manejar y analizar los datos de manera efectiva.
+
 
 ```{r, eval=FALSE}
 rm(list = ls())
@@ -27,7 +31,15 @@ library(srvyr)
 
 #### Lectura de Datos{-}
 
-Carga y prepara los datos necesarios: `muestra_ampliada`, `encuesta_enigh`, y `LB`.
+En esta sección se lleva a cabo la carga y preparación de los datos necesarios para el análisis. Se leen tres conjuntos de datos clave: `muestra_ampliada`, `encuesta_enigh`, y `LB`.
+
+Primero, se carga el archivo de muestra ampliada, almacenado en el archivo `../output/2020/encuesta_ampliada.rds`, utilizando la función `readRDS()`. Este archivo contiene la muestra ampliada del censo, que incluye una serie de variables importantes para el análisis posterior.
+
+Luego, se carga el archivo `encuesta_enigh`, ubicado en `../input/2020/enigh/encuesta_sta.rds`. Este archivo se lee también mediante `readRDS()`, y se le añade una columna nueva llamada `ingreso`, que toma los valores de la columna `ictpc`. Esta columna `ingreso` se usará para realizar cálculos y análisis en los pasos siguientes.
+
+Finalmente, se lee el archivo `Lineas_Bienestar.csv` con la función `read.delim()`, especificando que el archivo está separado por punto y coma (`sep = ";"`) y que los decimales están representados por comas (`dec = ","`). Este archivo contiene datos sobre las líneas de bienestar, y se convierte la columna `area` a formato carácter para asegurar una correcta manipulación de los datos en el análisis. 
+
+Estos datos, una vez cargados, se preparan para el análisis mediante la adición de columnas y el ajuste de formatos necesarios.
 
 ```{r, eval=FALSE}
 muestra_ampliada <- readRDS("../output/2020/encuesta_ampliada.rds")
@@ -43,9 +55,22 @@ LB <- read.delim(
 ```
 
 
-#### Cálculo del IPM en la Encuesta{-}
+#### Cálculo del Índice de Pobreza Multidimensional (IPM) en `encuesta_enigh` {-}
 
-Calcula el IPM y las variables asociadas en `encuesta_enigh`.
+Esta sección del código realiza el cálculo del Índice de Pobreza Multidimensional (IPM) y de variables asociadas utilizando los datos de la encuesta `encuesta_enigh` y la información sobre las líneas de bienestar `LB`. El objetivo es integrar la información de las carencias y el ingreso para clasificar a los individuos en diferentes categorías de pobreza y vulnerabilidad.
+
+1. **Integración de Datos**: Primero, se realiza una unión interna (`inner_join()`) entre `encuesta_enigh` y `LB`, añadiendo las variables de las líneas de bienestar (`LB`) a los datos de la encuesta.
+
+2. **Cálculo de `tol_ic`**: Se calcula la variable `tol_ic`, que representa el total de las carencias sociales que un individuo enfrenta. Esta variable es la suma de varias carencias (`ic_segsoc`, `ic_ali_nc`, `ic_asalud`, `ic_cv`, `ic_sbv`, y `ic_rezedu`).
+
+3. **Determinación del IPM**:
+   - **Pobreza Multidimensional (`ipm`)**: Se clasifica a cada individuo en una de las cuatro categorías de pobreza multidimensional basadas en el ingreso (`ingreso`) y el total de carencias (`tol_ic`).
+
+4. **Variables de Pobreza Moderada y Extrema**:
+   - **Pobreza Moderada (`pobre_moderada`)**: Se define como 1 si el ingreso está entre la línea de pobreza extrema (`li`) y la línea de pobreza (`lp`), y el total de carencias sociales (`tol_ic`) es mayor que 2; en caso contrario, se define como 0.
+   - **Pobreza Extrema (`pobre_extrema`)**: Se define como 1 si el individuo está en la categoría de pobreza multidimensional "I" y no es considerado pobre moderado; en caso contrario, se define como 0.
+
+Estas transformaciones y cálculos permiten clasificar y analizar el nivel de pobreza y las condiciones de vulnerabilidad de los individuos en la encuesta `encuesta_enigh`.
 
 ```{r, eval=FALSE}
 encuesta_enigh <-
@@ -68,7 +93,7 @@ encuesta_enigh <-
 
 #### Resumen de Datos por Municipio{-}
 
-Suma el número de personas por municipio en `muestra_ampliada`.
+El análisis de los datos de la `muestra_ampliada` se centra en calcular la cantidad total de personas en cada municipio. Para lograr esto, se agrupan los datos por entidad federativa y por clave de municipio. Luego, se suma el número de personas, representado por la variable `factor`, para cada municipio específico. Esta operación proporciona un resumen detallado de la población en cada municipio, generando un `data frame` que incluye las columnas `ent` (entidad federativa), `cve_mun` (clave del municipio) y `N_pers_mpio` (número total de personas en el municipio). Este resumen es fundamental para la correcta calibración de los modelos y la interpretación de los resultados a nivel municipal.
 
 
 ```{r, eval=FALSE}
@@ -79,8 +104,7 @@ N_mpio <- muestra_ampliada %>% group_by(ent, cve_mun) %>%
 
 #### Lectura de Archivos de Iteraciones y Cálculo de Estadísticas{-}
 
-Lee los archivos generados en iteraciones y filtra aquellos con resultados.
-
+Se procede a la lectura de los archivos generados durante las iteraciones del ajuste de modelos y calibración. Primero, se obtienen todos los archivos ubicados en el directorio `../output/2020/iteraciones/mpio_calib/`, que contienen los resultados de las iteraciones realizadas para cada entidad federativa. A continuación, se crea un `data frame` que incluye el nombre completo de cada directorio de iteración y la cantidad de archivos presentes en cada uno. Este `data frame` se filtra para mantener únicamente aquellos directorios que contienen al menos un archivo, lo que indica que se han generado resultados en esas iteraciones. Este proceso facilita el análisis posterior al asegurar que solo se consideren las iteraciones que tienen datos válidos para el análisis de las estimaciones.
 
 ```{r, eval=FALSE}
 list_estiacion <- list.files("../output/2020/iteraciones/mpio_calib/", full.names = TRUE)
@@ -93,7 +117,13 @@ iter = list_estiacion %>% map_dbl(~list.files(.x) %>% length())
 
 #### Proceso Iterativo para Cada estado {-}
 
-Para cada estado, se calculan las estimaciones promedio, la varianza, y otros indicadores. Los resultados se guardan en una lista. 
+Para cada entidad federativa, se lleva a cabo un análisis iterativo para calcular estimaciones promedio, varianza y otros indicadores estadísticos relevantes. Este proceso comienza con la lectura de los archivos de iteraciones para cada estado, que contienen resultados de las estimaciones calibradas. Los archivos se cargan y se combinan en un solo `data frame` para su procesamiento.
+
+Para cada estado, se realiza una serie de cálculos estadísticos. Primero, se obtiene la estimación promedio para cada indicador por municipio, calculando la media de las estimaciones en los datos. Posteriormente, se calcula el tamaño de la muestra para cada municipio y la varianza de las estimaciones. La varianza se descompone en la varianza entre las iteraciones (B) y la varianza promedio (Ubar) dentro de las iteraciones.
+
+Se realiza una combinación de estos datos para calcular la varianza total de las estimaciones, sumando la varianza promedio (Ubar) con la varianza entre las iteraciones ajustada por el tamaño de la muestra. La estimación del error estándar se obtiene como la raíz cuadrada de la varianza.
+
+Finalmente, se organiza toda la información en un `data frame` que incluye el número de observaciones, las estimaciones promedio, las varianzas y los errores estándar para cada indicador por municipio. Todos estos resultados se guardan en una lista para su posterior análisis y evaluación.
 
 ```{r, eval=FALSE}
 resul_ent_ipm <- list()
@@ -149,7 +179,15 @@ for(ii_ent in list_estiacion$list_estiacion){
 
 #### Guardar Resultados y Crear Archivos Excel{-}
 
-Combina los resultados de todas las estadoes, los guarda en un archivo RDS y en un archivo Excel. También calcula las estimaciones estatales y las guarda en un archivo Excel separado.
+Una vez calculadas todas las estimaciones y estadísticas para cada entidad federativa, los resultados se consolidan y se guardan en varios formatos para su posterior análisis y distribución. 
+
+Primero, los resultados de todas las entidades federativas se combinan en un solo `data frame`. Este `data frame` se enriquece con el número de personas por municipio, lo que permite contextualizar las estimaciones. Se seleccionan las columnas relevantes, que incluyen estimaciones de diversos indicadores, errores estándar y número de personas por municipio.
+
+El `data frame` consolidado se guarda en dos formatos. Se utiliza `saveRDS()` para guardar los datos en un archivo RDS, que es adecuado para el almacenamiento y recuperación eficiente en R. Además, se utiliza `openxlsx::write.xlsx()` para exportar los resultados a un archivo Excel, facilitando su revisión y análisis en herramientas de hojas de cálculo.
+
+Además, se calcula una estimación agregada a nivel estatal. Para esto, se agrupan los resultados por entidad federativa y se calculan las estimaciones totales para cada indicador, ponderadas por el número de personas en cada municipio. Este resumen estatal se guarda en otro archivo Excel separado, proporcionando una visión general de las estimaciones a nivel estatal.
+
+Estos pasos garantizan que tanto los datos detallados por municipio como las estimaciones agregadas a nivel estatal estén disponibles en formatos accesibles y útiles para la toma de decisiones y la presentación de resultados.
 
 ```{r, eval=FALSE}
 temp <- resul_ent_ipm %>% bind_rows()
@@ -192,7 +230,22 @@ openxlsx::write.xlsx(temp2,
 
 #### Generación de Gráficos{-}
 
-Genera gráficos para cada tipo de IPM y los guarda en archivos PNG.
+El proceso de generación de gráficos se enfoca en visualizar las estimaciones de pobreza multidimensional por entidad federativa para el año 2020. Los gráficos se crean para diferentes tipos de Índice de Pobreza Multidimensional (IPM) y se guardan en archivos PNG.
+
+1. **Preparación de los Datos para Graficar:**
+   Se utiliza el diseño muestral (`diseno`) de la encuesta ENIGH para calcular las estimaciones directas de los indicadores de pobreza multidimensional y sus intervalos de confianza. Estos cálculos se realizan para cada entidad federativa y se organizan en un `data frame` (`estimad_dir`), que se amplía para incluir las estimaciones directas de pobreza moderada y extrema.
+
+2. **Configuración de los Datos para Cada IPM:**
+   Se crea una lista de tipos de IPM (`ind`) que incluye tanto los tipos de IPM ("I", "II", "III", "IV") como las categorías de pobreza moderada ("mod") y extrema ("ext"). Para cada tipo, se seleccionan los datos relevantes y se preparan para la visualización.
+
+3. **Generación de Gráficos:**
+   Para cada tipo de IPM, se realiza lo siguiente:
+   - Se filtran los datos para el tipo de IPM actual y se preparan las columnas para los límites de los intervalos de confianza.
+   - Los datos se transforman y se preparan para graficar las estimaciones y sus intervalos de confianza.
+   - Se crea un gráfico con `ggplot2` que muestra las estimaciones de pobreza por entidad federativa. Las estimaciones de la encuesta ENIGH se representan con barras de error, mientras que las estimaciones de CEPAL se muestran con puntos. Los gráficos se personalizan con colores distintos, etiquetas, y un tema limpio.
+   - Los gráficos se guardan en archivos PNG con un tamaño adecuado para presentaciones y análisis.
+
+Este proceso asegura que los resultados de las estimaciones de pobreza sean visualmente accesibles y comparables entre las distintas entidades federativas y los diferentes tipos de IPM.
 
 ```{r, eval=FALSE}
 diseno <- encuesta_enigh %>% na.omit() %>%
